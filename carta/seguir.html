@@ -1,0 +1,72 @@
+<!-- SPDX-License-Identifier: EUPL-1.2 -->
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="gastro-idioma" content="">
+<script src="/idiomas.js"></script>
+<script src="/estatico/comun.js"></script>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="{{c_fondo}}">
+<title>{{nombre_corto}}</title>
+<link rel="icon" type="image/png" href="/img/icon-192.png">
+<meta name="generator" content="{{producto}}">
+<link rel="stylesheet" href="/estatico/fuentes/fuentes.css">
+<link rel="stylesheet" href="/tema.css">
+<link rel="stylesheet" href="/estatico/base.css">
+<style>
+body{margin:0}
+.seg{max-width:560px;margin:0 auto;padding:16px}
+.seg header{display:flex;align-items:center;gap:12px;justify-content:space-between}
+.seg header img{height:44px}
+.seg h1{font-size:1.4rem;margin:16px 0 4px}
+.seg .estado{font-size:1.15rem;font-weight:700;margin:12px 0 4px}
+.seg .aviso{border:1px solid currentColor;border-radius:8px;padding:10px 12px;font-weight:600}
+.seg ul{list-style:none;padding:0;margin:12px 0}
+.seg li{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid rgba(0,0,0,.12)}
+.seg li small{display:block;opacity:.75}
+.seg dl{display:grid;grid-template-columns:1fr auto;gap:4px 12px;margin:8px 0}
+.seg dd{margin:0;text-align:right}
+.seg dt:last-of-type,.seg dd:last-of-type{font-weight:700}
+.seg .nota{opacity:.8}
+</style>
+</head>
+<body>
+<main class="seg">
+  <header><img src="/img/{{logo}}" alt=""><span data-selector-idioma></span></header>
+  <h1 data-i18n="online.resumen_titulo"></h1>
+  <p class="aviso" data-i18n="online.aviso_no_factura"></p>
+  <div id="pedido" aria-live="polite"></div>
+  <p class="nota" data-i18n="seguir.guardar_enlace"></p>
+  <p><a href="/pedir" data-i18n="seguir.volver"></a></p>
+</main>
+<script>
+const T=new URLSearchParams(location.search).get('t')||'';
+let P=null,error=false,temp=null;
+const lista=a=>(a||[]).map(x=>I18N.tr(x)).join(', ');
+function pintar(){
+  if(error){$('#pedido').innerHTML=`<p class="estado">${esc(I18N.t('seguir.no_encontrado'))}</p>`;return}
+  if(!P)return;
+  const est=P.estado==='listo'&&P.tipo==='recoger'?'listo_recoger':P.estado;
+  const lin=P.lineas.map(l=>`<li><span>${l.cant}× ${esc(I18N.tr(l.n))}${l.sin&&l.sin.length?`<small>${esc(I18N.t('cocina.sin'))} ${esc(lista(l.sin))}</small>`:''}${l.extra&&l.extra.length?`<small>${esc(I18N.t('cocina.extra'))} ${esc(lista(l.extra))}</small>`:''}</span><span>${esc(I18N.moneda(l.precio*l.cant))}</span></li>`).join('');
+  $('#pedido').innerHTML=`<p><b>${esc(I18N.t('seguir.numero',{numero:P.numero}))}</b> · ${esc(I18N.t('seguir.tipo.'+P.tipo))}${P.hora!=='asap'?' · '+esc(I18N.t('seguir.para_hora',{hora:P.hora})):''}</p>
+   <p class="estado">${esc(I18N.t('seguir.estado.'+est))}</p>
+   ${P.hora_estimada&&!['rechazado','cancelado','entregado'].includes(P.estado)?`<p>${esc(I18N.t('seguir.hora_estimada',{hora:P.hora_estimada}))}</p>`:''}
+   ${P.motivo?`<p>${esc(I18N.t('seguir.motivo',{motivo:P.motivo}))}</p>`:''}
+   <ul>${lin}</ul>
+   <dl><dt>${esc(I18N.t('carta.online.subtotal'))}</dt><dd>${esc(I18N.moneda(P.subtotal))}</dd>
+   ${P.tipo==='domicilio'?`<dt>${esc(I18N.t('carta.online.envio'))}</dt><dd>${esc(I18N.moneda(P.envio))}</dd>`:''}
+   <dt>${esc(I18N.t('carta.online.estimado'))}</dt><dd>${esc(I18N.moneda(P.importe_estimado))}</dd></dl>
+   ${P.pago?`<p>${esc(I18N.t('seguir.pago.'+P.pago))}</p>`:''}`}
+async function cargar(){clearTimeout(temp);
+  try{const r=await fetch('/api/seguir?t='+encodeURIComponent(T),{cache:'no-store'});
+    if(r.status===404){error=true;pintar();return}
+    if(r.ok){P=await r.json();error=false;pintar()}}catch(e){}
+  if(!P||!['entregado','rechazado','cancelado'].includes(P.estado))temp=setTimeout(cargar,15000)}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)cargar()});
+I18N.alCambiar(pintar);
+cargar();
+</script>
+</body>
+</html>

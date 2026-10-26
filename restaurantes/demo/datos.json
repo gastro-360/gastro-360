@@ -1,0 +1,1731 @@
+{
+ "version": 1,
+ "gruposExtra": [
+  [
+   "carnes",
+   "Carnes"
+  ],
+  [
+   "embutidos",
+   "Embutidos y pescado"
+  ],
+  [
+   "quesos",
+   "Quesos"
+  ],
+  [
+   "verduras",
+   "Verduras"
+  ],
+  [
+   "salsas",
+   "Salsas"
+  ]
+ ],
+ "ingredientes": {
+  "pollo": {
+   "n": {
+    "es": "Pollo asado",
+    "en": "Roast chicken",
+    "ca": "Pollastre rostit",
+    "zh": "烤鸡肉",
+    "fr": "Poulet rôti",
+    "de": "Brathähnchen",
+    "it": "Pollo arrosto",
+    "pt": "Frango assado"
+   },
+   "cat": "carnes",
+   "p": null,
+   "s": "meat",
+   "h": 12,
+   "c": "#D9A066",
+   "fl": 1
+  },
+  "carne_desmigada": {
+   "n": {
+    "es": "Carne desmigada",
+    "en": "Pulled meat",
+    "ca": "Carn esfilagarsada",
+    "zh": "手撕肉",
+    "fr": "Viande effilochée",
+    "de": "Zupffleisch",
+    "it": "Carne sfilacciata",
+    "pt": "Carne desfiada"
+   },
+   "cat": "carnes",
+   "p": null,
+   "s": "strands",
+   "h": 11,
+   "c": "#7A3B1E"
+  },
+  "lomo": {
+   "n": {
+    "es": "Lomo",
+    "en": "Pork loin",
+    "ca": "Llom",
+    "zh": "猪里脊",
+    "fr": "Échine de porc",
+    "de": "Schweinelachs",
+    "it": "Lonza di maiale",
+    "pt": "Lombo de porco"
+   },
+   "cat": "carnes",
+   "p": null,
+   "s": "meat",
+   "h": 9,
+   "c": "#C98A5E"
+  },
+  "bacon": {
+   "n": {
+    "es": "Bacon",
+    "en": "Bacon",
+    "ca": "Bacó",
+    "zh": "培根",
+    "fr": "Bacon",
+    "de": "Bacon",
+    "it": "Bacon",
+    "pt": "Bacon"
+   },
+   "cat": "carnes",
+   "p": null,
+   "s": "bacon",
+   "h": 9,
+   "c": "#B5473A"
+  },
+  "albondigas": {
+   "n": {
+    "es": "Albóndigas",
+    "en": "Meatballs",
+    "ca": "Mandonguilles",
+    "zh": "肉丸",
+    "fr": "Boulettes de viande",
+    "de": "Fleischbällchen",
+    "it": "Polpette",
+    "pt": "Almôndegas"
+   },
+   "cat": "carnes",
+   "p": null,
+   "s": "balls",
+   "h": 17,
+   "c": "#7B4027"
+  },
+  "hamburguesa": {
+   "n": {
+    "es": "Hamburguesa",
+    "en": "Burger patty",
+    "ca": "Hamburguesa",
+    "zh": "汉堡肉饼",
+    "fr": "Burger",
+    "de": "Burger",
+    "it": "Hamburger",
+    "pt": "Hambúrguer"
+   },
+   "cat": "carnes",
+   "p": null,
+   "s": "meat",
+   "h": 13,
+   "c": "#5E3626"
+  },
+  "butifarra": {
+   "n": {
+    "es": "Butifarra",
+    "en": "Catalan sausage",
+    "ca": "Botifarra",
+    "zh": "加泰罗尼亚香肠",
+    "fr": "Saucisse catalane",
+    "de": "Katalanische Bratwurst",
+    "it": "Salsiccia catalana",
+    "pt": "Salsicha catalã"
+   },
+   "cat": "carnes",
+   "p": null,
+   "s": "sausage",
+   "h": 14,
+   "c": "#CDA27E"
+  },
+  "panceta": {
+   "n": {
+    "es": "Panceta",
+    "en": "Pork belly",
+    "ca": "Cansalada",
+    "zh": "五花肉",
+    "fr": "Poitrine de porc",
+    "de": "Schweinebauch",
+    "it": "Pancetta",
+    "pt": "Entremeada"
+   },
+   "cat": "carnes",
+   "p": null,
+   "s": "bacon",
+   "h": 10,
+   "c": "#C98267"
+  },
+  "chistorra": {
+   "n": {
+    "es": "Chistorra",
+    "en": "Chistorra sausage",
+    "ca": "Xistorra",
+    "zh": "细辣肠",
+    "fr": "Saucisse chistorra",
+    "de": "Chistorra-Wurst",
+    "it": "Salsiccia chistorra",
+    "pt": "Chouriço chistorra"
+   },
+   "cat": "carnes",
+   "p": null,
+   "s": "sausage",
+   "h": 9,
+   "c": "#B8401F"
+  },
+  "tortilla": {
+   "n": {
+    "es": "Tortilla de patatas",
+    "en": "Spanish omelette",
+    "ca": "Truita de patates",
+    "zh": "西班牙土豆饼",
+    "fr": "Tortilla espagnole",
+    "de": "Spanisches Kartoffelomelett",
+    "it": "Frittata di patate",
+    "pt": "Tortilha de batata"
+   },
+   "cat": "carnes",
+   "p": null,
+   "s": "slab",
+   "h": 18,
+   "c": "#F2C14E"
+  },
+  "jamon": {
+   "n": {
+    "es": "Jamón ibérico",
+    "en": "Iberian ham",
+    "ca": "Pernil ibèric",
+    "zh": "伊比利亚火腿",
+    "fr": "Jambon ibérique",
+    "de": "Iberischer Schinken",
+    "it": "Prosciutto iberico",
+    "pt": "Presunto ibérico"
+   },
+   "cat": "embutidos",
+   "p": null,
+   "s": "ham",
+   "h": 8,
+   "c": "#B8404B"
+  },
+  "salchichon": {
+   "n": {
+    "es": "Salchichón",
+    "en": "Salchichón",
+    "ca": "Salsitxó",
+    "zh": "萨拉米香肠",
+    "fr": "Saucisson",
+    "de": "Salchichón",
+    "it": "Salchichón",
+    "pt": "Salchichón"
+   },
+   "cat": "embutidos",
+   "p": null,
+   "s": "coins",
+   "h": 9,
+   "c": "#9E3B3B",
+   "d": "#F3D5CC"
+  },
+  "lomo_curado": {
+   "n": {
+    "es": "Lomo curado",
+    "en": "Cured pork loin",
+    "ca": "Llom curat",
+    "zh": "风干里脊",
+    "fr": "Filet de porc séché",
+    "de": "Geräucherter Schweinelachs",
+    "it": "Lonza stagionata",
+    "pt": "Lombo curado"
+   },
+   "cat": "embutidos",
+   "p": null,
+   "s": "coins",
+   "h": 9,
+   "c": "#8E2C2C",
+   "d": "#F3E3DA"
+  },
+  "chorizo": {
+   "n": {
+    "es": "Chorizo",
+    "en": "Chorizo",
+    "ca": "Xoriço",
+    "zh": "西班牙辣香肠",
+    "fr": "Chorizo",
+    "de": "Chorizo",
+    "it": "Chorizo",
+    "pt": "Chouriço"
+   },
+   "cat": "embutidos",
+   "p": null,
+   "s": "coins",
+   "h": 9,
+   "c": "#B23A2A",
+   "d": "#F1C7A8"
+  },
+  "sobrasada": {
+   "n": {
+    "es": "Sobrasada",
+    "en": "Sobrasada",
+    "ca": "Sobrassada",
+    "zh": "索布拉萨达肉酱",
+    "fr": "Sobrasada",
+    "de": "Sobrasada",
+    "it": "Sobrasada",
+    "pt": "Sobrasada"
+   },
+   "cat": "embutidos",
+   "p": null,
+   "s": "smear",
+   "h": 6,
+   "c": "#D0532C"
+  },
+  "atun": {
+   "n": {
+    "es": "Atún",
+    "en": "Tuna",
+    "ca": "Tonyina",
+    "zh": "金枪鱼",
+    "fr": "Thon",
+    "de": "Thunfisch",
+    "it": "Tonno",
+    "pt": "Atum"
+   },
+   "cat": "embutidos",
+   "p": null,
+   "s": "tuna",
+   "h": 9,
+   "c": "#D6B18E"
+  },
+  "havarti": {
+   "n": {
+    "es": "Queso havarti",
+    "en": "Havarti cheese",
+    "ca": "Formatge havarti",
+    "zh": "哈瓦蒂奶酪",
+    "fr": "Fromage havarti",
+    "de": "Havarti-Käse",
+    "it": "Formaggio havarti",
+    "pt": "Queijo havarti"
+   },
+   "cat": "quesos",
+   "p": 1.0,
+   "s": "cheeseFlat",
+   "h": 6,
+   "c": "#F3E2A6",
+   "norind": 1
+  },
+  "cheddar": {
+   "n": {
+    "es": "Queso cheddar",
+    "en": "Cheddar cheese",
+    "ca": "Formatge cheddar",
+    "zh": "切达奶酪",
+    "fr": "Fromage cheddar",
+    "de": "Cheddar-Käse",
+    "it": "Formaggio cheddar",
+    "pt": "Queijo cheddar"
+   },
+   "cat": "quesos",
+   "p": 1.0,
+   "s": "cheese",
+   "h": 6,
+   "c": "#F2A531"
+  },
+  "cabra": {
+   "n": {
+    "es": "Queso de cabra",
+    "en": "Goat cheese",
+    "ca": "Formatge de cabra",
+    "zh": "山羊奶酪",
+    "fr": "Fromage de chèvre",
+    "de": "Ziegenkäse",
+    "it": "Formaggio di capra",
+    "pt": "Queijo de cabra"
+   },
+   "cat": "quesos",
+   "p": 1.2,
+   "s": "coins",
+   "h": 9,
+   "c": "#F5F1E6",
+   "d": "#DDD3BC"
+  },
+  "lechuga": {
+   "n": {
+    "es": "Lechuga",
+    "en": "Lettuce",
+    "ca": "Enciam",
+    "zh": "生菜",
+    "fr": "Laitue",
+    "de": "Salat",
+    "it": "Lattuga",
+    "pt": "Alface"
+   },
+   "cat": "verduras",
+   "p": 0.5,
+   "s": "leaf",
+   "h": 7,
+   "c": "#86BF4C"
+  },
+  "tomate": {
+   "n": {
+    "es": "Tomate",
+    "en": "Tomato",
+    "ca": "Tomàquet",
+    "zh": "番茄",
+    "fr": "Tomate",
+    "de": "Tomate",
+    "it": "Pomodoro",
+    "pt": "Tomate"
+   },
+   "cat": "verduras",
+   "p": 0.5,
+   "s": "tomato",
+   "h": 8,
+   "c": "#E0473C"
+  },
+  "cebolla": {
+   "n": {
+    "es": "Cebolla",
+    "en": "Onion",
+    "ca": "Ceba",
+    "zh": "洋葱",
+    "fr": "Oignon",
+    "de": "Zwiebel",
+    "it": "Cipolla",
+    "pt": "Cebola"
+   },
+   "cat": "verduras",
+   "p": 0.5,
+   "s": "onion",
+   "h": 7,
+   "c": "#D9C2E6"
+  },
+  "cebolla_crujiente": {
+   "n": {
+    "es": "Cebolla crujiente",
+    "en": "Crispy onion",
+    "ca": "Ceba cruixent",
+    "zh": "脆洋葱",
+    "fr": "Oignon croustillant",
+    "de": "Knusprige Zwiebeln",
+    "it": "Cipolla croccante",
+    "pt": "Cebola crocante"
+   },
+   "cat": "verduras",
+   "p": 0.7,
+   "s": "sticks",
+   "h": 7,
+   "c": "#C9873A"
+  },
+  "cebolla_caramelizada": {
+   "n": {
+    "es": "Cebolla caramelizada",
+    "en": "Caramelised onion",
+    "ca": "Ceba caramel·litzada",
+    "zh": "焦糖洋葱",
+    "fr": "Oignon caramélisé",
+    "de": "Karamellisierte Zwiebeln",
+    "it": "Cipolla caramellata",
+    "pt": "Cebola caramelizada"
+   },
+   "cat": "verduras",
+   "p": 0.8,
+   "s": "strands",
+   "h": 7,
+   "c": "#9A5A25"
+  },
+  "pimiento_asado": {
+   "n": {
+    "es": "Pimiento asado",
+    "en": "Roasted pepper",
+    "ca": "Pebrot escalivat",
+    "zh": "烤红椒",
+    "fr": "Poivron rôti",
+    "de": "Gerösteter Paprika",
+    "it": "Peperone arrosto",
+    "pt": "Pimento assado"
+   },
+   "cat": "verduras",
+   "p": 0.8,
+   "s": "pepper",
+   "h": 8,
+   "c": "#C0392B"
+  },
+  "pimiento_verde": {
+   "n": {
+    "es": "Pimiento verde",
+    "en": "Green pepper",
+    "ca": "Pebrot verd",
+    "zh": "青椒",
+    "fr": "Poivron vert",
+    "de": "Grüne Paprika",
+    "it": "Peperone verde",
+    "pt": "Pimento verde"
+   },
+   "cat": "verduras",
+   "p": 0.7,
+   "s": "pepper",
+   "h": 10,
+   "c": "#4E8B2F",
+   "bl": 1
+  },
+  "olivas": {
+   "n": {
+    "es": "Olivas",
+    "en": "Olives",
+    "ca": "Olives",
+    "zh": "橄榄",
+    "fr": "Olives",
+    "de": "Oliven",
+    "it": "Olive",
+    "pt": "Azeitonas"
+   },
+   "cat": "verduras",
+   "p": 0.6,
+   "s": "olives",
+   "h": 7,
+   "c": "#2F2C21"
+  },
+  "alioli": {
+   "n": {
+    "es": "Alioli",
+    "en": "Aioli",
+    "ca": "Allioli",
+    "zh": "蒜香蛋黄酱",
+    "fr": "Aïoli",
+    "de": "Aioli",
+    "it": "Aioli",
+    "pt": "Aioli"
+   },
+   "cat": "salsas",
+   "p": 0.4,
+   "s": "sauce",
+   "h": 4,
+   "c": "#F4EBD0"
+  },
+  "mayonesa": {
+   "n": {
+    "es": "Mayonesa",
+    "en": "Mayonnaise",
+    "ca": "Maionesa",
+    "zh": "蛋黄酱",
+    "fr": "Mayonnaise",
+    "de": "Mayonnaise",
+    "it": "Maionese",
+    "pt": "Maionese"
+   },
+   "cat": "salsas",
+   "p": 0.4,
+   "s": "sauce",
+   "h": 4,
+   "c": "#F5E19A"
+  },
+  "barbacoa": {
+   "n": {
+    "es": "Salsa barbacoa",
+    "en": "BBQ sauce",
+    "ca": "Salsa barbacoa",
+    "zh": "烧烤酱",
+    "fr": "Sauce barbecue",
+    "de": "Barbecuesoße",
+    "it": "Salsa barbecue",
+    "pt": "Molho barbecue"
+   },
+   "cat": "salsas",
+   "p": 0.4,
+   "s": "sauce",
+   "h": 4,
+   "c": "#5B2412"
+  },
+  "salsa_tomate": {
+   "n": {
+    "es": "Salsa de tomate",
+    "en": "Tomato sauce",
+    "ca": "Salsa de tomàquet",
+    "zh": "番茄酱",
+    "fr": "Sauce tomate",
+    "de": "Tomatensoße",
+    "it": "Salsa di pomodoro",
+    "pt": "Molho de tomate"
+   },
+   "cat": "salsas",
+   "p": 0.4,
+   "s": "sauce",
+   "h": 5,
+   "c": "#C3301F"
+  },
+  "miel": {
+   "n": {
+    "es": "Miel",
+    "en": "Honey",
+    "ca": "Mel",
+    "zh": "蜂蜜",
+    "fr": "Miel",
+    "de": "Honig",
+    "it": "Miele",
+    "pt": "Mel"
+   },
+   "cat": "salsas",
+   "p": 0.5,
+   "s": "sauce",
+   "h": 3,
+   "c": "#E3A52A"
+  },
+  "huevo_duro": {
+   "n": {
+    "es": "Huevo duro",
+    "en": "Hard-boiled egg",
+    "ca": "Ou dur",
+    "zh": "水煮蛋",
+    "fr": "Œuf dur",
+    "de": "Hartgekochtes Ei",
+    "it": "Uovo sodo",
+    "pt": "Ovo cozido"
+   },
+   "cat": "verduras",
+   "p": 0.5,
+   "s": "coins",
+   "h": 9,
+   "c": "#8DBF5A"
+  },
+  "anchoas": {
+   "n": {
+    "es": "Anchoas",
+    "en": "Anchovies",
+    "ca": "Anxoves",
+    "zh": "鳀鱼",
+    "fr": "Anchois",
+    "de": "Anchovis",
+    "it": "Acciughe",
+    "pt": "Anchovas"
+   },
+   "cat": "embutidos",
+   "p": 1.5,
+   "s": "bacon",
+   "h": 6,
+   "c": "#8A4E3A"
+  },
+  "pepinillos": {
+   "n": {
+    "es": "Pepinillos",
+    "en": "Gherkins",
+    "ca": "Cogombrets",
+    "zh": "酸黄瓜",
+    "fr": "Cornichons",
+    "de": "Gewürzgurken",
+    "it": "Cetriolini",
+    "pt": "Pepininhos"
+   },
+   "cat": "verduras",
+   "p": 0.6,
+   "s": "tomato",
+   "h": 7,
+   "c": "#7A8F3A"
+  },
+  "pan_tomate": {
+   "n": {
+    "es": "Pan con tomate",
+    "en": "Bread with tomato",
+    "ca": "Pa amb tomàquet",
+    "zh": "番茄面包",
+    "fr": "Pain à la tomate",
+    "de": "Brot mit Tomate",
+    "it": "Pane con pomodoro",
+    "pt": "Pão com tomate"
+   },
+   "cat": "verduras",
+   "p": 0.0,
+   "s": "smear",
+   "h": 4,
+   "c": "#C8402E"
+  },
+  "escalivada": {
+   "n": {
+    "es": "Escalivada",
+    "en": "Roasted vegetables",
+    "ca": "Escalivada",
+    "zh": "烤蔬菜",
+    "fr": "Légumes grillés",
+    "de": "Gegrilltes Gemüse",
+    "it": "Verdure grigliate",
+    "pt": "Legumes assados"
+   },
+   "cat": "verduras",
+   "p": 1.2,
+   "s": "pepper",
+   "h": 8,
+   "c": "#B5452E"
+  },
+  "fuet": {
+   "n": {
+    "es": "Fuet",
+    "en": "Fuet sausage",
+    "ca": "Fuet",
+    "zh": "细干肠",
+    "fr": "Saucisson fuet",
+    "de": "Fuet-Wurst",
+    "it": "Salame fuet",
+    "pt": "Fuet"
+   },
+   "cat": "embutidos",
+   "p": 1.2,
+   "s": "coins",
+   "h": 9,
+   "c": "#A0524A",
+   "d": "#EBD9CC"
+  },
+  "butifarra_negra": {
+   "n": {
+    "es": "Butifarra negra",
+    "en": "Black sausage",
+    "ca": "Botifarra negra",
+    "zh": "黑香肠",
+    "fr": "Boudin catalan",
+    "de": "Katalanische Blutwurst",
+    "it": "Sanguinaccio catalano",
+    "pt": "Morcela catalã"
+   },
+   "cat": "carnes",
+   "p": 1.5,
+   "s": "coins",
+   "h": 10,
+   "c": "#3B2224",
+   "d": "#E8DCC8"
+  },
+  "romesco": {
+   "n": {
+    "es": "Romesco",
+    "en": "Romesco sauce",
+    "ca": "Romesco",
+    "zh": "罗梅斯科酱",
+    "fr": "Sauce romesco",
+    "de": "Romesco-Soße",
+    "it": "Salsa romesco",
+    "pt": "Molho romesco"
+   },
+   "cat": "salsas",
+   "p": 0.6,
+   "s": "sauce",
+   "h": 5,
+   "c": "#C0602E"
+  },
+  "maiz": {
+   "n": {
+    "es": "Maíz",
+    "en": "Sweetcorn",
+    "ca": "Blat de moro",
+    "zh": "玉米",
+    "fr": "Maïs",
+    "de": "Mais",
+    "it": "Mais",
+    "pt": "Milho"
+   },
+   "cat": "verduras",
+   "p": 0.2,
+   "s": "leaf",
+   "h": 7,
+   "c": "#8DBF5A"
+  }
+ },
+ "platos": [
+  {
+   "id": "pollo_alioli",
+   "sec": {
+    "es": "De la casa",
+    "en": "House specials",
+    "ca": "De la casa",
+    "zh": "招牌三明治",
+    "fr": "Spécialités de la maison",
+    "de": "Spezialitäten des Hauses",
+    "it": "Specialità della casa",
+    "pt": "Especialidades da casa"
+   },
+   "pan": "barra",
+   "p": 6.5,
+   "i": [
+    "pan_tomate",
+    "lechuga",
+    "pollo",
+    "alioli"
+   ],
+   "n": {
+    "es": "Pollo y alioli",
+    "en": "Chicken & aioli",
+    "ca": "Pollastre i allioli",
+    "zh": "鸡肉蒜香酱",
+    "fr": "Poulet et aïoli",
+    "de": "Hähnchen & Aioli",
+    "it": "Pollo e aioli",
+    "pt": "Frango e aioli"
+   },
+   "d": {
+    "es": "Pollo asado, alioli y lechuga.",
+    "en": "Roast chicken, aioli and lettuce.",
+    "ca": "Pollastre rostit, allioli i enciam.",
+    "zh": "烤鸡肉、蒜香蛋黄酱和生菜。",
+    "fr": "Poulet rôti, aïoli et laitue.",
+    "de": "Brathähnchen, Aioli und Salat.",
+    "it": "Pollo arrosto, aioli e lattuga.",
+    "pt": "Frango assado, aioli e alface."
+   },
+   "alergenos": [
+    "gluten",
+    "eggs"
+   ]
+  },
+  {
+   "id": "pollo_campero",
+   "sec": {
+    "es": "De la casa",
+    "en": "House specials",
+    "ca": "De la casa",
+    "zh": "招牌三明治",
+    "fr": "Spécialités de la maison",
+    "de": "Spezialitäten des Hauses",
+    "it": "Specialità della casa",
+    "pt": "Especialidades da casa"
+   },
+   "pan": "barra",
+   "p": 6.9,
+   "i": [
+    "pan_tomate",
+    "lechuga",
+    "tomate",
+    "pollo",
+    "cebolla",
+    "mayonesa"
+   ],
+   "n": {
+    "es": "Pollo campero",
+    "en": "Country chicken",
+    "ca": "Pollastre de pagès",
+    "zh": "田园鸡肉",
+    "fr": "Poulet campagnard",
+    "de": "Hähnchen Campero",
+    "it": "Pollo campero",
+    "pt": "Frango campestre"
+   },
+   "d": {
+    "es": "Pollo asado, lechuga, tomate, cebolla y mayonesa.",
+    "en": "Roast chicken, lettuce, tomato, onion and mayonnaise.",
+    "ca": "Pollastre rostit, enciam, tomàquet, ceba i maionesa.",
+    "zh": "烤鸡肉、生菜、番茄、洋葱和蛋黄酱。",
+    "fr": "Poulet rôti, laitue, tomate, oignon et mayonnaise.",
+    "de": "Brathähnchen, Salat, Tomate, Zwiebel und Mayonnaise.",
+    "it": "Pollo arrosto, lattuga, pomodoro, cipolla e maionese.",
+    "pt": "Frango assado, alface, tomate, cebola e maionese."
+   },
+   "alergenos": [
+    "gluten",
+    "eggs"
+   ]
+  },
+  {
+   "id": "de_la_casa",
+   "sec": {
+    "es": "De la casa",
+    "en": "House specials",
+    "ca": "De la casa",
+    "zh": "招牌三明治",
+    "fr": "Spécialités de la maison",
+    "de": "Spezialitäten des Hauses",
+    "it": "Specialità della casa",
+    "pt": "Especialidades da casa"
+   },
+   "pan": "barra",
+   "p": 7.5,
+   "i": [
+    "pan_tomate",
+    "pollo",
+    "bacon",
+    "cheddar",
+    "cebolla"
+   ],
+   "n": {
+    "es": "El de la casa",
+    "en": "The house special",
+    "ca": "El de la casa",
+    "zh": "本店招牌",
+    "fr": "Celui de la maison",
+    "de": "Der vom Haus",
+    "it": "Quello della casa",
+    "pt": "O da casa"
+   },
+   "d": {
+    "es": "Pollo asado, bacon, queso cheddar y cebolla.",
+    "en": "Roast chicken, bacon, cheddar cheese and onion.",
+    "ca": "Pollastre rostit, bacó, formatge cheddar i ceba.",
+    "zh": "烤鸡肉、培根、切达奶酪和洋葱。",
+    "fr": "Poulet rôti, bacon, cheddar et oignon.",
+    "de": "Brathähnchen, Bacon, Cheddar und Zwiebel.",
+    "it": "Pollo arrosto, bacon, cheddar e cipolla.",
+    "pt": "Frango assado, bacon, queijo cheddar e cebola."
+   },
+   "alergenos": [
+    "gluten",
+    "milk"
+   ]
+  },
+  {
+   "id": "meloso",
+   "sec": {
+    "es": "De la casa",
+    "en": "House specials",
+    "ca": "De la casa",
+    "zh": "招牌三明治",
+    "fr": "Spécialités de la maison",
+    "de": "Spezialitäten des Hauses",
+    "it": "Specialità della casa",
+    "pt": "Especialidades da casa"
+   },
+   "pan": "barra",
+   "p": 7.2,
+   "i": [
+    "pan_tomate",
+    "carne_desmigada",
+    "barbacoa",
+    "cebolla_crujiente"
+   ],
+   "n": {
+    "es": "El meloso",
+    "en": "The tender one",
+    "ca": "El melós",
+    "zh": "软嫩手撕肉",
+    "fr": "Le fondant",
+    "de": "Der Zarte",
+    "it": "Il morbido",
+    "pt": "O suculento"
+   },
+   "d": {
+    "es": "Carne desmigada, cebolla crujiente y salsa barbacoa.",
+    "en": "Pulled meat, crispy onion and BBQ sauce.",
+    "ca": "Carn esfilagarsada, ceba cruixent i salsa barbacoa.",
+    "zh": "手撕肉、脆洋葱和烧烤酱。",
+    "fr": "Viande effilochée, oignon croustillant et sauce barbecue.",
+    "de": "Zupffleisch, knusprige Zwiebeln und Barbecuesoße.",
+    "it": "Carne sfilacciata, cipolla croccante e salsa barbecue.",
+    "pt": "Carne desfiada, cebola crocante e molho barbecue."
+   },
+   "alergenos": [
+    "gluten"
+   ]
+  },
+  {
+   "id": "lomo_queso",
+   "sec": {
+    "es": "De la casa",
+    "en": "House specials",
+    "ca": "De la casa",
+    "zh": "招牌三明治",
+    "fr": "Spécialités de la maison",
+    "de": "Spezialitäten des Hauses",
+    "it": "Specialità della casa",
+    "pt": "Especialidades da casa"
+   },
+   "pan": "barra",
+   "p": 6.8,
+   "i": [
+    "pan_tomate",
+    "lomo",
+    "havarti",
+    "pimiento_asado"
+   ],
+   "n": {
+    "es": "Lomo, queso y pimiento",
+    "en": "Loin, cheese & pepper",
+    "ca": "Llom, formatge i pebrot",
+    "zh": "里脊奶酪烤椒",
+    "fr": "Échine, fromage et poivron",
+    "de": "Schweinelachs, Käse & Paprika",
+    "it": "Lonza, formaggio e peperone",
+    "pt": "Lombo, queijo e pimento"
+   },
+   "d": {
+    "es": "Lomo, queso y pimientos asados.",
+    "en": "Pork loin, cheese and roasted peppers.",
+    "ca": "Llom, formatge i pebrots escalivats.",
+    "zh": "猪里脊、奶酪和烤红椒。",
+    "fr": "Échine de porc, fromage et poivrons rôtis.",
+    "de": "Schweinelachs, Käse und geröstete Paprika.",
+    "it": "Lonza di maiale, formaggio e peperoni arrosto.",
+    "pt": "Lombo de porco, queijo e pimentos assados."
+   },
+   "alergenos": [
+    "gluten",
+    "milk"
+   ]
+  },
+  {
+   "id": "tortilla_alioli",
+   "sec": {
+    "es": "De la casa",
+    "en": "House specials",
+    "ca": "De la casa",
+    "zh": "招牌三明治",
+    "fr": "Spécialités de la maison",
+    "de": "Spezialitäten des Hauses",
+    "it": "Specialità della casa",
+    "pt": "Especialidades da casa"
+   },
+   "pan": "barra",
+   "p": 5.9,
+   "i": [
+    "pan_tomate",
+    "tortilla",
+    "alioli"
+   ],
+   "n": {
+    "es": "Tortilla y alioli",
+    "en": "Omelette & aioli",
+    "ca": "Truita i allioli",
+    "zh": "土豆饼蒜香酱",
+    "fr": "Tortilla et aïoli",
+    "de": "Tortilla & Aioli",
+    "it": "Frittata e aioli",
+    "pt": "Tortilha e aioli"
+   },
+   "d": {
+    "es": "Tortilla de patatas y alioli.",
+    "en": "Spanish omelette and aioli.",
+    "ca": "Truita de patates i allioli.",
+    "zh": "西班牙土豆饼和蒜香蛋黄酱。",
+    "fr": "Tortilla espagnole et aïoli.",
+    "de": "Spanisches Kartoffelomelett und Aioli.",
+    "it": "Frittata di patate e aioli.",
+    "pt": "Tortilha de batata e aioli."
+   },
+   "alergenos": [
+    "gluten",
+    "eggs"
+   ]
+  },
+  {
+   "id": "capricho",
+   "sec": {
+    "es": "De la casa",
+    "en": "House specials",
+    "ca": "De la casa",
+    "zh": "招牌三明治",
+    "fr": "Spécialités de la maison",
+    "de": "Spezialitäten des Hauses",
+    "it": "Specialità della casa",
+    "pt": "Especialidades da casa"
+   },
+   "pan": "barra",
+   "p": 6.9,
+   "i": [
+    "pan_tomate",
+    "bacon",
+    "havarti",
+    "cebolla_caramelizada"
+   ],
+   "n": {
+    "es": "El capricho",
+    "en": "The treat",
+    "ca": "El caprici",
+    "zh": "小确幸",
+    "fr": "Le caprice",
+    "de": "Die Leckerei",
+    "it": "Il capriccio",
+    "pt": "O capricho"
+   },
+   "d": {
+    "es": "Bacon, queso y cebolla caramelizada.",
+    "en": "Bacon, cheese and caramelised onion.",
+    "ca": "Bacó, formatge i ceba caramel·litzada.",
+    "zh": "培根、奶酪和焦糖洋葱。",
+    "fr": "Bacon, fromage et oignon caramélisé.",
+    "de": "Bacon, Käse und karamellisierte Zwiebeln.",
+    "it": "Bacon, formaggio e cipolla caramellata.",
+    "pt": "Bacon, queijo e cebola caramelizada."
+   },
+   "alergenos": [
+    "gluten",
+    "milk"
+   ]
+  },
+  {
+   "id": "albondigas",
+   "sec": {
+    "es": "De la casa",
+    "en": "House specials",
+    "ca": "De la casa",
+    "zh": "招牌三明治",
+    "fr": "Spécialités de la maison",
+    "de": "Spezialitäten des Hauses",
+    "it": "Specialità della casa",
+    "pt": "Especialidades da casa"
+   },
+   "pan": "barra",
+   "p": 6.9,
+   "i": [
+    "pan_tomate",
+    "albondigas",
+    "salsa_tomate",
+    "havarti"
+   ],
+   "n": {
+    "es": "Albóndigas de la abuela",
+    "en": "Grandma's meatballs",
+    "ca": "Mandonguilles de l'àvia",
+    "zh": "奶奶的肉丸",
+    "fr": "Boulettes de grand-mère",
+    "de": "Omas Fleischbällchen",
+    "it": "Le polpette della nonna",
+    "pt": "Almôndegas da avó"
+   },
+   "d": {
+    "es": "Albóndigas, salsa de tomate y queso.",
+    "en": "Meatballs, tomato sauce and cheese.",
+    "ca": "Mandonguilles, salsa de tomàquet i formatge.",
+    "zh": "肉丸、番茄酱和奶酪。",
+    "fr": "Boulettes, sauce tomate et fromage.",
+    "de": "Fleischbällchen, Tomatensoße und Käse.",
+    "it": "Polpette, salsa di pomodoro e formaggio.",
+    "pt": "Almôndegas, molho de tomate e queijo."
+   },
+   "alergenos": [
+    "gluten",
+    "eggs",
+    "milk"
+   ]
+  },
+  {
+   "id": "atunero",
+   "sec": {
+    "es": "De la casa",
+    "en": "House specials",
+    "ca": "De la casa",
+    "zh": "招牌三明治",
+    "fr": "Spécialités de la maison",
+    "de": "Spezialitäten des Hauses",
+    "it": "Specialità della casa",
+    "pt": "Especialidades da casa"
+   },
+   "pan": "barra",
+   "p": 6.5,
+   "i": [
+    "pan_tomate",
+    "pimiento_asado",
+    "atun",
+    "olivas"
+   ],
+   "n": {
+    "es": "El atunero",
+    "en": "The tuna one",
+    "ca": "El tonyinaire",
+    "zh": "金枪鱼款",
+    "fr": "Le thonier",
+    "de": "Der Thunfischliebhaber",
+    "it": "Il tonnaro",
+    "pt": "O atuneiro"
+   },
+   "d": {
+    "es": "Atún, pimiento asado y olivas.",
+    "en": "Tuna, roasted pepper and olives.",
+    "ca": "Tonyina, pebrot escalivat i olives.",
+    "zh": "金枪鱼、烤红椒和橄榄。",
+    "fr": "Thon, poivron rôti et olives.",
+    "de": "Thunfisch, gerösteter Paprika und Oliven.",
+    "it": "Tonno, peperone arrosto e olive.",
+    "pt": "Atum, pimento assado e azeitonas."
+   },
+   "alergenos": [
+    "gluten",
+    "fish"
+   ]
+  },
+  {
+   "id": "playero",
+   "sec": {
+    "es": "De la casa",
+    "en": "House specials",
+    "ca": "De la casa",
+    "zh": "招牌三明治",
+    "fr": "Spécialités de la maison",
+    "de": "Spezialitäten des Hauses",
+    "it": "Specialità della casa",
+    "pt": "Especialidades da casa"
+   },
+   "pan": "barra",
+   "p": 6.9,
+   "i": [
+    "pan_tomate",
+    "lechuga",
+    "tomate",
+    "atun",
+    "cebolla",
+    "olivas",
+    "mayonesa"
+   ],
+   "n": {
+    "es": "El playero",
+    "en": "The beach one",
+    "ca": "El platger",
+    "zh": "海滩款",
+    "fr": "Le plagiste",
+    "de": "Der Strandfreund",
+    "it": "Il balneare",
+    "pt": "O praiano"
+   },
+   "d": {
+    "es": "Atún, lechuga, tomate, olivas, cebolla y mayonesa.",
+    "en": "Tuna, lettuce, tomato, olives, onion and mayonnaise.",
+    "ca": "Tonyina, enciam, tomàquet, olives, ceba i maionesa.",
+    "zh": "金枪鱼、生菜、番茄、橄榄、洋葱和蛋黄酱。",
+    "fr": "Thon, laitue, tomate, olives, oignon et mayonnaise.",
+    "de": "Thunfisch, Salat, Tomate, Oliven, Zwiebel und Mayonnaise.",
+    "it": "Tonno, lattuga, pomodoro, olive, cipolla e maionese.",
+    "pt": "Atum, alface, tomate, azeitonas, cebola e maionese."
+   },
+   "alergenos": [
+    "gluten",
+    "fish",
+    "eggs"
+   ]
+  },
+  {
+   "id": "balear",
+   "sec": {
+    "es": "De la casa",
+    "en": "House specials",
+    "ca": "De la casa",
+    "zh": "招牌三明治",
+    "fr": "Spécialités de la maison",
+    "de": "Spezialitäten des Hauses",
+    "it": "Specialità della casa",
+    "pt": "Especialidades da casa"
+   },
+   "pan": "barra",
+   "p": 6.9,
+   "i": [
+    "pan_tomate",
+    "sobrasada",
+    "cabra",
+    "miel"
+   ],
+   "n": {
+    "es": "El balear",
+    "en": "The Balearic",
+    "ca": "El balear",
+    "zh": "巴利阿里款",
+    "fr": "Le baléare",
+    "de": "Der Balearische",
+    "it": "Il baleare",
+    "pt": "O baleárico"
+   },
+   "d": {
+    "es": "Sobrasada, queso de cabra y miel.",
+    "en": "Sobrasada, goat cheese and honey.",
+    "ca": "Sobrassada, formatge de cabra i mel.",
+    "zh": "索布拉萨达肉酱、山羊奶酪和蜂蜜。",
+    "fr": "Sobrasada, fromage de chèvre et miel.",
+    "de": "Sobrasada, Ziegenkäse und Honig.",
+    "it": "Sobrasada, formaggio di capra e miele.",
+    "pt": "Sobrasada, queijo de cabra e mel."
+   },
+   "alergenos": [
+    "gluten",
+    "milk"
+   ]
+  },
+  {
+   "id": "chistorra",
+   "sec": {
+    "es": "De la casa",
+    "en": "House specials",
+    "ca": "De la casa",
+    "zh": "招牌三明治",
+    "fr": "Spécialités de la maison",
+    "de": "Spezialitäten des Hauses",
+    "it": "Specialità della casa",
+    "pt": "Especialidades da casa"
+   },
+   "pan": "barra",
+   "p": 6.5,
+   "i": [
+    "pan_tomate",
+    "chistorra",
+    "pimiento_verde"
+   ],
+   "n": {
+    "es": "Chistorra y pimiento",
+    "en": "Chistorra & pepper",
+    "ca": "Xistorra i pebrot",
+    "zh": "细辣肠青椒",
+    "fr": "Chistorra et poivron",
+    "de": "Chistorra & Paprika",
+    "it": "Chistorra e peperone",
+    "pt": "Chistorra e pimento"
+   },
+   "d": {
+    "es": "Chistorra y pimientos verdes.",
+    "en": "Chistorra sausage and green peppers.",
+    "ca": "Xistorra i pebrots verds.",
+    "zh": "细辣肠和青椒。",
+    "fr": "Chistorra et poivrons verts.",
+    "de": "Chistorra und grüne Paprika.",
+    "it": "Chistorra e peperoni verdi.",
+    "pt": "Chistorra e pimentos verdes."
+   },
+   "alergenos": [
+    "gluten"
+   ]
+  },
+  {
+   "id": "c_lomo",
+   "sec": {
+    "es": "Los clásicos",
+    "en": "The classics",
+    "ca": "Els clàssics",
+    "zh": "经典款",
+    "fr": "Les classiques",
+    "de": "Die Klassiker",
+    "it": "I classici",
+    "pt": "Os clássicos"
+   },
+   "pan": "barra",
+   "p": 4.5,
+   "i": [
+    "pan_tomate",
+    "lomo"
+   ],
+   "n": {
+    "es": "Lomo",
+    "en": "Pork loin",
+    "ca": "Llom",
+    "zh": "猪里脊",
+    "fr": "Échine de porc",
+    "de": "Schweinelachs",
+    "it": "Lonza di maiale",
+    "pt": "Lombo de porco"
+   },
+   "d": {
+    "es": "Bocadillo de lomo.",
+    "en": "Pork loin sandwich.",
+    "ca": "Entrepà de llom.",
+    "zh": "猪里脊三明治。",
+    "fr": "Sandwich à l'échine de porc.",
+    "de": "Sandwich mit Schweinelachs.",
+    "it": "Panino con lonza di maiale.",
+    "pt": "Sandes de lombo de porco."
+   },
+   "alergenos": [
+    "gluten"
+   ]
+  },
+  {
+   "id": "c_hamburguesa",
+   "sec": {
+    "es": "Los clásicos",
+    "en": "The classics",
+    "ca": "Els clàssics",
+    "zh": "经典款",
+    "fr": "Les classiques",
+    "de": "Die Klassiker",
+    "it": "I classici",
+    "pt": "Os clássicos"
+   },
+   "pan": "barra",
+   "p": 4.8,
+   "i": [
+    "pan_tomate",
+    "hamburguesa"
+   ],
+   "n": {
+    "es": "Hamburguesa",
+    "en": "Burger",
+    "ca": "Hamburguesa",
+    "zh": "汉堡肉",
+    "fr": "Burger",
+    "de": "Burger",
+    "it": "Hamburger",
+    "pt": "Hambúrguer"
+   },
+   "d": {
+    "es": "Bocadillo de hamburguesa.",
+    "en": "Burger patty sandwich.",
+    "ca": "Entrepà d'hamburguesa.",
+    "zh": "汉堡肉饼三明治。",
+    "fr": "Sandwich au steak haché.",
+    "de": "Sandwich mit Burgerpatty.",
+    "it": "Panino con hamburger.",
+    "pt": "Sandes de hambúrguer."
+   },
+   "alergenos": [
+    "gluten"
+   ]
+  },
+  {
+   "id": "c_butifarra",
+   "sec": {
+    "es": "Los clásicos",
+    "en": "The classics",
+    "ca": "Els clàssics",
+    "zh": "经典款",
+    "fr": "Les classiques",
+    "de": "Die Klassiker",
+    "it": "I classici",
+    "pt": "Os clássicos"
+   },
+   "pan": "barra",
+   "p": 4.8,
+   "i": [
+    "pan_tomate",
+    "butifarra"
+   ],
+   "n": {
+    "es": "Butifarra",
+    "en": "Catalan sausage",
+    "ca": "Botifarra",
+    "zh": "加泰罗尼亚香肠",
+    "fr": "Saucisse catalane",
+    "de": "Katalanische Bratwurst",
+    "it": "Salsiccia catalana",
+    "pt": "Salsicha catalã"
+   },
+   "d": {
+    "es": "Bocadillo de butifarra.",
+    "en": "Catalan sausage sandwich.",
+    "ca": "Entrepà de botifarra.",
+    "zh": "加泰罗尼亚香肠三明治。",
+    "fr": "Sandwich à la saucisse catalane.",
+    "de": "Sandwich mit katalanischer Bratwurst.",
+    "it": "Panino con salsiccia catalana.",
+    "pt": "Sandes de salsicha catalã."
+   },
+   "alergenos": [
+    "gluten"
+   ]
+  },
+  {
+   "id": "c_panceta",
+   "sec": {
+    "es": "Los clásicos",
+    "en": "The classics",
+    "ca": "Els clàssics",
+    "zh": "经典款",
+    "fr": "Les classiques",
+    "de": "Die Klassiker",
+    "it": "I classici",
+    "pt": "Os clássicos"
+   },
+   "pan": "barra",
+   "p": 4.5,
+   "i": [
+    "pan_tomate",
+    "panceta"
+   ],
+   "n": {
+    "es": "Panceta",
+    "en": "Pork belly",
+    "ca": "Cansalada",
+    "zh": "五花肉",
+    "fr": "Poitrine de porc",
+    "de": "Schweinebauch",
+    "it": "Pancetta",
+    "pt": "Entremeada"
+   },
+   "d": {
+    "es": "Bocadillo de panceta.",
+    "en": "Pork belly sandwich.",
+    "ca": "Entrepà de cansalada.",
+    "zh": "五花肉三明治。",
+    "fr": "Sandwich à la poitrine de porc.",
+    "de": "Sandwich mit Schweinebauch.",
+    "it": "Panino con pancetta.",
+    "pt": "Sandes de entremeada."
+   },
+   "alergenos": [
+    "gluten"
+   ]
+  },
+  {
+   "id": "i_jamon",
+   "sec": {
+    "es": "Los ibéricos",
+    "en": "Iberian",
+    "ca": "Els ibèrics",
+    "zh": "伊比利亚系列",
+    "fr": "Les ibériques",
+    "de": "Die Iberischen",
+    "it": "Gli iberici",
+    "pt": "Os ibéricos"
+   },
+   "pan": "barra",
+   "p": 6.5,
+   "i": [
+    "pan_tomate",
+    "jamon"
+   ],
+   "n": {
+    "es": "Jamón",
+    "en": "Ham",
+    "ca": "Pernil",
+    "zh": "火腿",
+    "fr": "Jambon",
+    "de": "Schinken",
+    "it": "Prosciutto",
+    "pt": "Presunto"
+   },
+   "d": {
+    "es": "Bocadillo de jamón ibérico.",
+    "en": "Iberian ham sandwich.",
+    "ca": "Entrepà de pernil ibèric.",
+    "zh": "伊比利亚火腿三明治。",
+    "fr": "Sandwich au jambon ibérique.",
+    "de": "Sandwich mit iberischem Schinken.",
+    "it": "Panino con prosciutto iberico.",
+    "pt": "Sandes de presunto ibérico."
+   },
+   "alergenos": [
+    "gluten"
+   ]
+  },
+  {
+   "id": "i_salchichon",
+   "sec": {
+    "es": "Los ibéricos",
+    "en": "Iberian",
+    "ca": "Els ibèrics",
+    "zh": "伊比利亚系列",
+    "fr": "Les ibériques",
+    "de": "Die Iberischen",
+    "it": "Gli iberici",
+    "pt": "Os ibéricos"
+   },
+   "pan": "barra",
+   "p": 5.0,
+   "i": [
+    "pan_tomate",
+    "salchichon"
+   ],
+   "n": {
+    "es": "Salchichón",
+    "en": "Salchichón",
+    "ca": "Salsitxó",
+    "zh": "萨拉米香肠",
+    "fr": "Saucisson",
+    "de": "Salchichón",
+    "it": "Salchichón",
+    "pt": "Salchichón"
+   },
+   "d": {
+    "es": "Bocadillo de salchichón ibérico.",
+    "en": "Iberian salchichón sandwich.",
+    "ca": "Entrepà de salsitxó ibèric.",
+    "zh": "伊比利亚萨拉米三明治。",
+    "fr": "Sandwich au saucisson ibérique.",
+    "de": "Sandwich mit iberischem Salchichón.",
+    "it": "Panino con salchichón iberico.",
+    "pt": "Sandes de salchichón ibérico."
+   },
+   "alergenos": [
+    "gluten"
+   ]
+  },
+  {
+   "id": "i_lomo_curado",
+   "sec": {
+    "es": "Los ibéricos",
+    "en": "Iberian",
+    "ca": "Els ibèrics",
+    "zh": "伊比利亚系列",
+    "fr": "Les ibériques",
+    "de": "Die Iberischen",
+    "it": "Gli iberici",
+    "pt": "Os ibéricos"
+   },
+   "pan": "barra",
+   "p": 6.0,
+   "i": [
+    "pan_tomate",
+    "lomo_curado"
+   ],
+   "n": {
+    "es": "Lomo curado",
+    "en": "Cured loin",
+    "ca": "Llom curat",
+    "zh": "风干里脊",
+    "fr": "Filet de porc séché",
+    "de": "Geräucherter Schweinelachs",
+    "it": "Lonza stagionata",
+    "pt": "Lombo curado"
+   },
+   "d": {
+    "es": "Bocadillo de lomo curado ibérico.",
+    "en": "Iberian cured loin sandwich.",
+    "ca": "Entrepà de llom curat ibèric.",
+    "zh": "伊比利亚风干里脊三明治。",
+    "fr": "Sandwich au filet de porc séché ibérique.",
+    "de": "Sandwich mit iberischem Lomo curado.",
+    "it": "Panino con lonza stagionata iberica.",
+    "pt": "Sandes de lombo curado ibérico."
+   },
+   "alergenos": [
+    "gluten"
+   ]
+  },
+  {
+   "id": "i_chorizo",
+   "sec": {
+    "es": "Los ibéricos",
+    "en": "Iberian",
+    "ca": "Els ibèrics",
+    "zh": "伊比利亚系列",
+    "fr": "Les ibériques",
+    "de": "Die Iberischen",
+    "it": "Gli iberici",
+    "pt": "Os ibéricos"
+   },
+   "pan": "barra",
+   "p": 5.0,
+   "i": [
+    "pan_tomate",
+    "chorizo"
+   ],
+   "n": {
+    "es": "Chorizo",
+    "en": "Chorizo",
+    "ca": "Xoriço",
+    "zh": "西班牙辣香肠",
+    "fr": "Chorizo",
+    "de": "Chorizo",
+    "it": "Chorizo",
+    "pt": "Chouriço"
+   },
+   "d": {
+    "es": "Bocadillo de chorizo ibérico.",
+    "en": "Iberian chorizo sandwich.",
+    "ca": "Entrepà de xoriço ibèric.",
+    "zh": "伊比利亚辣香肠三明治。",
+    "fr": "Sandwich au chorizo ibérique.",
+    "de": "Sandwich mit iberischem Chorizo.",
+    "it": "Panino con chorizo iberico.",
+    "pt": "Sandes de chouriço ibérico."
+   },
+   "alergenos": [
+    "gluten"
+   ]
+  }
+ ],
+ "picar": [
+  {
+   "id": "alitas",
+   "n": {
+    "es": "Alitas de pollo",
+    "en": "Chicken wings",
+    "ca": "Ales de pollastre",
+    "zh": "鸡翅",
+    "fr": "Ailes de poulet",
+    "de": "Hähnchenflügel",
+    "it": "Alette di pollo",
+    "pt": "Asinhas de frango"
+   },
+   "p": 6.5,
+   "c": "#B8642A",
+   "alergenos": []
+  },
+  {
+   "id": "fingers",
+   "n": {
+    "es": "Tiras de pollo",
+    "en": "Chicken tenders",
+    "ca": "Tires de pollastre",
+    "zh": "鸡柳",
+    "fr": "Lanières de poulet",
+    "de": "Hähnchenstreifen",
+    "it": "Straccetti di pollo",
+    "pt": "Tiras de frango"
+   },
+   "p": 6.0,
+   "c": "#C98B3E",
+   "alergenos": [
+    "gluten",
+    "eggs"
+   ]
+  },
+  {
+   "id": "fritas",
+   "n": {
+    "es": "Patatas fritas",
+    "en": "French fries",
+    "ca": "Patates fregides",
+    "zh": "薯条",
+    "fr": "Frites",
+    "de": "Pommes frites",
+    "it": "Patatine fritte",
+    "pt": "Batatas fritas"
+   },
+   "p": 3.5,
+   "c": "#E9B949",
+   "alergenos": []
+  },
+  {
+   "id": "bravas",
+   "n": {
+    "es": "Patatas bravas",
+    "en": "Patatas bravas",
+    "ca": "Patates braves",
+    "zh": "辣酱土豆",
+    "fr": "Patatas bravas",
+    "de": "Patatas bravas",
+    "it": "Patatas bravas",
+    "pt": "Batatas bravas"
+   },
+   "p": 4.5,
+   "c": "#D9822B",
+   "salsa": "#C2410C",
+   "alergenos": []
+  },
+  {
+   "id": "gajo",
+   "n": {
+    "es": "Patatas gajo",
+    "en": "Potato wedges",
+    "ca": "Patates gall",
+    "zh": "土豆角",
+    "fr": "Quartiers de pommes de terre",
+    "de": "Kartoffelspalten",
+    "it": "Patate a spicchi",
+    "pt": "Gomos de batata"
+   },
+   "p": 5.5,
+   "c": "#DFA640"
+  }
+ ],
+ "mesas": [
+  {
+   "n": 1,
+   "z": "sala"
+  },
+  {
+   "n": 2,
+   "z": "sala"
+  },
+  {
+   "n": 3,
+   "z": "sala"
+  },
+  {
+   "n": 4,
+   "z": "sala"
+  },
+  {
+   "n": 5,
+   "z": "sala"
+  },
+  {
+   "n": 6,
+   "z": "sala"
+  },
+  {
+   "n": 7,
+   "z": "sala"
+  }
+ ],
+ "urlQR": ""
+}

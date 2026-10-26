@@ -1,0 +1,490 @@
+{
+ "anchoas": {
+  "src": "fotos/anchoas.webp",
+  "r": 0.144
+ },
+ "atunero.atun": {
+  "src": "fotos/atunero.atun.webp",
+  "r": 0.155
+ },
+ "atunero.barra_abajo": {
+  "src": "fotos/atunero.barra_abajo.webp",
+  "r": 0.173
+ },
+ "atunero.barra_arriba": {
+  "src": "fotos/atunero.barra_arriba.webp",
+  "r": 0.18
+ },
+ "atunero.olivas": {
+  "src": "fotos/atunero.olivas.webp",
+  "r": 0.1
+ },
+ "atunero.pimiento_asado": {
+  "src": "fotos/atunero.pimiento_asado.webp",
+  "r": 0.103
+ },
+ "balear.barra_abajo": {
+  "src": "fotos/balear.barra_abajo.webp",
+  "r": 0.158
+ },
+ "balear.barra_arriba": {
+  "src": "fotos/balear.barra_arriba.webp",
+  "r": 0.168
+ },
+ "balear.cabra": {
+  "src": "fotos/balear.cabra.webp",
+  "r": 0.082
+ },
+ "balear.miel": {
+  "src": "fotos/balear.miel.webp",
+  "r": 0.128
+ },
+ "balear.sobrasada": {
+  "src": "fotos/balear.sobrasada.webp",
+  "r": 0.147
+ },
+ "butifarra_negra": {
+  "src": "fotos/butifarra_negra.webp",
+  "r": 0.137
+ },
+ "c_butifarra.barra_abajo": {
+  "src": "fotos/c_butifarra.barra_abajo.webp",
+  "r": 0.182
+ },
+ "c_butifarra.barra_arriba": {
+  "src": "fotos/c_butifarra.barra_arriba.webp",
+  "r": 0.18
+ },
+ "c_butifarra.butifarra": {
+  "src": "fotos/c_butifarra.butifarra.webp",
+  "r": 0.168
+ },
+ "c_hamburguesa.barra_abajo": {
+  "src": "fotos/c_hamburguesa.barra_abajo.webp",
+  "r": 0.188
+ },
+ "c_hamburguesa.barra_arriba": {
+  "src": "fotos/c_hamburguesa.barra_arriba.webp",
+  "r": 0.184
+ },
+ "c_hamburguesa.hamburguesa": {
+  "src": "fotos/c_hamburguesa.hamburguesa.webp",
+  "r": 0.19
+ },
+ "c_lomo.barra_abajo": {
+  "src": "fotos/c_lomo.barra_abajo.webp",
+  "r": 0.17
+ },
+ "c_lomo.barra_arriba": {
+  "src": "fotos/c_lomo.barra_arriba.webp",
+  "r": 0.176
+ },
+ "c_lomo.lomo": {
+  "src": "fotos/c_lomo.lomo.webp",
+  "r": 0.19
+ },
+ "c_panceta.barra_abajo": {
+  "src": "fotos/c_panceta.barra_abajo.webp",
+  "r": 0.18
+ },
+ "c_panceta.barra_arriba": {
+  "src": "fotos/c_panceta.barra_arriba.webp",
+  "r": 0.177
+ },
+ "c_panceta.panceta": {
+  "src": "fotos/c_panceta.panceta.webp",
+  "r": 0.185
+ },
+ "capricho.bacon": {
+  "src": "fotos/capricho.bacon.webp",
+  "r": 0.163
+ },
+ "capricho.barra_abajo": {
+  "src": "fotos/capricho.barra_abajo.webp",
+  "r": 0.178
+ },
+ "capricho.barra_arriba": {
+  "src": "fotos/capricho.barra_arriba.webp",
+  "r": 0.171
+ },
+ "capricho.cebolla_caramelizada": {
+  "src": "fotos/capricho.cebolla_caramelizada.webp",
+  "r": 0.152
+ },
+ "capricho.havarti": {
+  "src": "fotos/capricho.havarti.webp",
+  "r": 0.172
+ },
+ "chistorra.barra_abajo": {
+  "src": "fotos/chistorra.barra_abajo.webp",
+  "r": 0.167
+ },
+ "chistorra.barra_arriba": {
+  "src": "fotos/chistorra.barra_arriba.webp",
+  "r": 0.166
+ },
+ "chistorra.chistorra": {
+  "src": "fotos/chistorra.chistorra.webp",
+  "r": 0.086
+ },
+ "chistorra.pimiento_verde": {
+  "src": "fotos/chistorra.pimiento_verde.webp",
+  "r": 0.096
+ },
+ "completo_atunero": {
+  "src": "fotos/completo_atunero.webp",
+  "r": 0.312
+ },
+ "completo_balear": {
+  "src": "fotos/completo_balear.webp",
+  "r": 0.314
+ },
+ "completo_c_butifarra": {
+  "src": "fotos/completo_c_butifarra.webp",
+  "r": 0.317
+ },
+ "completo_c_hamburguesa": {
+  "src": "fotos/completo_c_hamburguesa.webp",
+  "r": 0.317
+ },
+ "completo_c_lomo": {
+  "src": "fotos/completo_c_lomo.webp",
+  "r": 0.313
+ },
+ "completo_c_panceta": {
+  "src": "fotos/completo_c_panceta.webp",
+  "r": 0.315
+ },
+ "completo_capricho": {
+  "src": "fotos/completo_capricho.webp",
+  "r": 0.309
+ },
+ "completo_chistorra": {
+  "src": "fotos/completo_chistorra.webp",
+  "r": 0.315
+ },
+ "completo_i_chorizo": {
+  "src": "fotos/completo_i_chorizo.webp",
+  "r": 0.305
+ },
+ "completo_i_jamon": {
+  "src": "fotos/completo_i_jamon.webp",
+  "r": 0.308
+ },
+ "completo_i_lomo_curado": {
+  "src": "fotos/completo_i_lomo_curado.webp",
+  "r": 0.313
+ },
+ "completo_i_salchichon": {
+  "src": "fotos/completo_i_salchichon.webp",
+  "r": 0.316
+ },
+ "completo_de_la_casa": {
+  "src": "fotos/completo_de_la_casa.webp",
+  "r": 0.316
+ },
+ "completo_lomo_queso": {
+  "src": "fotos/completo_lomo_queso.webp",
+  "r": 0.315
+ },
+ "completo_meloso": {
+  "src": "fotos/completo_meloso.webp",
+  "r": 0.315
+ },
+ "completo_playero": {
+  "src": "fotos/completo_playero.webp",
+  "r": 0.314
+ },
+ "completo_pollo_alioli": {
+  "src": "fotos/completo_pollo_alioli.webp",
+  "r": 0.311
+ },
+ "completo_pollo_campero": {
+  "src": "fotos/completo_pollo_campero.webp",
+  "r": 0.313
+ },
+ "completo_tortilla_alioli": {
+  "src": "fotos/completo_tortilla_alioli.webp",
+  "r": 0.316
+ },
+ "completo_albondigas": {
+  "src": "fotos/completo_albondigas.webp",
+  "r": 0.316
+ },
+ "escalivada": {
+  "src": "fotos/escalivada.webp",
+  "r": 0.155
+ },
+ "fuet": {
+  "src": "fotos/fuet.webp",
+  "r": 0.115
+ },
+ "huevo_duro": {
+  "src": "fotos/huevo_duro.webp",
+  "r": 0.13
+ },
+ "i_chorizo.barra_abajo": {
+  "src": "fotos/i_chorizo.barra_abajo.webp",
+  "r": 0.174
+ },
+ "i_chorizo.barra_arriba": {
+  "src": "fotos/i_chorizo.barra_arriba.webp",
+  "r": 0.173
+ },
+ "i_chorizo.chorizo": {
+  "src": "fotos/i_chorizo.chorizo.webp",
+  "r": 0.123
+ },
+ "i_jamon.barra_abajo": {
+  "src": "fotos/i_jamon.barra_abajo.webp",
+  "r": 0.188
+ },
+ "i_jamon.barra_arriba": {
+  "src": "fotos/i_jamon.barra_arriba.webp",
+  "r": 0.179
+ },
+ "i_jamon.jamon": {
+  "src": "fotos/i_jamon.jamon.webp",
+  "r": 0.172
+ },
+ "i_lomo_curado.barra_abajo": {
+  "src": "fotos/i_lomo_curado.barra_abajo.webp",
+  "r": 0.177
+ },
+ "i_lomo_curado.barra_arriba": {
+  "src": "fotos/i_lomo_curado.barra_arriba.webp",
+  "r": 0.177
+ },
+ "i_lomo_curado.lomo_curado": {
+  "src": "fotos/i_lomo_curado.lomo_curado.webp",
+  "r": 0.14
+ },
+ "i_salchichon.barra_abajo": {
+  "src": "fotos/i_salchichon.barra_abajo.webp",
+  "r": 0.179
+ },
+ "i_salchichon.barra_arriba": {
+  "src": "fotos/i_salchichon.barra_arriba.webp",
+  "r": 0.183
+ },
+ "i_salchichon.salchichon": {
+  "src": "fotos/i_salchichon.salchichon.webp",
+  "r": 0.117
+ },
+ "de_la_casa.bacon": {
+  "src": "fotos/de_la_casa.bacon.webp",
+  "r": 0.135
+ },
+ "de_la_casa.barra_abajo": {
+  "src": "fotos/de_la_casa.barra_abajo.webp",
+  "r": 0.153
+ },
+ "de_la_casa.barra_arriba": {
+  "src": "fotos/de_la_casa.barra_arriba.webp",
+  "r": 0.161
+ },
+ "de_la_casa.cebolla": {
+  "src": "fotos/de_la_casa.cebolla.webp",
+  "r": 0.084
+ },
+ "de_la_casa.cheddar": {
+  "src": "fotos/de_la_casa.cheddar.webp",
+  "r": 0.156
+ },
+ "de_la_casa.pollo": {
+  "src": "fotos/de_la_casa.pollo.webp",
+  "r": 0.145
+ },
+ "lomo_queso.barra_abajo": {
+  "src": "fotos/lomo_queso.barra_abajo.webp",
+  "r": 0.167
+ },
+ "lomo_queso.barra_arriba": {
+  "src": "fotos/lomo_queso.barra_arriba.webp",
+  "r": 0.168
+ },
+ "lomo_queso.havarti": {
+  "src": "fotos/lomo_queso.havarti.webp",
+  "r": 0.148
+ },
+ "lomo_queso.lomo": {
+  "src": "fotos/lomo_queso.lomo.webp",
+  "r": 0.138
+ },
+ "lomo_queso.pimiento_asado": {
+  "src": "fotos/lomo_queso.pimiento_asado.webp",
+  "r": 0.106
+ },
+ "maiz": {
+  "src": "fotos/maiz.webp",
+  "r": 0.124
+ },
+ "meloso.barbacoa": {
+  "src": "fotos/meloso.barbacoa.webp",
+  "r": 0.099
+ },
+ "meloso.barra_abajo": {
+  "src": "fotos/meloso.barra_abajo.webp",
+  "r": 0.174
+ },
+ "meloso.barra_arriba": {
+  "src": "fotos/meloso.barra_arriba.webp",
+  "r": 0.165
+ },
+ "meloso.carne_desmigada": {
+  "src": "fotos/meloso.carne_desmigada.webp",
+  "r": 0.223
+ },
+ "meloso.cebolla_crujiente": {
+  "src": "fotos/meloso.cebolla_crujiente.webp",
+  "r": 0.164
+ },
+ "pan_tomate": {
+  "src": "fotos/pan_tomate.webp",
+  "r": 0.174
+ },
+ "pepinillos": {
+  "src": "fotos/pepinillos.webp",
+  "r": 0.114
+ },
+ "picar_alitas": {
+  "src": "fotos/picar_alitas.webp",
+  "r": 0.629
+ },
+ "picar_bravas": {
+  "src": "fotos/picar_bravas.webp",
+  "r": 0.64
+ },
+ "picar_fingers": {
+  "src": "fotos/picar_fingers.webp",
+  "r": 0.592
+ },
+ "picar_fritas": {
+  "src": "fotos/picar_fritas.webp",
+  "r": 0.577
+ },
+ "picar_gajo": {
+  "src": "fotos/picar_gajo.webp",
+  "r": 0.615
+ },
+ "playero.atun": {
+  "src": "fotos/playero.atun.webp",
+  "r": 0.121
+ },
+ "playero.barra_abajo": {
+  "src": "fotos/playero.barra_abajo.webp",
+  "r": 0.153
+ },
+ "playero.barra_arriba": {
+  "src": "fotos/playero.barra_arriba.webp",
+  "r": 0.166
+ },
+ "playero.cebolla": {
+  "src": "fotos/playero.cebolla.webp",
+  "r": 0.055
+ },
+ "playero.lechuga": {
+  "src": "fotos/playero.lechuga.webp",
+  "r": 0.139
+ },
+ "playero.mayonesa": {
+  "src": "fotos/playero.mayonesa.webp",
+  "r": 0.06
+ },
+ "playero.olivas": {
+  "src": "fotos/playero.olivas.webp",
+  "r": 0.074
+ },
+ "playero.tomate": {
+  "src": "fotos/playero.tomate.webp",
+  "r": 0.084
+ },
+ "pollo_alioli.alioli": {
+  "src": "fotos/pollo_alioli.alioli.webp",
+  "r": 0.108
+ },
+ "pollo_alioli.barra_abajo": {
+  "src": "fotos/pollo_alioli.barra_abajo.webp",
+  "r": 0.159
+ },
+ "pollo_alioli.barra_arriba": {
+  "src": "fotos/pollo_alioli.barra_arriba.webp",
+  "r": 0.167
+ },
+ "pollo_alioli.lechuga": {
+  "src": "fotos/pollo_alioli.lechuga.webp",
+  "r": 0.161
+ },
+ "pollo_alioli.pollo": {
+  "src": "fotos/pollo_alioli.pollo.webp",
+  "r": 0.164
+ },
+ "pollo_campero.barra_abajo": {
+  "src": "fotos/pollo_campero.barra_abajo.webp",
+  "r": 0.15
+ },
+ "pollo_campero.barra_arriba": {
+  "src": "fotos/pollo_campero.barra_arriba.webp",
+  "r": 0.173
+ },
+ "pollo_campero.cebolla": {
+  "src": "fotos/pollo_campero.cebolla.webp",
+  "r": 0.068
+ },
+ "pollo_campero.lechuga": {
+  "src": "fotos/pollo_campero.lechuga.webp",
+  "r": 0.162
+ },
+ "pollo_campero.mayonesa": {
+  "src": "fotos/pollo_campero.mayonesa.webp",
+  "r": 0.06
+ },
+ "pollo_campero.pollo": {
+  "src": "fotos/pollo_campero.pollo.webp",
+  "r": 0.152
+ },
+ "pollo_campero.tomate": {
+  "src": "fotos/pollo_campero.tomate.webp",
+  "r": 0.084
+ },
+ "romesco": {
+  "src": "fotos/romesco.webp",
+  "r": 0.149
+ },
+ "tortilla_alioli.alioli": {
+  "src": "fotos/tortilla_alioli.alioli.webp",
+  "r": 0.083
+ },
+ "tortilla_alioli.barra_abajo": {
+  "src": "fotos/tortilla_alioli.barra_abajo.webp",
+  "r": 0.161
+ },
+ "tortilla_alioli.barra_arriba": {
+  "src": "fotos/tortilla_alioli.barra_arriba.webp",
+  "r": 0.178
+ },
+ "tortilla_alioli.tortilla": {
+  "src": "fotos/tortilla_alioli.tortilla.webp",
+  "r": 0.183
+ },
+ "albondigas.albondigas": {
+  "src": "fotos/albondigas.albondigas.webp",
+  "r": 0.134
+ },
+ "albondigas.barra_abajo": {
+  "src": "fotos/albondigas.barra_abajo.webp",
+  "r": 0.159
+ },
+ "albondigas.barra_arriba": {
+  "src": "fotos/albondigas.barra_arriba.webp",
+  "r": 0.175
+ },
+ "albondigas.havarti": {
+  "src": "fotos/albondigas.havarti.webp",
+  "r": 0.179
+ },
+ "albondigas.salsa_tomate": {
+  "src": "fotos/albondigas.salsa_tomate.webp",
+  "r": 0.148
+ }
+}

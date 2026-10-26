@@ -1,0 +1,8 @@
+# Añade el simulador de Telegram al compose para tests/vigilancia.sh (no se usa en producción).
+services:
+  telegram-mock:
+    build: .
+    image: gastro-360:${GASTRO_IMAGEN_TAG:-local}
+    entrypoint: ["python", "/app/tests/telegram_mock.py", "9000"]
+    healthcheck:
+      disable: true

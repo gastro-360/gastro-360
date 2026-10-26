@@ -1,0 +1,205 @@
+<!-- SPDX-License-Identifier: EUPL-1.2 -->
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="gastro-idioma" content="">
+<script src="/idiomas.js"></script>
+<script src="/estatico/comun.js"></script>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="{{c_fondo}}">
+<title>{{nombre_corto}}</title>
+<link rel="icon" type="image/png" href="/img/icon-192.png">
+<meta name="generator" content="{{producto}}">
+<link rel="stylesheet" href="/estatico/fuentes/fuentes.css">
+<link rel="stylesheet" href="/tema.css">
+<link rel="stylesheet" href="/estatico/base.css">
+<link rel="stylesheet" href="/estatico/cocina.css">
+</head>
+<body>
+
+<section class="login" id="login" hidden>
+  <form id="formLogin">
+    <img src="/img/{{logo}}" alt="">
+    <span data-selector-idioma></span>
+    <h1 data-i18n="cocina.login.titulo"></h1>
+    <p id="loginTxt"></p>
+    <input class="in" id="clave" type="password" autocomplete="current-password" data-i18n-attr="placeholder:cocina.login.clave" required>
+    <label><input type="checkbox" id="recordar" checked> <span data-i18n="cocina.login.recordar"></span></label>
+    <button class="btn" type="submit" data-i18n="cocina.login.entrar"></button>
+    <p class="err" id="errLogin" role="alert"></p>
+  </form>
+</section>
+
+<div id="app" hidden>
+  <header class="top">
+    <div class="marca"><img src="/img/{{logo}}" alt=""><h1><span class="t" data-i18n="cocina.nombre"></span> <span>{{nombre_corto}}</span></h1></div>
+    <span class="reloj" id="reloj"></span>
+    <div class="acciones">
+      <button class="pill" id="aceptar" type="button" aria-pressed="true"></button>
+      <button class="pill" id="sonido" type="button"></button>
+      <button class="pill" id="verIngredientes" type="button" aria-pressed="true"></button>
+      <button class="pill" id="verEntregados" type="button" aria-pressed="false" data-i18n="cocina.ver_entregados"></button>
+      <a class="pill" href="/admin" target="_blank" rel="noopener" data-i18n="cocina.backoffice"></a>
+      <button class="pill" id="salir" type="button" data-i18n="cocina.salir"></button>
+      <span data-selector-idioma></span>
+    </div>
+  </header>
+  <div class="caida" id="caida" role="alert" hidden data-i18n="cocina.sin_conexion"></div>
+  <main class="tablero" id="tablero"></main>
+</div>
+<div class="toast" id="toast" role="status"><span id="toastTxt"></span><button type="button" id="toastBtn" hidden data-i18n="cocina.deshacer"></button></div>
+
+<script src="/alergenos.js"></script>
+<script>
+const NOMBRE_CORTO={{js:nombre_corto}}, NOMBRE={{js:nombre}};
+const titulo=()=>I18N.t('cocina.titulo',{nombre:NOMBRE_CORTO});
+const TXT={{js:textos}};
+const IC=d=>`<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+const IC_CAMPANA=IC('<path d="M6 9a6 6 0 0 1 12 0c0 6 2 7 2 7H4s2-1 2-7"/><path d="M10 20a2 2 0 0 0 4 0"/>'),IC_MUDO=IC('<path d="M11 5 6 9H3v6h3l5 4z"/><path d="m16 9 5 6m0-6-5 6"/>'),IC_VOLVER=IC('<path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>');
+const COLS=['nuevo','preparando','listo','entregado'];
+const SIG={nuevo:'preparando',preparando:'listo',listo:'entregado'};
+const ANT={preparando:'nuevo',listo:'preparando',entregado:'listo'};
+// Pedidos online (domicilio/recoger): llegan ya aceptados por la sala. «aceptado» va en la columna de nuevos y «en_reparto» con los entregados;
+// a domicilio, de «listo» no pasa la cocina: lo saca a repartir la sala
+const online=p=>p.tipo==='domicilio'||p.tipo==='recoger';
+const quien=p=>online(p)?I18N.t('cocina.tipo.'+p.tipo)+' '+p.numero:p.mesa;
+const col=p=>p.estado==='aceptado'?'nuevo':p.estado==='en_reparto'?'entregado':p.estado;
+const sig=p=>online(p)?({aceptado:'preparando',preparando:'listo',listo:p.tipo==='recoger'?'entregado':null})[p.estado]:SIG[p.estado];
+const ant=p=>online(p)?({preparando:'aceptado',listo:'preparando',entregado:p.tipo==='recoger'?'listo':null})[p.estado]:ANT[p.estado];
+const sep=()=>I18N.t('cocina.separador');
+const lista=a=>a.map(x=>I18N.tr(x)).join(sep());
+const guarda=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+const lee=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+
+let pedidos=[], firma='', vistos=null, desfase=0, verEnt=false, temporizador=null;
+let verIng=lee('cocina_ingredientes')!=='no';   // lista de montaje en «En preparación» (útil para un cocinero nuevo); se recuerda en este dispositivo
+
+/* ---------- API ---------- */
+async function api(metodo,ruta,cuerpo){
+  const r=await fetch(ruta,{method:metodo,headers:cuerpo?{'Content-Type':'application/json'}:{},body:cuerpo?JSON.stringify(cuerpo):undefined,credentials:'same-origin',cache:'no-store'});
+  let j={};try{j=await r.json()}catch(e){}
+  if(r.status===401&&ruta!=='/api/login'){mostrarLogin();throw new Error(j.error||I18N.t('cocina.err.sesion'))}
+  if(!r.ok)throw new Error(j.error||I18N.t('cocina.err.servidor'));
+  return j}
+function mostrarLogin(){clearTimeout(temporizador);$('#app').hidden=true;$('#login').hidden=false;$('#clave').focus()}
+function entrar(){$('#login').hidden=true;$('#app').hidden=false;pintarSonido();pintarIng();pantallaEncendida();consultar()}
+$('#formLogin').addEventListener('submit',async e=>{e.preventDefault();$('#errLogin').textContent='';
+  try{await api('POST','/api/login',{clave:$('#clave').value,recordar:$('#recordar').checked});$('#clave').value='';prepararAudio();entrar()}
+  catch(err){$('#errLogin').textContent=err.message}});
+$('#salir').addEventListener('click',async()=>{await api('POST','/api/logout').catch(()=>{});mostrarLogin()});
+
+/* ---------- Pedidos en vivo: se consultan cada 3 segundos ---------- */
+async function consultar(){
+  clearTimeout(temporizador);
+  try{
+    const r=await api('GET','/api/pedidos');
+    desfase=r.ahora*1000-Date.now();
+    $('#caida').hidden=true;pintarAceptar(r.aceptar_pedidos!==false);
+    const nuevos=r.pedidos.filter(p=>col(p)==='nuevo'&&vistos&&!vistos.has(p.id));
+    vistos=new Set(r.pedidos.map(p=>p.id));
+    const f=JSON.stringify(r.pedidos);
+    if(f!==firma){firma=f;pedidos=r.pedidos;pintar(new Set(nuevos.map(p=>p.id)))}
+    if(nuevos.length){sonar();document.title=`(${nuevos.length}) ${titulo()}`;setTimeout(()=>{document.title=titulo()},8000)}
+  }catch(e){if($('#login').hidden)$('#caida').hidden=false;else return}
+  temporizador=setTimeout(consultar,3000)}
+
+function minutos(p){return Math.max(0,Math.floor((Date.now()+desfase-p.t.nuevo*1000)/60000))}
+function espera(p){const m=minutos(p),cls=p.estado==='nuevo'||p.estado==='preparando'?(m>=20?'muy-tarde':m>=10?'tarde':''):'';
+  return`<b class="${cls}" data-min="${p.id}">${m<1?I18N.t('cocina.espera.ahora'):I18N.t('cocina.espera.min',{n:m})}</b>`}
+// En preparación, cada plato muestra sus ingredientes en el orden en que se ponen (de abajo arriba)
+function montaje(l){let k=0;
+  return`<ol class="montaje" aria-label="${esc(I18N.t('cocina.montaje.aria'))}">`+l.montaje.map(c=>{
+    const va=c.e!=='sin'&&c.e!=='agotado';
+    return`<li class="${c.e}"><span class="num">${va?++k:''}</span><span class="ing">${esc(I18N.tr(c.n))}</span>${c.e?`<i>${esc(I18N.t('cocina.'+c.e))}</i>`:''}</li>`}).join('')+'</ol>'}
+// Total de la mesa junto a su número: platos y, si hay, raciones
+function cuenta(p){const n=k=>p.lineas.filter(l=>!!l.picar===k).reduce((a,l)=>a+l.cant,0),b=n(false),r=n(true);
+  return`<span class="cuenta">${b?`<b>${b}</b> ${esc(I18N.tr(b===1?TXT.plato:TXT.platos))}`:''}${b&&r?'<br>':''}${r?`<b>${r}</b> ${esc(I18N.tn('cocina.racion',r))}`:''}</span>`}
+const ALG=window.ALERGENOS||{lista:[],textos:{es:{}}};
+const algT=()=>ALG.textos[I18N.lang]||ALG.textos.es||{};
+// Alérgenos del plato tal como los declara el restaurante: marcados (icono + nombre), sin alérgenos declarados o sin revisar
+function alergenosK(l){const v=l.alergenos,ALGT=algT();
+  if(v==null)return`<span class="alg-k"><span class="sin_revisar">${esc(ALGT.sin_revisar)}</span></span>`;
+  if(!v.length)return`<span class="alg-k"><span class="sin_declarar">${esc(ALGT.sin_declarar)}</span></span>`;
+  return`<span class="alg-k" aria-label="${esc(ALGT.titulo)}">`+ALG.lista.filter(a=>v.includes(a.id)).map(a=>`<span>${a.svg}${esc(a.n[I18N.lang]||a.n.es)}</span>`).join('')+'</span>'}
+function tarjeta(p,recien){
+  // El mismo plato pedido de dos formas: el que va sin cambios se marca «Normal» para no confundirlo
+  const veces={};p.lineas.forEach(l=>veces[l.pid]=(veces[l.pid]||0)+1);
+  const normal=l=>veces[l.pid]>1&&!l.sin.length&&!l.extra.length&&!l.agotado.length?`<span class="cambio normal"><i>${esc(I18N.t('cocina.normal'))}</i>${esc(I18N.t('cocina.receta_original'))}</span>`:'';
+  const lin=p.lineas.map(l=>`<li><span class="cant${l.cant>1?' varios':''}">${l.cant}×</span><div><span class="prod">${esc(I18N.tr(l.n))}${l.picar?`<small>${esc(I18N.t('cocina.racion_etiqueta'))}</small>`:''}</span>${normal(l)}`+alergenosK(l)+
+    (p.estado==='preparando'&&verIng&&!l.picar&&l.montaje?montaje(l)+'</div></li>':
+    (l.sin.length?`<span class="cambio sin"><i>${esc(I18N.t('cocina.sin'))}</i>${esc(lista(l.sin))}</span>`:'')+
+    (l.extra.length?`<span class="cambio extra"><i>${esc(I18N.t('cocina.extra'))}</i>${esc(lista(l.extra))}</span>`:'')+
+    (l.agotado.length?`<span class="cambio ago"><i>${esc(I18N.t('cocina.agotado'))}</i>${esc(I18N.t('cocina.agotado_sin',{lista:lista(l.agotado)}))}</span>`:'')+'</div></li>')).join('');
+    return`<article class="ped${recien?' recien':''}" aria-label="${esc(I18N.t('cocina.pedido.aria',{mesa:quien(p),n:p.numero}))}">
+   <div class="ped-h">${online(p)?`<span class="mesa"><small>${esc(I18N.t('cocina.tipo.'+p.tipo))}</small>${p.numero}${p.hora&&p.hora!=='asap'?`<em class="zona">${esc(I18N.t('cocina.para_hora',{hora:p.hora}))}</em>`:''}</span>`:`<span class="mesa"><small>${esc(I18N.t('cocina.mesa'))}</small>${p.mesa}${p.zona?`<em class="zona">${esc(p.zona)}</em>`:''}</span>`}${cuenta(p)}<span class="meta">${espera(p)}${esc(I18N.t('cocina.pedido.meta',{n:p.numero,hora:I18N.hora(p.creado)}))}</span></div>
+   ${p.nota?`<p class="nota"><b>${esc(I18N.t('cocina.nota'))}</b><span>${esc(p.nota)}</span></p>`:''}<ul class="lineas">${lin}</ul>
+   <div class="ped-f">${p.estado==='entregado'?`<span class="total">${esc(I18N.moneda(p.total))}</span>`:''}
+    ${ant(p)?`<button class="atras" type="button" data-mover="${p.id}" data-a="${ant(p)}" title="${esc(I18N.t('cocina.volver_a',{estado:I18N.t('cocina.estado.'+ant(p))}))}">${IC_VOLVER}</button>`:''}
+    ${sig(p)?`<button class="paso ${col(p)}" type="button" data-mover="${p.id}" data-a="${sig(p)}">${esc(I18N.t('cocina.paso.'+p.estado))}</button>`:''}
+    ${online(p)&&p.tipo==='domicilio'&&p.estado==='listo'?`<span class="nota">${esc(I18N.t('cocina.espera_reparto'))}</span>`:''}${p.estado==='en_reparto'?`<span class="nota">${esc(I18N.t('cocina.estado.en_reparto'))}</span>`:''}</div></article>`}
+function pintar(recien=new Set()){
+  const scroll={};document.querySelectorAll('.lista').forEach(l=>scroll[l.dataset.e]=l.scrollTop);
+  $('#tablero').innerHTML=COLS.filter(e=>e!=='entregado'||verEnt).map(e=>{
+    const ps=pedidos.filter(p=>col(p)===e).sort((a,b)=>e==='entregado'?(b.t.entregado||b.t.en_reparto)-(a.t.entregado||a.t.en_reparto):a.creado-b.creado);
+    return`<section class="col" data-e="${e}"${e==='preparando'?` style="--n:${Math.max(1,ps.length)}"`:''}><div class="col-h"><h2>${esc(I18N.t('cocina.col.'+e))}</h2><span class="n">${ps.length}</span></div>
+     <div class="lista" data-e="${e}">${ps.map(p=>tarjeta(p,recien.has(p.id))).join('')||`<p class="nada">${esc(I18N.t(e==='nuevo'?'cocina.sin_nuevos':'cocina.nada'))}</p>`}</div></section>`}).join('');
+  document.querySelectorAll('.lista').forEach(l=>l.scrollTop=scroll[l.dataset.e]||0)}
+// Minutos de espera y reloj, sin volver a pintar todo
+setInterval(()=>{$('#reloj').textContent=I18N.hora(new Date());
+  pedidos.forEach(p=>{const b=document.querySelector(`[data-min="${p.id}"]`);if(b)b.outerHTML=espera(p)})},15000);
+$('#reloj').textContent=I18N.hora(new Date());
+
+async function mover(id,estado,deshacer=true){
+  const p=pedidos.find(x=>x.id===id);if(!p)return;const antes=p.estado;
+  p.estado=estado;p.t[estado]=(Date.now()+desfase)/1000;pintar();   // al momento, sin esperar al servidor
+  try{await api('POST','/api/pedido/estado',{id,estado});firma=''}
+  catch(e){p.estado=antes;pintar();toast(I18N.t('cocina.err.guardar',{error:e.message}));return}
+  if(deshacer)toast(I18N.t('cocina.toast.estado',{mesa:quien(p),estado:I18N.t('cocina.estado.'+estado)}),()=>mover(id,antes,false))}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-mover]');if(b)mover(b.dataset.mover,b.dataset.a)});
+$('#verEntregados').addEventListener('click',()=>{verEnt=!verEnt;$('#verEntregados').setAttribute('aria-pressed',verEnt);pintar()});
+let aceptando=true;
+function pintarAceptar(v){aceptando=v;const b=$('#aceptar');b.setAttribute('aria-pressed',v);b.classList.toggle('cerrado',!v);
+  b.textContent=I18N.t(v?'cocina.aceptar.abiertos':'cocina.aceptar.cerrados')}
+$('#aceptar').addEventListener('click',async()=>{const nuevo=!aceptando;
+  if(!nuevo&&!confirm(I18N.t('cocina.aceptar.confirmar')))return;
+  try{pintarAceptar((await api('POST','/api/aceptar',{aceptar_pedidos:nuevo})).aceptar_pedidos);toast(I18N.t(nuevo?'cocina.aceptar.toast_abiertos':'cocina.aceptar.toast_cerrados'))}
+  catch(e){toast(I18N.t('cocina.err.cambiar',{error:e.message}))}});
+function pintarIng(){const b=$('#verIngredientes');b.setAttribute('aria-pressed',verIng);b.textContent=I18N.t(verIng?'cocina.ingredientes.visibles':'cocina.ingredientes.ocultos')}
+$('#verIngredientes').addEventListener('click',()=>{verIng=!verIng;guarda('cocina_ingredientes',verIng?'si':'no');pintarIng();pintar()});
+
+/* ---------- Sonido de pedido nuevo (el navegador exige pulsar algo antes de poder sonar) ---------- */
+let audio=null, sonidoOn=lee('cocina_sonido')!=='no';
+function prepararAudio(){try{audio=audio||new (window.AudioContext||window.webkitAudioContext)();if(audio.state==='suspended')audio.resume().then(pintarSonido)}catch(e){}pintarSonido()}
+function sonar(){if(!sonidoOn||!audio||audio.state!=='running')return;const t=audio.currentTime;
+  [[880,0],[1175,.18],[880,.5],[1175,.68]].forEach(([fr,d])=>{const o=audio.createOscillator(),g=audio.createGain();o.type='sine';o.frequency.value=fr;
+   g.gain.setValueAtTime(0,t+d);g.gain.linearRampToValueAtTime(.35,t+d+.02);g.gain.exponentialRampToValueAtTime(.001,t+d+.16);o.connect(g).connect(audio.destination);o.start(t+d);o.stop(t+d+.18)})}
+function pintarSonido(){const b=$('#sonido'),listo=audio&&audio.state==='running';
+  b.classList.toggle('aviso',sonidoOn&&!listo);
+  b.innerHTML=(!sonidoOn?IC_MUDO+esc(I18N.t('cocina.sonido.apagado')):listo?IC_CAMPANA+esc(I18N.t('cocina.sonido.activado')):IC_CAMPANA+esc(I18N.t('cocina.sonido.activar')));
+  b.setAttribute('aria-pressed',sonidoOn&&listo)}
+$('#sonido').addEventListener('click',()=>{const listo=audio&&audio.state==='running';
+  if(sonidoOn&&!listo){prepararAudio();setTimeout(sonar,150);return}
+  sonidoOn=!sonidoOn;guarda('cocina_sonido',sonidoOn?'si':'no');prepararAudio();if(sonidoOn)setTimeout(sonar,150);pintarSonido()});
+document.addEventListener('pointerdown',()=>{if(sonidoOn&&(!audio||audio.state!=='running'))prepararAudio()},{passive:true});
+
+/* ---------- Que la pantalla de la tablet no se apague ---------- */
+let bloqueoPantalla=null;
+async function pantallaEncendida(){try{if('wakeLock' in navigator&&document.visibilityState==='visible')bloqueoPantalla=await navigator.wakeLock.request('screen')}catch(e){}}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&!$('#app').hidden){pantallaEncendida();consultar()}});
+
+let tt,accion=null;
+function toast(t,deshacer){$('#toastTxt').textContent=t;accion=deshacer||null;$('#toastBtn').hidden=!deshacer;
+  $('#toast').classList.add('show');clearTimeout(tt);tt=setTimeout(()=>{$('#toast').classList.remove('show');accion=null},deshacer?6000:3000)}
+$('#toastBtn').addEventListener('click',()=>{const a=accion;accion=null;$('#toast').classList.remove('show');if(a)a()});
+
+// Al cambiar de idioma se repinta todo lo que construye el script
+function textosIdioma(){document.title=titulo();$('#loginTxt').textContent=I18N.t('cocina.login.texto',{nombre:NOMBRE});
+  $('#reloj').textContent=I18N.hora(new Date());pintarAceptar(aceptando);pintarIng();pintarSonido();pintar()}
+I18N.alCambiar(textosIdioma);textosIdioma();
+
+api('GET','/api/sesion').then(r=>r.ok?entrar():mostrarLogin()).catch(mostrarLogin);
+</script>
+</body>
+</html>

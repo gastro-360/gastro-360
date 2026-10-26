@@ -1,0 +1,20 @@
+.git
+__pycache__
+*.pyc
+.env
+# Secretos y datos del día a día: nunca dentro de la imagen
+restaurantes/*/config.json
+restaurantes/*/clave_inicial.txt
+restaurantes/*/sesiones.json
+restaurantes/*/pedidos.json
+restaurantes/*/historial
+restaurantes/*/copias
+restaurantes/*/copias_pedidos
+restaurantes/*/ajustes.json
+restaurantes/*/clientes.db*
+restaurantes/*/fotos_raw
+carta/web
+restaurantes/*/kpis.db*
+restaurantes/*/sellos.db*
+restaurantes/*/wallet
+.env.anterior

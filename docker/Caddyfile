@@ -1,0 +1,19 @@
+{
+	http_port {$HTTP_PORT:80}
+	https_port {$HTTPS_PORT:443}
+}
+
+{$DOMINIO:localhost} {
+	encode zstd gzip
+	# HSTS solo en un dominio real (en localhost fijaría https para cualquier otra cosa que corra ahí); sin banner de servidor
+	@dominio_real not host localhost
+	header @dominio_real Strict-Transport-Security "max-age=31536000; includeSubDomains"
+	header -Server
+	log {
+		output stdout
+	}
+	# No hay Cloudflare delante: un CF-Connecting-IP que llegue es del cliente y no se pasa a la app
+	reverse_proxy app:8080 {
+		header_up -CF-Connecting-IP
+	}
+}

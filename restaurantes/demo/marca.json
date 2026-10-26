@@ -1,0 +1,78 @@
+{
+ "nombre": "Tu Restaurante",
+ "nombre_corto": "Tu Restaurante",
+ "nombre_resalte": "Restaurante",
+ "descripcion": {
+  "es": "Carta interactiva de Tu Restaurante (local de demostración)",
+  "en": "Interactive menu of Tu Restaurante (demo venue)",
+  "ca": "Carta interactiva de Tu Restaurante (local de demostració)",
+  "zh": "Tu Restaurante 互动菜单（演示店铺）",
+  "fr": "Carte interactive de Tu Restaurante (local de démonstration)",
+  "de": "Interaktive Speisekarte von Tu Restaurante (Demo-Lokal)",
+  "it": "Menu interattivo di Tu Restaurante (locale dimostrativo)",
+  "pt": "Ementa interativa de Tu Restaurante (local de demonstração)"
+ },
+ "logo": "logo.png",
+ "lema": {
+  "es": "Local de demostración · carta interactiva",
+  "en": "Demo venue · interactive menu",
+  "ca": "Local de demostració · carta interactiva",
+  "zh": "演示店铺 · 互动菜单",
+  "fr": "Local de démonstration · carte interactive",
+  "de": "Demo-Lokal · interaktive Speisekarte",
+  "it": "Locale dimostrativo · menu interattivo",
+  "pt": "Local de demonstração · ementa interativa"
+ },
+ "intro": {
+  "es": "Elige un plato de la carta. Mira cómo va montado y su despiece capa a capa. Quita lo que no quieras y añade extras desde el menú de la derecha.",
+  "en": "Pick a dish from the menu. See how it is put together, layer by layer. Remove what you don't want and add extras from the menu on the right.",
+  "ca": "Tria un plat de la carta. Mira com va muntat i el seu desglossament capa a capa. Treu el que no vulguis i afegeix extres des del menú de la dreta.",
+  "zh": "从菜单中选一道菜，查看它是怎么搭配的，一层一层看清楚。不想要的配料可以去掉，也可以在右侧菜单里加配料。",
+  "fr": "Choisissez un plat de la carte. Voyez comment il est composé, couche par couche. Retirez ce que vous ne voulez pas et ajoutez des suppléments depuis le menu de droite.",
+  "de": "Wähle ein Gericht aus der Karte. Sieh dir an, wie es aufgebaut ist, Schicht für Schicht. Entferne, was du nicht möchtest, und füge im Menü rechts Extras hinzu.",
+  "it": "Scegli un piatto dal menu. Guarda com'è composto, strato dopo strato. Togli ciò che non vuoi e aggiungi extra dal menu a destra.",
+  "pt": "Escolha um prato da ementa. Veja como é composto, camada a camada. Retire o que não quer e adicione extras no menu da direita."
+ },
+ "colores": {
+  "fondo": "#101614",
+  "primario": "#8FD1B0",
+  "primario_suave": "#1A2B24",
+  "acento": "#E0A458",
+  "acento_suave": "#2B2216",
+  "acento_texto": "#EDBF7E"
+ },
+ "direccion": "Calle de Ejemplo 1, Ciudad de Muestra",
+ "aviso_pie": {
+  "es": "Local ficticio: precios y platos de demostración.",
+  "en": "Fictional venue: demo prices and dishes.",
+  "ca": "Local fictici: preus i plats de demostració.",
+  "zh": "虚构店铺：价格和菜品仅作演示。",
+  "fr": "Local fictif : prix et plats de démonstration.",
+  "de": "Fiktives Lokal: Preise und Gerichte dienen nur zur Demonstration.",
+  "it": "Locale fittizio: prezzi e piatti a scopo dimostrativo.",
+  "pt": "Local fictício: preços e pratos de demonstração."
+ },
+ "foto_referencia": "pollo_campero.lechuga.webp",
+ "textos": {
+  "plato": {
+   "es": "plato",
+   "en": "dish",
+   "ca": "plat",
+   "zh": "菜品",
+   "fr": "plat",
+   "de": "Gericht",
+   "it": "piatto",
+   "pt": "prato"
+  },
+  "platos": {
+   "es": "platos",
+   "en": "dishes",
+   "ca": "plats",
+   "zh": "菜品",
+   "fr": "plats",
+   "de": "Gerichte",
+   "it": "piatti",
+   "pt": "pratos"
+  }
+ }
+}

@@ -1,0 +1,113 @@
+/* SPDX-License-Identifier: EUPL-1.2 */
+/* Pantalla de cocina: columnas por estado, letra grande para leer de lejos y botones grandes para pulsar con prisa. */
+html,body{height:100%}
+body{line-height:1.4}
+.in{min-height:var(--objetivo)}
+.login label{display:flex;gap:var(--s-2);align-items:center;justify-content:center;font-size:var(--t-s);color:var(--tinta-2);cursor:pointer;min-height:var(--objetivo)}
+.login input[type=checkbox]{width:24px;height:24px}
+
+#app{height:100%;display:flex;flex-direction:column}
+.top{flex:none;display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-2) var(--s-5);padding:var(--s-3) var(--s-4);border-bottom:1px solid var(--linea)}
+.marca img{width:40px;height:40px}
+.marca h1{font-size:var(--t-l)}
+.reloj{font-weight:650;font-size:var(--t-l);font-variant-numeric:tabular-nums}
+.acciones{margin-left:auto;display:flex;flex-wrap:wrap;gap:var(--s-2);align-items:center}
+.pill{display:inline-flex;align-items:center;gap:var(--s-2);min-height:var(--objetivo);border:1px solid var(--linea-fuerte);background:var(--superficie);border-radius:var(--r-chip);padding:0 var(--s-4);font-size:var(--t-s);font-weight:600;color:var(--tinta-2);text-decoration:none;white-space:nowrap}
+.pill svg{width:18px;height:18px;flex:none}
+.pill:hover{color:var(--tinta);border-color:var(--primario-texto)}
+.pill[aria-pressed=true]{color:var(--tinta);border-color:var(--primario-texto);background:var(--primario-suave)}
+.pill.cerrado{color:var(--sobre-peligro);background:var(--peligro);border-color:var(--peligro)}
+.pill.aviso{color:var(--sobre-acento);background:var(--acento);border-color:var(--acento);animation:latido 1.6s ease-in-out infinite}
+@keyframes latido{50%{box-shadow:0 0 0 6px color-mix(in srgb,var(--acento) 30%,transparent)}}
+.caida{flex:none;background:var(--peligro-suave);color:var(--peligro);font-weight:650;text-align:center;padding:var(--s-2) var(--s-4);border-bottom:1px solid var(--peligro)}
+
+.tablero{flex:1 1 auto;min-height:0;display:flex;align-items:stretch;gap:var(--s-3);padding:var(--s-3);overflow-x:auto;overflow-y:hidden}
+.col{flex:1 1 220px;min-width:220px;min-height:0;display:flex;flex-direction:column;background:var(--superficie);border:1px solid var(--linea);border-radius:var(--r)}
+/* En preparación crece una columna de 240 px por mesa (--n, lo pone el JS); si no cabe, se estrecha y las mesas siguientes pasan debajo */
+.col[data-e=preparando]{flex:0 1 calc(var(--n,1) * 252px + 30px)}
+.col-h{flex:none;display:flex;justify-content:space-between;align-items:center;gap:var(--s-2);padding:var(--s-3) var(--s-4);border-bottom:1px solid var(--linea)}
+.col-h h2{font-size:var(--t-m);font-weight:650}
+.col-h .n{font-weight:650;font-size:var(--t-m);min-width:32px;height:32px;border-radius:16px;display:inline-grid;place-items:center;padding:0 var(--s-2);background:var(--superficie-2);font-variant-numeric:tabular-nums}
+.col[data-e=nuevo] .col-h h2{color:var(--acento-texto)}
+.col[data-e=nuevo] .col-h .n{background:var(--acento-suave);color:var(--acento-texto)}
+.col[data-e=preparando] .col-h h2{color:var(--primario-texto)}
+.col[data-e=preparando] .col-h .n{background:var(--primario-suave);color:var(--primario-texto)}
+.col[data-e=listo] .col-h h2{color:var(--ok)}
+.col[data-e=listo] .col-h .n{background:var(--ok-suave);color:var(--ok)}
+.col[data-e=entregado] .col-h h2{color:var(--tinta-2)}
+.lista{flex:1 1 auto;min-height:0;overflow-y:auto;padding:var(--s-3);display:grid;grid-auto-rows:max-content;gap:var(--s-3);align-content:start;overscroll-behavior:contain}
+.col[data-e=preparando] .lista{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));align-items:start}
+.nada{color:var(--tinta-2);text-align:center;padding:var(--s-6) var(--s-3);font-size:var(--t-s)}
+
+.ped{background:var(--superficie-2);border:1px solid var(--linea);border-radius:var(--r);overflow:hidden}
+.col[data-e=nuevo] .ped{border-color:var(--acento)}
+.col[data-e=listo] .ped{border-color:var(--ok)}
+.ped.recien{animation:entra .5s ease-out}
+@keyframes entra{from{transform:translateY(-14px);opacity:0}}
+.ped-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s-3);padding:var(--s-3) var(--s-4) var(--s-2)}
+.mesa{font-weight:650;font-size:var(--t-xl);line-height:1}
+.mesa small{font-size:var(--t-s);font-weight:600;color:var(--tinta-2);margin-right:var(--s-2)}
+.cuenta{align-self:center;background:var(--tinta);color:var(--fondo);border-radius:var(--r-ctl);padding:3px var(--s-2);font-size:var(--t-xs);font-weight:650;line-height:1.25;white-space:nowrap}
+.cuenta b{font-size:var(--t-m)}
+.mesa .zona{display:block;font-style:normal;font-size:var(--t-s);font-weight:600;color:var(--acento-texto);margin-top:3px}
+.ped-h .meta{margin-left:auto;text-align:right;font-size:var(--t-xs);color:var(--tinta-2);line-height:1.3}
+.ped-h .meta b{display:block;font-size:var(--t-m);color:var(--tinta);font-variant-numeric:tabular-nums}
+.ped-h .meta b.tarde{color:var(--acento-texto)}
+.ped-h .meta b.muy-tarde{color:var(--peligro)}
+.lineas{list-style:none;margin:0;padding:0 var(--s-4) var(--s-2);display:grid;gap:var(--s-2)}
+.lineas>li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--s-2);align-items:baseline;padding-top:var(--s-2);border-top:1px solid var(--linea)}
+.lineas>li:first-child{border-top:0;padding-top:0}
+.cant{font-weight:650;font-size:var(--t-l);color:var(--acento-texto);min-width:32px;font-variant-numeric:tabular-nums}
+.cant.varios{background:var(--tinta);color:var(--fondo);border-radius:6px;padding:0 6px;min-width:0;text-align:center}
+.prod{font-weight:650;font-size:20px;line-height:1.2}
+.prod small{font-size:var(--t-xs);font-weight:600;color:var(--tinta-2);margin-left:var(--s-2)}
+.alg-k{display:flex;flex-wrap:wrap;gap:var(--s-1) var(--s-2);margin-top:var(--s-1)}
+.alg-k>span{display:inline-flex;align-items:center;gap:var(--s-1);border:1.5px solid var(--acento);color:var(--acento-texto);border-radius:var(--r-ctl);padding:1px var(--s-2) 1px 5px;font-size:var(--t-s);font-weight:650}
+.alg-k svg{width:18px;height:18px;flex:none}
+.alg-k>.sin_declarar{border-color:var(--linea-fuerte);color:var(--tinta-2);font-weight:500}
+.alg-k>.sin_revisar{border-style:dashed;color:var(--tinta)}
+.cambio{display:block;font-size:var(--t-m);font-weight:600;margin-top:2px}
+.cambio i{font-style:normal;font-size:var(--t-xs);font-weight:650;border-radius:5px;padding:1px 6px;margin-right:var(--s-2)}
+.cambio.sin i{background:var(--peligro-suave);color:var(--peligro)}
+.cambio.extra i{background:var(--acento-suave);color:var(--acento-texto)}
+.cambio.ago{color:var(--tinta-2)}
+.cambio.ago i{background:var(--superficie);color:var(--tinta-2);border:1px solid var(--linea)}
+.cambio.normal{color:var(--tinta-2)}
+.cambio.normal i{background:var(--ok-suave);color:var(--ok)}
+/* Orden de montaje (en preparación): 1 = lo primero que va sobre el pan de abajo */
+.montaje{list-style:none;margin:var(--s-2) 0 2px;padding:0;display:grid;gap:3px}
+.montaje li{display:flex;align-items:center;gap:var(--s-2);font-size:var(--t-m);font-weight:600}
+.montaje .num{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:var(--t-xs);font-weight:650;background:var(--primario-suave);color:var(--primario-texto);font-variant-numeric:tabular-nums}
+.montaje i{font-style:normal;font-size:var(--t-xs);font-weight:650;border-radius:5px;padding:1px 6px}
+/* Cambios del cliente (extra o quitado): en rojo e intermitentes, para que no se escapen */
+.montaje li.extra,.montaje li.sin{color:var(--peligro);background:var(--peligro-suave);border-radius:6px;margin-inline:-4px;padding:1px 4px;animation:parpadeo 1.1s ease-in-out infinite}
+@keyframes parpadeo{50%{background:transparent;color:var(--tinta)}}
+.montaje li.extra .num{background:var(--peligro);color:var(--sobre-peligro)}
+.montaje li.extra i,.montaje li.sin i{background:var(--peligro);color:var(--sobre-peligro)}
+.montaje li.sin .num,.montaje li.agotado .num{background:none;border:1.5px dashed var(--linea-fuerte)}
+.montaje li.sin .ing{text-decoration:line-through;text-decoration-thickness:2px}
+.montaje li.agotado .ing{text-decoration:line-through;color:var(--tinta-2);font-weight:500}
+.montaje li.agotado i{background:var(--superficie);color:var(--tinta-2);border:1px solid var(--linea)}
+/* Nota del cliente: arriba del todo y destacada, para que no pase desapercibida */
+.nota{margin:0 var(--s-4) var(--s-3);padding:var(--s-2) var(--s-3);border-radius:var(--r-ctl);background:var(--acento);color:var(--sobre-acento);font-size:18px;font-weight:650;line-height:1.3;display:flex;gap:var(--s-3);align-items:flex-start}
+.nota b{flex:none;font-size:var(--t-xs);font-weight:650;background:var(--sobre-acento);color:var(--acento);border-radius:5px;padding:3px 7px;margin-top:3px}
+.ped-f{display:flex;gap:var(--s-2);padding:var(--s-3) var(--s-4) var(--s-4);align-items:stretch}
+.paso{flex:1;min-height:56px;border:0;border-radius:var(--r-ctl);padding:0 var(--s-3);font-weight:650;font-size:18px}
+.paso.nuevo{background:var(--ok);color:var(--sobre-ok)}
+.paso.preparando{background:var(--primario);color:var(--sobre-primario)}
+.paso.listo{background:var(--ok);color:var(--sobre-ok)}
+.paso:active{transform:translateY(1px)}
+.atras{flex:none;min-width:var(--objetivo);min-height:56px;border:1px solid var(--linea-fuerte);background:var(--superficie);border-radius:var(--r-ctl);padding:0 var(--s-4);font-weight:600;font-size:var(--t-m);color:var(--tinta-2)}
+.atras:hover{color:var(--tinta);border-color:var(--primario-texto)}
+.total{font-size:var(--t-s);color:var(--tinta-2);align-self:center;margin-right:auto;font-variant-numeric:tabular-nums}
+
+.toast{display:flex;gap:var(--s-4);align-items:center;font-size:var(--t-m)}
+.toast.show{pointer-events:auto}
+.toast button{border:0;background:var(--fondo);color:var(--tinta);border-radius:var(--r-ctl);min-height:var(--objetivo);padding:0 var(--s-3);font-weight:600;font-size:var(--t-s)}
+
+@media (max-width:700px){
+  .tablero{flex-direction:column;overflow-y:auto}
+  .col,.col[data-e=preparando]{flex:none;min-width:0;min-height:auto}
+  .lista{overflow:visible}
+  .reloj{display:none}
+}

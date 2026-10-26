@@ -1,0 +1,11 @@
+{
+ "domicilio": true,
+ "recoger": true,
+ "pausa": false,
+ "dias": [0, 1, 2, 3, 4, 5, 6],
+ "tramos": [["00:00", "23:59"]],
+ "minimo": 10,
+ "envio": 2.5,
+ "cps": ["08001", "08002", "28001", "28013"],
+ "preparacion": 30
+}

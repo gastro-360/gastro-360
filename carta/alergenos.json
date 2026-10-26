@@ -1,0 +1,29 @@
+{
+ "version": 1,
+ "alergenos": [
+  {"id": "gluten", "nombre": {"es": "Cereales con gluten", "en": "Cereals containing gluten", "ca": "Cereals amb gluten", "zh": "含麸质的谷物", "fr": "Céréales contenant du gluten", "de": "Glutenhaltiges Getreide", "it": "Cereali contenenti glutine", "pt": "Cereais que contêm glúten"}},
+  {"id": "crustaceans", "nombre": {"es": "Crustáceos", "en": "Crustaceans", "ca": "Crustacis", "zh": "甲壳类", "fr": "Crustacés", "de": "Krebstiere", "it": "Crostacei", "pt": "Crustáceos"}},
+  {"id": "eggs", "nombre": {"es": "Huevos", "en": "Eggs", "ca": "Ous", "zh": "蛋类", "fr": "Œufs", "de": "Eier", "it": "Uova", "pt": "Ovos"}},
+  {"id": "fish", "nombre": {"es": "Pescado", "en": "Fish", "ca": "Peix", "zh": "鱼类", "fr": "Poisson", "de": "Fisch", "it": "Pesce", "pt": "Peixe"}},
+  {"id": "peanuts", "nombre": {"es": "Cacahuetes", "en": "Peanuts", "ca": "Cacauets", "zh": "花生", "fr": "Arachides", "de": "Erdnüsse", "it": "Arachidi", "pt": "Amendoins"}},
+  {"id": "soybeans", "nombre": {"es": "Soja", "en": "Soy", "ca": "Soja", "zh": "大豆", "fr": "Soja", "de": "Soja", "it": "Soia", "pt": "Soja"}},
+  {"id": "milk", "nombre": {"es": "Leche y lácteos (incl. lactosa)", "en": "Milk and dairy (incl. lactose)", "ca": "Llet i derivats làctics (inclosa la lactosa)", "zh": "奶及奶制品（含乳糖）", "fr": "Lait et produits laitiers (y compris lactose)", "de": "Milch und Milchprodukte (inkl. Laktose)", "it": "Latte e derivati (incluso lattosio)", "pt": "Leite e laticínios (incluindo lactose)"}},
+  {"id": "tree_nuts", "nombre": {"es": "Frutos de cáscara", "en": "Tree nuts", "ca": "Fruits de closca", "zh": "坚果", "fr": "Fruits à coque", "de": "Schalenfrüchte", "it": "Frutta a guscio", "pt": "Frutos de casca rija"}},
+  {"id": "celery", "nombre": {"es": "Apio", "en": "Celery", "ca": "Api", "zh": "芹菜", "fr": "Céleri", "de": "Sellerie", "it": "Sedano", "pt": "Aipo"}},
+  {"id": "mustard", "nombre": {"es": "Mostaza", "en": "Mustard", "ca": "Mostassa", "zh": "芥末", "fr": "Moutarde", "de": "Senf", "it": "Senape", "pt": "Mostarda"}},
+  {"id": "sesame", "nombre": {"es": "Sésamo", "en": "Sesame", "ca": "Sèsam", "zh": "芝麻", "fr": "Sésame", "de": "Sesam", "it": "Sesamo", "pt": "Sésamo"}},
+  {"id": "sulphites", "nombre": {"es": "Dióxido de azufre y sulfitos", "en": "Sulphur dioxide and sulphites", "ca": "Diòxid de sofre i sulfits", "zh": "二氧化硫和亚硫酸盐", "fr": "Anhydride sulfureux et sulfites", "de": "Schwefeldioxid und Sulfite", "it": "Anidride solforosa e solfiti", "pt": "Dióxido de enxofre e sulfitos"}},
+  {"id": "lupin", "nombre": {"es": "Altramuces", "en": "Lupin", "ca": "Tramussos", "zh": "羽扇豆", "fr": "Lupin", "de": "Lupinen", "it": "Lupini", "pt": "Tremoço"}},
+  {"id": "molluscs", "nombre": {"es": "Moluscos", "en": "Molluscs", "ca": "Mol·luscs", "zh": "软体动物", "fr": "Mollusques", "de": "Weichtiere", "it": "Molluschi", "pt": "Moluscos"}}
+ ],
+ "textos": {
+  "es": {"sin_declarar": "Sin alérgenos declarados", "sin_revisar": "Consulta al personal", "aviso": "Información facilitada por el restaurante; consulta al personal", "titulo": "Alérgenos"},
+  "en": {"sin_declarar": "No allergens declared", "sin_revisar": "Ask the staff", "aviso": "Information provided by the restaurant; ask the staff", "titulo": "Allergens"},
+  "ca": {"sin_declarar": "Sense al·lèrgens declarats", "sin_revisar": "Pregunta al personal", "aviso": "Informació facilitada pel restaurant; pregunta al personal", "titulo": "Al·lèrgens"},
+  "zh": {"sin_declarar": "未申报过敏原", "sin_revisar": "请咨询工作人员", "aviso": "信息由餐厅提供；请咨询工作人员", "titulo": "过敏原"},
+  "fr": {"sin_declarar": "Aucun allergène déclaré", "sin_revisar": "Demandez au personnel", "aviso": "Informations fournies par le restaurant ; demandez au personnel", "titulo": "Allergènes"},
+  "de": {"sin_declarar": "Keine Allergene angegeben", "sin_revisar": "Fragen Sie das Personal", "aviso": "Angaben des Restaurants; fragen Sie das Personal", "titulo": "Allergene"},
+  "it": {"sin_declarar": "Nessun allergene dichiarato", "sin_revisar": "Chiedi al personale", "aviso": "Informazioni fornite dal ristorante; chiedi al personale", "titulo": "Allergeni"},
+  "pt": {"sin_declarar": "Sem alergénios declarados", "sin_revisar": "Pergunta ao pessoal", "aviso": "Informação fornecida pelo restaurante; pergunta ao pessoal", "titulo": "Alergénios"}
+ }
+}

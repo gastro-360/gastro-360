@@ -1,0 +1,91 @@
+<!-- SPDX-License-Identifier: EUPL-1.2 -->
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="gastro-idioma" content="">
+<script src="/idiomas.js"></script>
+<script src="/estatico/comun.js"></script>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="{{c_fondo}}">
+<title>{{nombre_corto}}</title>
+<link rel="icon" type="image/png" href="/img/icon-192.png">
+<meta name="generator" content="{{producto}}">
+<link rel="stylesheet" href="/estatico/fuentes/fuentes.css">
+<link rel="stylesheet" href="/tema.css">
+<link rel="stylesheet" href="/estatico/base.css">
+<style>
+body{margin:0}
+.res{max-width:560px;margin:0 auto;padding:16px}
+.res header{display:flex;align-items:center;gap:12px;justify-content:space-between}
+.res header img{height:44px}
+.res h1{font-size:1.4rem;margin:16px 0 12px}
+.res form{display:grid;gap:14px}
+.res label>span{display:block;font-weight:600;margin-bottom:4px}
+.res .horas{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;border:0}
+.res .horas legend{font-weight:600;margin-bottom:4px;padding:0}
+.res .horas button{min-width:76px}
+.res .horas button[aria-pressed="true"]{outline:3px solid var(--primario-texto);outline-offset:1px}
+.res .aviso{font-size:.92rem;border-left:3px solid currentColor;padding:4px 10px;margin:4px 0 0}
+.res .check{display:flex;gap:8px;align-items:flex-start;font-size:.92rem}
+.res .check input{margin-top:3px}
+.res .nota{opacity:.8}
+</style>
+</head>
+<body>
+<main class="res">
+  <header><img src="/img/{{logo}}" alt=""><span data-selector-idioma></span></header>
+  <h1 data-i18n="reservar.titulo"></h1>
+  <p id="inactivo" class="aviso" hidden data-i18n="reservar.inactivo"></p>
+  <form id="form" hidden novalidate>
+    <label><span data-i18n="reservar.fecha"></span><input class="in" type="date" id="fecha" required></label>
+    <fieldset class="horas" id="horas" aria-live="polite"><legend data-i18n="reservar.hora"></legend><p class="nota" data-i18n="reservar.elige_fecha"></p></fieldset>
+    <label><span data-i18n="reservar.comensales"></span><select class="in" id="comensales"></select></label>
+    <label><span data-i18n="reservar.nombre"></span><input class="in" id="nombre" autocomplete="name" maxlength="80" required></label>
+    <label><span data-i18n="reservar.telefono"></span><input class="in" id="telefono" type="tel" autocomplete="tel" maxlength="20" required></label>
+    <label><span data-i18n="reservar.email"></span><input class="in" id="email" type="email" autocomplete="email" maxlength="120"></label>
+    <label><span data-i18n="reservar.nota"></span><textarea class="in" id="nota" rows="3" maxlength="300" aria-describedby="avisoSalud"></textarea>
+      <p class="aviso" id="avisoSalud" data-i18n="reservar.aviso_salud"></p></label>
+    <div id="permiso" hidden><label class="check"><input type="checkbox" id="permisoCasilla"><span id="permisoTexto"></span></label></div>
+    <p class="err" id="err" role="alert"></p>
+    <p><button class="btn" type="submit" id="enviar" data-i18n="reservar.enviar"></button></p>
+  </form>
+  <p><a href="/" data-i18n="reservar.ver_carta"></a></p>
+</main>
+<script>
+let CFG=null,PERMISO=null,TRAMOS=[],hora='',errClave=null;
+const setErr=(k,txt)=>{errClave=k;$('#err').textContent=txt||(k?I18N.t(k):'')};
+function pintarComensales(){const libres=(TRAMOS.find(t=>t.hora===hora)||{}).libres,max=Math.max(1,Math.min(CFG.max_reserva,libres||CFG.max_reserva)),sel=$('#comensales'),v=+sel.value||2;
+  sel.innerHTML=Array.from({length:max},(_,i)=>`<option value="${i+1}"${i+1===Math.min(v,max)?' selected':''}>${i+1}</option>`).join('')}
+function pintarHoras(){const f=$('#horas');const leyenda=`<legend>${esc(I18N.t('reservar.hora'))}</legend>`;
+  if(!$('#fecha').value){f.innerHTML=leyenda+`<p class="nota">${esc(I18N.t('reservar.elige_fecha'))}</p>`;return}
+  if(!TRAMOS.length){f.innerHTML=leyenda+`<p class="nota">${esc(I18N.t('reservar.sin_tramos'))}</p>`;return}
+  f.innerHTML=leyenda+TRAMOS.map(t=>`<button type="button" class="btn sec" data-hora="${esc(t.hora)}" aria-pressed="${t.hora===hora}" ${t.libres<1?'disabled':''}>${esc(t.hora)}${t.libres<1?' · '+esc(I18N.t('reservar.completo')):''}</button>`).join('')}
+async function cargarTramos(){hora='';TRAMOS=[];
+  if($('#fecha').value){try{const r=await fetch('/api/reservar?fecha='+encodeURIComponent($('#fecha').value),{cache:'no-store'});if(r.ok)TRAMOS=(await r.json()).tramos||[]}catch(e){}}
+  pintarHoras();pintarComensales()}
+$('#fecha').addEventListener('change',cargarTramos);
+$('#horas').addEventListener('click',e=>{const b=e.target.closest('[data-hora]');if(!b)return;hora=b.dataset.hora;pintarHoras();pintarComensales();setErr(null)});
+$('#form').addEventListener('submit',async e=>{e.preventDefault();
+  if(!hora)return setErr('reservar.err.hora');
+  const cuerpo={fecha:$('#fecha').value,hora,comensales:+$('#comensales').value,nombre:$('#nombre').value.trim(),telefono:$('#telefono').value.trim(),
+    email:$('#email').value.trim(),nota:$('#nota').value.trim(),idioma:I18N.lang};
+  if(PERMISO&&$('#permisoCasilla').checked){if(!cuerpo.email||!$('#email').checkValidity()){$('#email').focus();return setErr('reservar.err.correo')}
+    cuerpo.permiso={email:cuerpo.email,version:PERMISO.version}}
+  $('#enviar').disabled=true;$('#enviar').textContent=I18N.t('reservar.enviando');setErr(null);
+  try{const r=await fetch('/api/reservar',{method:'POST',headers:{'Content-Type':'application/json','X-Idioma':I18N.lang},body:JSON.stringify(cuerpo)});
+    const j=await r.json().catch(()=>({}));
+    if(r.ok&&j.token){location.href='/reserva?t='+encodeURIComponent(j.token);return}
+    setErr(null,j.error||I18N.t('reservar.err.red'));if(r.status===400||r.status===409)cargarTramos()}
+  catch(e){setErr('reservar.err.red')}
+  $('#enviar').disabled=false;$('#enviar').textContent=I18N.t('reservar.enviar')});
+I18N.alCambiar(()=>{if(CFG){pintarHoras();if(errClave)setErr(errClave)}
+  fetch('/api/permiso',{cache:'no-store',headers:{'X-Idioma':I18N.lang}}).then(r=>r.ok?r.json():null).then(j=>{if(j&&j.texto){PERMISO=j;$('#permisoTexto').textContent=j.texto;$('#permiso').hidden=false}}).catch(()=>{})});
+(async()=>{try{const r=await fetch('/api/reservar',{cache:'no-store'});CFG=await r.json()}catch(e){}
+  if(!CFG||!CFG.activo){$('#inactivo').hidden=false;return}
+  $('#fecha').min=CFG.hoy;$('#fecha').max=CFG.hasta;$('#form').hidden=false;pintarComensales();
+  fetch('/api/permiso',{cache:'no-store',headers:{'X-Idioma':I18N.lang}}).then(r=>r.ok?r.json():null).then(j=>{if(j&&j.texto){PERMISO=j;$('#permisoTexto').textContent=j.texto;$('#permiso').hidden=false}}).catch(()=>{})})();
+</script>
+</body>
+</html>

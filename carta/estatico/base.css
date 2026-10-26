@@ -1,0 +1,55 @@
+/* SPDX-License-Identifier: EUPL-1.2 */
+/* Base común de la carta, la cocina y el backoffice. Los colores, tipos, radios y espaciado salen de /tema.css
+   (calculado desde marca.json); aquí solo hay estructura y escalas que no cambian entre restaurantes. */
+:root{
+  --t-xs:12px; --t-s:14px; --t-m:16px; --t-l:24px; --t-xl:32px;
+  --s-1:var(--u); --s-2:calc(var(--u)*2); --s-3:calc(var(--u)*3); --s-4:calc(var(--u)*4); --s-5:calc(var(--u)*5); --s-6:calc(var(--u)*6); --s-8:calc(var(--u)*8);
+  --objetivo:44px;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--fondo);color:var(--tinta);font-family:var(--f-texto);font-size:var(--t-m);line-height:1.5;-webkit-text-size-adjust:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--acento-texto);outline-offset:2px}
+h1,h2,h3{margin:0;font-family:var(--f-titulos);font-weight:650;line-height:1.15;text-wrap:balance}
+h1{font-size:var(--t-l)} h2{font-size:var(--t-m)} h3{font-size:var(--t-s)}
+[hidden]{display:none!important}
+.money,.num-tab{font-variant-numeric:tabular-nums}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.cod{font-family:var(--f-mono)}
+
+/* Botones y campos */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s-2);min-height:var(--objetivo);border:0;border-radius:var(--r-ctl);padding:0 var(--s-4);font-weight:600;background:var(--primario);color:var(--sobre-primario)}
+.btn:hover:not(:disabled){filter:brightness(1.08)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.sec{background:var(--superficie-2);color:var(--tinta);border:1px solid var(--linea-fuerte)}
+.btn.sec:hover:not(:disabled){border-color:var(--primario-texto);filter:none}
+.link{border:0;background:none;color:var(--primario-texto);font-weight:600;font-size:var(--t-s);padding:0;text-decoration:underline;text-underline-offset:3px}
+.link:disabled{opacity:.5;cursor:default;text-decoration:none}
+.in{width:100%;min-width:0;background:var(--superficie-2);color:var(--tinta);border:1px solid var(--linea-fuerte);border-radius:var(--r-ctl);padding:var(--s-2) var(--s-3)}
+.in:focus{border-color:var(--primario-texto);outline:2px solid var(--primario-texto);outline-offset:0}
+.err{color:var(--peligro);font-weight:600;font-size:var(--t-s);min-height:1.2em;margin:0}
+.err:empty{min-height:0}
+
+/* Entrada (cocina y backoffice) y marca */
+.login{min-height:100vh;display:grid;place-items:center;padding:var(--s-4)}
+.login form{width:min(380px,100%);background:var(--superficie);border:1px solid var(--linea);border-radius:var(--r);padding:var(--s-8) var(--s-6);display:grid;gap:var(--s-4);text-align:center}
+.login img{width:72px;height:72px;margin:0 auto;border-radius:50%}
+.login h1{color:var(--tinta)}
+.login p{margin:0;color:var(--tinta-2);font-size:var(--t-s)}
+.login [data-selector-idioma]{justify-self:center}
+.marca{display:flex;align-items:center;gap:var(--s-3)}
+.marca img{border-radius:50%}
+.marca h1{line-height:1}
+.marca h1 span:not(.t){color:var(--acento-texto)}
+
+/* Selector de idioma */
+.sel-idioma{font:inherit;font-weight:600;cursor:pointer;background:var(--superficie-2);color:var(--tinta);border:1px solid var(--linea-fuerte);border-radius:var(--r-chip);padding:0 var(--s-3);min-height:var(--objetivo);font-size:var(--t-s)}
+
+/* Aviso emergente */
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);transform:translateX(-50%) translateY(20px);opacity:0;max-width:calc(100vw - 32px);text-align:center;
+  background:var(--tinta);color:var(--fondo);padding:var(--s-3) var(--s-4);border-radius:var(--r);font-weight:600;font-size:var(--t-s);box-shadow:0 8px 24px var(--sombra);transition:opacity .2s,transform .2s;pointer-events:none;z-index:40}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}

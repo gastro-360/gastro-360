@@ -1,0 +1,49 @@
+# Contraseña del backoffice: nunca al repositorio (cada restaurante, en su carpeta restaurantes/<nombre>/)
+restaurantes/*/config.json
+restaurantes/*/clave_inicial.txt
+
+# Copias de seguridad automáticas de los datos
+restaurantes/*/copias/
+restaurantes/*/copias_pedidos/
+
+# Pedidos y sesiones (datos del día a día del local)
+restaurantes/*/pedidos.json
+restaurantes/*/historial/
+restaurantes/*/sesiones.json
+restaurantes/*/ajustes.json
+
+# Clientes con permiso de publicidad y su prueba (datos personales)
+restaurantes/*/clientes.db*
+
+# Tarjeta de sellos: base de datos del día a día y credenciales de Apple/Google Wallet (secretos)
+restaurantes/*/sellos.db*
+restaurantes/*/kpis.db*
+restaurantes/*/wallet/
+
+# Fotos originales del generador (191 MB). Guardarlas aparte; se necesitan solo para volver a recortar.
+restaurantes/*/fotos_raw/
+
+# Se genera con:  python preparar_netlify.py
+carta/web/
+
+# Temporales
+carta/*.tmp
+restaurantes/*/*.tmp
+__pycache__/
+*.pyc
+
+# Configuración local (secretos)
+.env
+tests/e2e/salida/
+.env.anterior
+tests/aceptacion/salida/
+
+# Ajustes de pedidos online que guarda el dueño desde el backoffice (los de fábrica, en pedidos_online.defecto.json)
+restaurantes/*/pedidos_online.json
+
+# Reservas: ajustes que guarda el dueño (los de fábrica, en reservas.defecto.json) y las reservas (datos personales)
+restaurantes/*/reservas.json
+restaurantes/*/reservas_datos.json
+
+# Nombres reales que vigila tests/lineas-rojas.sh (nunca al repo)
+tests/lineas-rojas.local

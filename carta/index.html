@@ -1,0 +1,709 @@
+<!-- SPDX-License-Identifier: EUPL-1.2 -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="gastro-idioma" content="">
+<script src="idiomas.js"></script>
+<script src="estatico/comun.js"></script>
+<title>{{nombre}}</title>
+<meta name="generator" content="{{producto}}">
+<link rel="stylesheet" href="estatico/fuentes/fuentes.css">
+<link rel="stylesheet" href="tema.css">
+<link rel="stylesheet" href="estatico/base.css">
+<link rel="stylesheet" href="estatico/carta.css">
+
+<header class="top">
+  <img class="logo" src="img/{{logo}}" alt="">
+  <div class="top-txt">
+    <div class="etq" data-marca="lema">{{lema}}</div>
+    <h1><b class="r">{{nombre_inicio}}</b><span>{{nombre_resalte}}</span></h1>
+    <p data-marca="intro">{{intro}}</p>
+  </div>
+  <span class="mesa-tag" id="mesaTag" hidden></span>
+  <button class="pantalla" id="pantalla" type="button" hidden aria-label="">
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path id="pantallaIco" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span id="pantallaTxt"></span>
+  </button>
+  <span data-selector-idioma></span>
+</header>
+<p class="cerrado" id="cerrado" role="status" hidden data-i18n="carta.cerrado"></p>
+
+<main class="app">
+  <aside class="carta" data-i18n-attr="aria-label:carta.aria.carta">
+    <div class="carta-head"><h2 data-i18n="carta.titulo"></h2><span class="etq" id="ncarta"></span></div>
+    <p class="aviso-alg" data-aviso-alg>{{aviso_alergenos}}</p>
+    <ul id="lista"></ul>
+  </aside>
+
+  <section class="build" aria-live="polite">
+    <div class="card escaparate">
+      <div class="esc-head">
+        <span class="region" id="region"></span>
+        <h2 id="nombre"></h2>
+        <p class="desc" id="desc"></p>
+        <div class="alg" id="alg"></div>
+      </div>
+      <div class="vistas" id="vistas">
+        <figure class="despiece" id="figDespiece">
+          <div class="svgwrap" id="despiece"></div>
+          <figcaption><span id="ncapas"></span></figcaption>
+        </figure>
+        <figure class="montado">
+          <div class="svgwrap" id="montado"></div>
+          <figcaption id="capCompleto"></figcaption>
+        </figure>
+      </div>
+      <div class="vistas-pie"><button class="link solo-movil verdesp" id="verDesp" type="button" aria-expanded="false"></button></div>
+    </div>
+
+    <div class="card info">
+      <div class="chips-label" id="chipsHead"><span class="etq" id="chipsLbl"></span><button class="link" id="reset" type="button"></button></div>
+      <div class="chips" id="chips"></div>
+      <button class="solo-movil abrir-extras" id="abrirExtras" type="button" data-i18n="carta.extras.abrir"></button>
+      <div class="precio">
+        <dl>
+          <dt data-i18n="carta.precio.base"></dt><dd class="money" id="pbase"></dd>
+          <dt data-i18n="carta.precio.extras"></dt><dd class="money" id="pextra"></dd>
+        </dl>
+        <div class="precio-lado">
+          <span class="total" id="ptotal"></span>
+          <button class="btn" id="add" type="button"></button>
+        </div>
+      </div>
+      <p class="editing" id="editing" hidden data-i18n="carta.editando.nota"></p>
+      <p class="note" id="pnote"></p>
+    </div>
+
+    <div class="card pedido">
+      <div class="pedido-head sheet-head"><h2 data-i18n="carta.pedido.titulo"></h2><span class="acciones"><button class="link" id="vaciar" type="button" data-i18n="carta.pedido.vaciar"></button><button class="cerrar" type="button" data-cerrar data-i18n="carta.cerrar"></button></span></div>
+      <div class="enviados" id="enviados" hidden aria-live="polite"></div>
+      <ul id="lineas"></ul>
+      <p class="vacio" id="vacio"></p>
+      <p class="note nota-lineas" id="notaLineas" data-i18n="carta.pedido.nota_lineas"></p>
+      <p class="aviso-alg" data-aviso-alg>{{aviso_alergenos}}</p>
+      <div class="pedido-total" id="ptot" hidden><span data-i18n="carta.pedido.total"></span><span class="money" id="totalPedido"></span></div>
+      <button class="btn enviar" id="enviar" type="button" hidden></button>
+    </div>
+
+    <footer>
+      {{pie_html}}
+    </footer>
+  </section>
+
+  <aside class="card menu" data-i18n-attr="aria-label:carta.ingredientes.titulo">
+    <div class="sheet-head"><h2 data-i18n="carta.ingredientes.titulo"></h2><button class="cerrar" type="button" data-cerrar data-i18n="carta.listo"></button></div>
+    <p class="note" id="menuNote"></p>
+    <input class="buscar" id="buscar" type="search" data-i18n-attr="placeholder:carta.ingredientes.buscar" autocomplete="off">
+    <div id="grupos"></div>
+  </aside>
+</main>
+<div class="sheet-bg" id="sheetBg" data-cerrar></div>
+<nav class="barra" id="barra" data-i18n-attr="aria-label:carta.pedido.titulo"><button type="button" id="verPedido"><span><span id="barTxt"></span><span class="n" id="barN">0</span></span><span class="money" id="barT">0,00 €</span></button></nav>
+<div class="toast" id="toast" role="status"></div>
+<dialog class="dlg" id="dlgEnviar" aria-labelledby="dlgTit">
+  <form method="dialog" id="formEnviar">
+    <h2 id="dlgTit" data-i18n="carta.enviar.titulo"></h2>
+    <p class="demo" id="dlgDemo" hidden data-i18n="carta.enviar.demo"></p>
+    <ul id="dlgLineas"></ul>
+    <label id="dlgMesaFija" hidden><span data-i18n="carta.enviar.tu_mesa"></span><span class="mesa-fija" id="dlgMesaN"></span></label>
+    <label id="dlgMesaCampo"><span data-i18n="carta.enviar.numero_mesa"></span><input id="dlgMesa" type="number" inputmode="numeric" min="1" max="200" required data-i18n-attr="placeholder:carta.enviar.numero_mesa_ph"></label>
+    <label id="dlgMesaLista" hidden><span data-i18n="carta.enviar.tu_mesa"></span><select id="dlgMesaSel"></select></label>
+    <p class="aviso-alg" data-aviso-alg>{{aviso_alergenos}}</p>
+    <div id="dlgOnline" hidden>
+      <fieldset class="opciones"><legend data-i18n="carta.online.tipo"></legend>
+        <label class="check"><input type="radio" name="tipo" value="domicilio" id="dlgTipoDom"><span data-i18n="carta.online.domicilio"></span></label>
+        <label class="check"><input type="radio" name="tipo" value="recoger" id="dlgTipoRec"><span data-i18n="carta.online.recoger"></span></label></fieldset>
+      <p class="note" id="dlgOnlineInfo"></p>
+      <label><span data-i18n="carta.online.nombre"></span><input id="dlgNombre" maxlength="80" autocomplete="name"></label>
+      <label><span data-i18n="carta.online.telefono"></span><input id="dlgTel" type="tel" inputmode="tel" maxlength="20" autocomplete="tel"></label>
+      <div id="dlgDomicilio"><label><span data-i18n="carta.online.direccion"></span><input id="dlgDir" maxlength="200" autocomplete="street-address"></label>
+        <label><span data-i18n="carta.online.cp"></span><input id="dlgCP" inputmode="numeric" maxlength="5" autocomplete="postal-code"></label></div>
+      <fieldset class="opciones"><legend data-i18n="carta.online.hora"></legend>
+        <label class="check"><input type="radio" name="hora" value="asap" checked><span data-i18n="carta.online.asap"></span></label>
+        <label class="check"><input type="radio" name="hora" value="prog"><span data-i18n="carta.online.programada"></span></label>
+        <input id="dlgHoraValor" type="time" step="300" hidden></fieldset>
+      <fieldset class="opciones"><legend data-i18n="carta.online.pago"></legend>
+        <label class="check"><input type="radio" name="pago" value="tarjeta" checked><span data-i18n="carta.online.tarjeta"></span></label>
+        <label class="check"><input type="radio" name="pago" value="efectivo"><span data-i18n="carta.online.efectivo"></span></label></fieldset>
+      <label id="dlgCambioCampo" hidden><span data-i18n="carta.online.cambio"></span><input id="dlgCambio" maxlength="60" data-i18n-attr="placeholder:carta.online.cambio_ph"></label>
+      <dl class="importe" id="dlgImporte"><dt data-i18n="carta.online.subtotal"></dt><dd class="money" id="impSub"></dd>
+        <dt id="impEnvioT" data-i18n="carta.online.envio"></dt><dd class="money" id="impEnvio"></dd>
+        <dt data-i18n="carta.online.estimado"></dt><dd class="money" id="impTotal"></dd></dl>
+      <p class="note" data-i18n="carta.online.pago_nota"></p>
+      <p class="note" data-i18n="online.aviso_no_factura"></p>
+    </div>
+    <label><span data-i18n="carta.enviar.nota"></span><textarea id="dlgNota" maxlength="200" data-i18n-attr="placeholder:carta.enviar.nota_ph"></textarea></label>
+    <div id="dlgPermiso" hidden>
+      <label><span data-i18n="carta.enviar.correo"></span><input id="dlgEmail" type="email" inputmode="email" autocomplete="email" maxlength="120" data-i18n-attr="placeholder:carta.enviar.correo_ph"></label>
+      <label class="check"><input type="checkbox" id="dlgPermisoCasilla"><span id="dlgPermisoTexto"></span></label>
+    </div>
+    <p class="err" id="dlgErr" role="alert"></p>
+    <div class="botones"><button class="btn sec" type="button" id="dlgCancelar" data-i18n="carta.enviar.seguir"></button><button class="btn" type="submit" id="dlgOk"></button></div>
+  </form>
+</dialog>
+
+<script src="datos.js"></script>
+<script src="fotos.js"></script>
+<script src="alergenos.js"></script>
+<script>
+/* ================= DATOS =================
+   Vienen de datos.js (window.DATOS), que genera el servidor desde datos.json y edita el backoffice.
+   Ingredientes: n nombre, cat grupo, p precio como extra (null = no se vende como extra),
+   s forma del dibujo provisional, h alto, c color. platos: i = ingredientes DE ABAJO ARRIBA. */
+window.MARCA_I18N={{js:marca_i18n}};
+const TXT={{js:textos}};
+const NOMBRE={{js:nombre}};
+const plato_=()=>I18N.tr(TXT.plato),platoCap=()=>I18N.tr(TXT.plato_cap),platosT=()=>I18N.tr(TXT.platos);
+const DATOS=window.DATOS||{gruposExtra:[],ingredientes:{},platos:[],picar:[]};
+const CATS=DATOS.gruposExtra;
+const ING=DATOS.ingredientes;
+// Más volumen en cada capa para que se lea como una foto
+Object.values(ING).forEach(g=>{g.h=Math.round((g.h||8)*1.7);if(g.p===undefined)g.p=null});
+// Los ingredientes que ya no existen se ignoran (por si se borró alguno)
+// Los productos ocultos en el backoffice no salen en la carta. Un ingrediente oculto no se ofrece como extra
+// y, en las recetas que lo llevan, sale como agotado.
+const BOC=DATOS.platos.filter(b=>!b.oculto).map(b=>({pan:'barra',...b,i:(b.i||[]).filter(x=>ING[x])}));
+const PICAR=DATOS.picar.filter(p=>!p.oculto).map(p=>({...p,i:[]}));
+const agotado=id=>!!(ING[id]&&ING[id].oculto);
+const BREAD={
+ barra:{hi:'#E8B566',lo:'#C9873A',dk:'#9A5F22',edge:'#8A5420',crumb:'#F3E1B6',score:'#F3D394',L:320,top:60,bot:32},
+};
+
+/* ================= UTILIDADES ================= */
+const eur={format:n=>I18N.moneda(n)};
+const precioExtra=p=>eur.format(p);
+const ingN=id=>I18N.tr(ING[id].n);
+const nm=x=>I18N.tr(x.n);   // los extras a 0 € (p. ej. pa amb tomàquet) no muestran precio
+function rnd(seed){let a=seed>>>0;return()=>{a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function hash(s){let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
+function shade(hex,k){const n=parseInt(hex.slice(1),16),m=v=>Math.max(0,Math.min(255,Math.round(k<1?v*k:v+(255-v)*(k-1))));
+ return'#'+[n>>16,n>>8&255,n&255].map(v=>m(v).toString(16).padStart(2,'0')).join('')}
+const f=p=>p[0].toFixed(1)+' '+p[1].toFixed(1);
+function smooth(pts,move=true){let d=(move?'M':' L')+f(pts[0]);
+ for(let i=1;i<pts.length-1;i++){const m=[(pts[i][0]+pts[i+1][0])/2,(pts[i][1]+pts[i+1][1])/2];d+=' Q'+f(pts[i])+' '+f(m)}
+ return d+' L'+f(pts[pts.length-1])}
+function bandPts(x,y,w,h,amp,fr,r){const n=Math.max(6,Math.round(w/16)),ph=r()*6,T=[],B=[];
+ for(let i=0;i<=n;i++){const px=x+w*i/n,e=(i==0||i==n)?h*.3:0;
+  T.push([px,y+amp*Math.sin(i*fr+ph)+(r()-.5)*amp*.5+e]);B.push([px,y+h+amp*.7*Math.sin(i*fr+ph+1.3)-e])}
+ return{T,B}}
+const bandPath=b=>smooth(b.T)+smooth(b.B.slice().reverse(),false)+'Z';
+const P=(d,fill,stroke,sw=1,extra='')=>`<path d="${d}" fill="${fill}"${stroke?` stroke="${stroke}" stroke-width="${sw}"`:''} ${extra}/>`;
+const E=(cx,cy,rx,ry,fill,stroke,sw=1,extra='')=>`<ellipse cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" rx="${rx.toFixed(1)}" ry="${Math.max(.5,ry).toFixed(1)}" fill="${fill}"${stroke?` stroke="${stroke}" stroke-width="${sw}"`:''} ${extra}/>`;
+function spread(x,w,n,pad){return Array.from({length:n},(_,i)=>n==1?x+w/2:x+pad+i*(w-2*pad)/(n-1))}
+
+/* ================= DIBUJOS PROVISIONALES (vista lateral) ================= */
+const SH={
+ ham(x,y,w,h,c,r){const b1=bandPts(x,y+2,w,h-2,2.5,.9,r),b2=bandPts(x+5,y,w-10,h-2,2.8,1.1,r);
+  return P(bandPath(b1),shade(c,.72))+P(bandPath(b2),c,shade(c,.68),.8)+
+   P(smooth(b2.T.slice(1,-1).map(p=>[p[0],p[1]+2.2])),'none','#F6DAD5',1.6,'stroke-linecap="round" opacity=".9"')},
+ meat(x,y,w,h,c,r,g){const b=bandPts(x,y,w,h,1.3,.7,r);let s=P(bandPath(b),c,shade(c,.68),1);
+  s+=P(smooth(b.T.slice(1,-1).map(p=>[p[0],p[1]+1.6])),'none',shade(c,1.3),1.1,'opacity=".7"');
+  for(let gx=x+18;gx<x+w-14;gx+=26)s+=`<line x1="${gx}" y1="${y+2.5}" x2="${gx+7}" y2="${y+h-2.5}" stroke="${shade(c,.48)}" stroke-width="2.2" stroke-linecap="round" opacity=".55"/>`;
+  if(g.fl)for(let k=0;k<w/7;k++)s+=E(x+6+r()*(w-12),y+3+r()*(h-6),1.2+r()*1.6,.9+r(),r()<.5?'#F0DCC0':shade(c,.55));
+  return s},
+ slab(x,y,w,h,c,r){let s=`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="${c}" stroke="${shade(c,.74)}"/>`+
+   `<rect x="${x+4}" y="${y+2}" width="${w-8}" height="${(h*.28).toFixed(1)}" rx="3" fill="${shade(c,1.3)}" opacity=".7"/>`;
+  for(let k=0;k<w/22;k++)s+=E(x+10+r()*(w-20),y+h*.45+r()*h*.35,4+r()*5,2+r()*1.5,shade(c,1.22),shade(c,.85),.5);
+  for(let k=0;k<w/6;k++)s+=E(x+6+r()*(w-12),y+3+r()*(h-6),.9+r()*.8,.8,'#B8741A','', 1,'opacity=".55"');
+  return s},
+ cheese(x,y,w,h,c,r){const b=bandPts(x,y,w,h,.6,1,r);let s='';
+  for(let k=0;k<Math.round(w/40);k++){const px=x+12+r()*(w-24),l=3+r()*9;
+   s+=P(`M${(px-3.5).toFixed(1)} ${y+h-1} L${(px-3.5).toFixed(1)} ${(y+h+l).toFixed(1)} a3.5 3.5 0 0 0 7 0 L${(px+3.5).toFixed(1)} ${y+h-1}Z`,c)}
+  return s+P(bandPath(b),c,shade(c,.82),.7)+P(smooth(b.T.slice(1,-1).map(p=>[p[0],p[1]+1.3])),'none',shade(c,1.4),1,'opacity=".8"')},
+ cheeseFlat(x,y,w,h,c,r,g){let s=`<rect x="${x+2}" y="${y}" width="${w-4}" height="${h}" rx="2" fill="${c}" stroke="${shade(c,.78)}" stroke-width=".7"/>`;
+  if(!g.norind)s+=`<rect x="${x+2}" y="${y+h-2.2}" width="${w-4}" height="2.2" fill="#7A5A35"/>`;
+  for(let k=0;k<w/18;k++)s+=E(x+8+r()*(w-16),y+1.5+r()*(h-4.5),1.2+r(),.8,shade(c,.84));
+  return s},
+ leaf(x,y,w,h,c,r){const b=bandPts(x,y,w,h,3.2,1.8,r),b2=bandPts(x+3,y+1.5,w-6,h-1,2.2,2.3,r);let s=P(bandPath(b2),shade(c,.82))+P(bandPath(b),c,shade(c,.66),.9);
+  for(let k=0;k<w/20;k++){const px=x+8+r()*(w-16);s+=P(`M${px.toFixed(1)} ${y+h-1} q3 -${(h*.5).toFixed(1)} 7 -${(h*.75).toFixed(1)}`,'none',shade(c,1.45),.9)}
+  return s},
+ tomato(x,y,w,h,c,r){let s='';const n=Math.max(2,Math.round(w/44));
+  spread(x,w,n,24).forEach(cx=>{const cy=y+h/2+(r()-.5)*1.5;s+=E(cx,cy,23,h/2,c,shade(c,.7))+E(cx,cy,17,h/2-1.8,shade(c,1.3));
+   for(let k=0;k<3;k++)s+=E(cx-9+k*9,cy,1.6,1,'#F6D66B')});
+  return s},
+ smear(x,y,w,h,c,r){const b=bandPts(x,y,w,h,1.4,2.4,r);let s=P(bandPath(b),c);
+  for(let k=0;k<w/10;k++)s+=E(x+4+r()*(w-8),y+1.5+r()*(h-2),1.1,.8,shade(c,.7));return s},
+ pepper(x,y,w,h,c,r,g){let s='';const n=Math.max(2,Math.round(w/46));
+  spread(x,w,n,28).forEach(cx=>{const rx=24+r()*8,rot=((r()-.5)*8).toFixed(1),cy=y+h/2;
+   s+=`<g transform="rotate(${rot} ${cx.toFixed(1)} ${cy.toFixed(1)})">`+E(cx,cy,rx,h/2,c,shade(c,.66))+
+    P(`M${(cx-rx*.7).toFixed(1)} ${(cy-h*.18).toFixed(1)} Q${cx.toFixed(1)} ${(cy-h*.4).toFixed(1)} ${(cx+rx*.7).toFixed(1)} ${(cy-h*.18).toFixed(1)}`,'none',shade(c,1.5),1.2,'stroke-linecap="round" opacity=".8"');
+   if(g.bl)for(let k=0;k<4;k++)s+=E(cx-rx*.6+r()*rx*1.2,cy+r()*h*.3-h*.05,2+r()*2,1.2,shade(c,.55),'',1,'opacity=".6"');
+   s+='</g>'});
+  return s},
+ onion(x,y,w,h,c,r){let s='';const n=Math.max(4,Math.round(w/20));
+  spread(x,w,n,13).forEach(cx=>{const cy=y+h/2+(r()-.5)*1.5;s+=E(cx,cy,12,h/2-.6,'none','#F2E8F6',2.3)+E(cx,cy,12,h/2-.6,'none',c,1)+E(cx,cy,6.5,h/2-2.2,'none',shade(c,.82),.9)});
+  return s},
+ strands(x,y,w,h,c,r){let s='';for(let k=0;k<w/4.5;k++){const px=x+4+r()*(w-24),py=y+1.5+r()*(h-3),l=12+r()*12,cc=r()<.5?c:shade(c,r()<.5?.75:1.25);
+  s+=P(`M${px.toFixed(1)} ${py.toFixed(1)} q${(l/2).toFixed(1)} ${((r()-.5)*5).toFixed(1)} ${l.toFixed(1)} ${((r()-.5)*2).toFixed(1)}`,'none',cc,2.1,'stroke-linecap="round"')}
+  return s},
+ sauce(x,y,w,h,c,r){const b=bandPts(x,y,w,h,1.2,2.2,r);let s=P(bandPath(b),c,shade(c,.85),.5);
+  for(let k=0;k<w/30;k++)s+=E(x+6+r()*(w-12),y+1.4,2.4,.7,'#FFFFFF','',1,'opacity=".5"');return s},
+ bacon(x,y,w,h,c,r){let s='';for(let j=0;j<2;j++){const b=bandPts(x+j*7,y+j*h*.45,w-7,h*.55+1,2.6,1.3+j*.3,r);
+  s+=P(bandPath(b),j?c:shade(c,.85),shade(c,.68),.8)+P(smooth(b.T.slice(1,-1).map(p=>[p[0],p[1]+h*.27])),'none','#F3CDBF',1.7,'stroke-linecap="round"')}
+  return s},
+ coins(x,y,w,h,c,r,g){let s='';const n=Math.max(3,Math.round(w/23));
+  spread(x,w,n,13).forEach(cx=>{const cy=y+h/2+(r()-.5)*2;s+=E(cx,cy,13,h/2,c,shade(c,c=='#F5F1E6'?.82:.68));
+   for(let k=0;k<4;k++)s+=E(cx-8+r()*16,cy-h/2+2+r()*(h-4),1.2,.9,g.d||shade(c,.8))});
+  return s},
+ tuna(x,y,w,h,c,r){const b=bandPts(x,y,w,h,1.8,1.6,r);let s=P(bandPath(b),c,shade(c,.76),.8);
+  for(let k=0;k<w/9;k++){const px=x+5+r()*(w-14),py=y+2+r()*(h-4);s+=P(`M${px.toFixed(1)} ${py.toFixed(1)} q3 -2 6 0`,'none',r()<.6?shade(c,.68):'#E9A99A',1,'stroke-linecap="round"')}
+  return s},
+ sticks(x,y,w,h,c,r){let a='',b='';for(let k=0;k<w/3.5;k++){const px=x+4+r()*(w-18),py=y+1.5+r()*(h-3),l=9+r()*8,an=(r()-.5)*.6;
+  const d=`M${px.toFixed(1)} ${py.toFixed(1)} l${(l*Math.cos(an)).toFixed(1)} ${(l*Math.sin(an)).toFixed(1)}`;a+=P(d,'none',shade(c,.7),3,'stroke-linecap="round"');b+=P(d,'none',c,1.8,'stroke-linecap="round"')}
+  return a+b},
+ balls(x,y,w,h,c,r){let s='';const n=Math.max(3,Math.round(w/34));
+  spread(x,w,n,18).forEach(cx=>{const cy=y+h/2+(r()-.5)*2;s+=E(cx,cy,17,h/2,c,shade(c,.62))+E(cx-5,cy-h*.22,6,2.2,shade(c,1.45),'',1,'opacity=".55"');
+   for(let k=0;k<5;k++)s+=E(cx-11+r()*22,cy-h*.3+r()*h*.6,1.2,.9,shade(c,.55))});
+  return s},
+ sausage(x,y,w,h,c,r){let s='';const n=2,gap=6,lw=(w-gap)/n;
+  for(let k=0;k<n;k++){const lx=x+k*(lw+gap),cy=y+h/2;
+   s+=`<rect x="${lx.toFixed(1)}" y="${y}" width="${lw.toFixed(1)}" height="${h}" rx="${(h/2).toFixed(1)}" fill="${c}" stroke="${shade(c,.66)}"/>`+
+    P(`M${(lx+h*.5).toFixed(1)} ${(y+h*.28).toFixed(1)} L${(lx+lw-h*.5).toFixed(1)} ${(y+h*.28).toFixed(1)}`,'none',shade(c,1.35),1.6,'stroke-linecap="round" opacity=".8"');
+   for(let gx=lx+h;gx<lx+lw-h;gx+=22)s+=`<line x1="${gx.toFixed(1)}" y1="${(y+h*.2).toFixed(1)}" x2="${(gx+5).toFixed(1)}" y2="${(y+h*.85).toFixed(1)}" stroke="${shade(c,.5)}" stroke-width="2" stroke-linecap="round" opacity=".5"/>`}
+  return s},
+ olives(x,y,w,h,c,r){let s='';const n=Math.max(5,Math.round(w/19));
+  spread(x,w,n,10).forEach(cx=>{const cy=y+h/2+(r()-.5)*2;s+=E(cx,cy,8.5,h/2,c,shade(c,.6))+E(cx,cy,3.2,h/2-2.4,'#B8352A')+E(cx-3,cy-h*.25,2.2,1,'#FFFFFF','',1,'opacity=".25"')});
+  return s},
+};
+const OVER={leaf:4,cheese:2,ham:2,bacon:2,sauce:-2,smear:-2};
+function drawIng(id,x,y,w,seed){const g=ING[id];return SH[g.s](x,y,w,g.h,g.c,rnd(hash(id)+seed*97),g)}
+
+/* ---------- Pan ---------- */
+function defs(pid,b){return`<defs><linearGradient id="${pid}t" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${b.hi}"/><stop offset="1" stop-color="${b.lo}"/></linearGradient>`+
+ `<linearGradient id="${pid}b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${b.lo}"/><stop offset="1" stop-color="${b.dk}"/></linearGradient></defs>`}
+function breadBottom(x,y,L,h,b,pid){
+ return P(`M${x} ${y+3} Q${x} ${y} ${x+4} ${y} L${x+L-4} ${y} Q${x+L} ${y} ${x+L} ${y+3} L${x+L} ${y+h-12} Q${x+L} ${y+h} ${x+L-18} ${y+h} L${x+18} ${y+h} Q${x} ${y+h} ${x} ${y+h-12}Z`,`url(#${pid}b)`,b.edge)+
+  `<rect x="${x+2}" y="${y}" width="${L-4}" height="5" rx="2.5" fill="${b.crumb}"/>`}
+function breadTop(x,y,L,h,b,pid,r){const yb=y+h;
+ let s=P(`M${x} ${yb} C${x} ${yb-h*.9} ${x+L*.08} ${y} ${x+L*.2} ${y} L${x+L*.8} ${y} C${x+L*.92} ${y} ${x+L} ${yb-h*.9} ${x+L} ${yb}Z`,`url(#${pid}t)`,b.edge)+
+  `<rect x="${x+2}" y="${yb-5}" width="${L-4}" height="5" rx="2.5" fill="${b.crumb}"/>`;
+ for(let i=0;i<5;i++){const sx=x+L*(.17+i*.14);s+=P(`M${sx.toFixed(1)} ${(y+h*.42).toFixed(1)} q${L*.04} -${h*.22} ${L*.085} -${h*.14}`,'none',b.score,4,'stroke-linecap="round" opacity=".85"')}
+ s+=P(`M${x+L*.22} ${y+3} L${x+L*.78} ${y+3}`,'none','#FFFFFF',2,'stroke-linecap="round" opacity=".25"');
+ return s}
+
+/* ---------- Ración para picar (dibujo provisional) ---------- */
+function plato(p,small){const f=FOTO['picar_'+p.id];
+ if(f)return`<img src="${f.src}" alt="${nm(p)}" class="foto-plena">`;
+ const r=rnd(hash(p.id));let s=`<svg viewBox="0 0 400 170" role="img" aria-label="${nm(p)}">`+
+  E(200,118,178,44,'#E9E3D6','#BDB4A2',1.2)+E(200,112,150,32,'#D9D1C0');
+ for(let k=0;k<38;k++){const x=95+r()*210,y=70+r()*44,l=20+r()*24,a=(r()*160-80).toFixed(0);
+  s+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${l.toFixed(1)}" height="${(9+r()*5).toFixed(1)}" rx="5" fill="${r()<.6?p.c:shade(p.c,.8)}" stroke="${shade(p.c,.6)}" stroke-width=".8" transform="rotate(${a} ${x.toFixed(1)} ${y.toFixed(1)})"/>`}
+ if(p.salsa)for(let k=0;k<7;k++)s+=E(130+r()*140,78+r()*26,10+r()*8,4,p.salsa,'',1,'opacity=".9"');
+ return s+'</svg>'}
+
+/* ---------- Vistas con dibujos ---------- */
+function montado(b,layers,pid,newId){
+ const B=BREAD[b.pan],L=B.L,x=20,W=L+40,pos=[];let cur=3;
+ layers.forEach(l=>{const h=ING[l.id].h,y=cur-h;pos.push(y);cur=y+Math.min(h*.3,5)});
+ const topY=cur+2-B.top,off=-Math.min(topY,...pos)+10,H=off+B.bot+18;
+ let s=`<svg viewBox="0 0 ${W} ${H.toFixed(0)}" role="img" aria-label="${I18N.t('carta.alt.montado',{nombre:nm(b)})}">`+defs(pid,B);
+ s+=`<ellipse class="sombra" cx="${x+L/2}" cy="${off+B.bot+5}" rx="${L*.47}" ry="6"/>`;
+ s+=breadBottom(x,off,L,B.bot,B,pid);
+ layers.forEach((l,i)=>{const ov=OVER[ING[l.id].s]||0;s+=`<g class="${l.id===newId?'new':''}">${drawIng(l.id,x+4-ov,pos[i]+off,L-8+2*ov,i)}</g>`});
+ s+=breadTop(x,topY+off,L,B.top,B,pid,rnd(hash(b.id)));
+ return s+'</svg>'}
+
+function despiece(b,layers,pid,newId){
+ // Etiquetas a la izquierda, línea guía con punto hasta la capa
+ const B=BREAD[b.pan],L=B.L,LX=196,x=LX+44,W=LX+44+L+16,G=24;
+ const rows=[];let y=14;
+ rows.push({k:'top',y,h:B.top});y+=B.top+G;
+ [...layers].reverse().forEach(l=>{const g=ING[l.id];rows.push({k:'ing',l,y,h:g.h});y+=g.h+G+(g.s==='cheese'?8:0)});
+ y+=8;rows.push({k:'bot',y,h:B.bot});y+=B.bot+12;
+ let s=`<svg viewBox="0 0 ${W.toFixed(0)} ${y}" role="img" aria-label="${I18N.t('carta.alt.despiece',{nombre:nm(b)})}">`+defs(pid,B);
+ rows.forEach((row,i)=>{const my=row.y+row.h/2;let label,sub='';
+  if(row.k==='top'){s+=breadTop(x,row.y,L,row.h,B,pid,rnd(hash(b.id)));label=I18N.t('carta.pan.superior')}
+  else if(row.k==='bot'){s+=`<path d="M${x+6} ${row.y+2} Q${x+L/2} ${row.y-11} ${x+L-6} ${row.y+2}Z" fill="${B.crumb}" stroke="${shade(B.crumb,.85)}" stroke-width=".8"/>`+breadBottom(x,row.y,L,row.h,B,pid);label=I18N.t('carta.pan.inferior')}
+  else{const g=ING[row.l.id],ov=OVER[g.s]||0;s+=`<g class="${row.l.id===newId?'new':''}">${drawIng(row.l.id,x+4-ov,row.y,L-8+2*ov,i)}</g>`;label=ingN(row.l.id);
+   if(row.l.extra&&g.p)sub=`<tspan class="ex" x="${LX}" dy="15">${I18N.th('carta.extra_precio',{precio:precioExtra(g.p)})}</tspan>`}
+  const ty=sub?my-2:my+5;
+  if(row.k!=='top'&&row.k!=='bot')s+=`<text class="lbl" text-anchor="end" x="${LX}" y="${ty}">${label}${sub}</text>`+
+   `<line class="lead" x1="${LX+8}" y1="${my}" x2="${x-6}" y2="${my}"/><circle class="dot" cx="${x-6}" cy="${my}" r="2.6"/>`});
+ return s+'</svg>'}
+
+/* ================= MODO FOTO =================
+   fotos.js define window.FOTOS = { "<plato>.<capa>": {src, r}, "completo_<plato>": {src, r}, ... }
+   r = alto/ancho. Capas de pan: "barra_arriba" y "barra_abajo". */
+const FOTO=window.FOTOS||{};
+const conFotos=Object.keys(FOTO).length>0;
+// Qué parte de la capa de abajo queda tapada por la de arriba en el plato completo
+const TAPA={sauce:.92,smear:.9,cheese:.62,leaf:.6,ham:.6,bacon:.6};
+function capaSvg(id,i){const g=ING[id],ov=OVER[g.s]||0,h=g.h+(g.s==='cheese'?16:6);
+ return{html:`<svg viewBox="0 0 330 ${h}" aria-hidden="true">${drawIng(id,5+4-ov,3,320-8+2*ov,i)}</svg>`,r:h/330}}
+function panSvg(b,arriba,pid){const B=BREAD[b.pan],h=(arriba?B.top:B.bot)+(arriba?2:12),y=arriba?1:9;
+ const crumb=arriba?'':`<path d="M8 ${y+2} Q${B.L/2} ${y-9} ${B.L-8} ${y+2}Z" fill="${B.crumb}" stroke="${shade(B.crumb,.85)}" stroke-width=".8"/>`;
+ return{html:`<svg viewBox="-2 0 ${B.L+4} ${h}" aria-hidden="true">${defs(pid,B)}${arriba?breadTop(0,y,B.L,B.top,B,pid,rnd(hash(b.id))):crumb+breadBottom(0,y,B.L,B.bot,B,pid)}</svg>`,r:h/(B.L+4)}}
+// Foto de una capa: la propia del plato; si no, la del ingrediente (p. ej. subida desde el backoffice);
+// si no, la del mismo ingrediente en otro plato
+function fotoCapa(b,key){if(b&&FOTO[b.id+'.'+key])return FOTO[b.id+'.'+key];
+ if(FOTO[key])return FOTO[key];
+ const otra=Object.keys(FOTO).find(k=>k.endsWith('.'+key));return otra?FOTO[otra]:null}
+function capa(b,key,i,pid){const f=fotoCapa(b,key);
+ if(f)return{html:`<img src="${f.src}" alt="" loading="lazy" decoding="async">`,r:f.r};
+ if(key.endsWith('_arriba'))return panSvg(b,true,pid);
+ if(key.endsWith('_abajo'))return panSvg(b,false,pid);
+ return capaSvg(key,i)}
+function despieceFoto(b,layers,pid,newId){
+ const rows=[{k:b.pan+'_arriba',n:'',pan:1},...[...layers].reverse().map(l=>({k:l.id,n:ingN(l.id),l})),{k:b.pan+'_abajo',n:'',pan:1}];
+ return`<div class="fx" role="img" aria-label="${I18N.t('carta.alt.despiece',{nombre:nm(b)})}">`+rows.map((r,i)=>{const c=capa(b,r.k,i,pid+i);
+  const sub=r.l&&r.l.extra?`${ING[r.k].p?`<small>${I18N.th('carta.extra_precio',{precio:precioExtra(ING[r.k].p)})}</small>`:""}`:'';
+  return`<div class="fx-row${r.pan?' pan':''}${r.l&&r.l.id===newId?' new':''}"><span class="fx-lbl"><span>${r.n}${sub}</span></span><div class="fx-img">${c.html}</div></div>`}).join('')+'</div>'}
+function montadoFoto(b,layers,pid,newId){
+ // plato cerrado: el relleno se aplasta, cada capa queda casi tapada por la de encima
+ // y solo asoma su borde delantero; sombras de contacto y pequeñas irregularidades.
+ const seq=[{k:b.pan+'_abajo',s:'pan'},...layers.map(l=>({k:l.id,s:ING[l.id].s,l})),{k:b.pan+'_arriba',s:'pan'}];
+ const n=layers.length,extraTapa=Math.min(.14,Math.max(0,n-4)*.035);
+ let prev=null;
+ const html=seq.map((r,i)=>{const c=capa(b,r.k,i,pid+i),pan=r.s==='pan',rr=rnd(hash(r.k)+i*31);
+  // El pa amb tomàquet es parte del pan: tan ancho como él, más fino, pegado a la miga y que asome por el borde
+  const tom=r.k==='pa_amb_tomaquet';
+  const k=pan?1:tom?.6:.78;                               // aplastado vertical del relleno
+  const w=pan||tom?100:100+rr()*5;                        // el relleno asoma un poco por los lados
+  const dx=pan||tom?0:(rr()-.5)*3,rot=pan||tom?0:(rr()-.5)*1.1;
+  const h=c.r*k*w;                                        // alto en % del ancho del plato
+  const tapa=prev?(prev.pan?(tom?.78:.62):prev.tom?.7:Math.min(.9,(TAPA[prev.s]??.6)+extraTapa)):0;
+  const mb=prev?-(prev.h*tapa):0;prev={h,s:r.s,pan,tom};
+  const cls='st'+(pan?' pan':' relleno')+(i===seq.length-1?' tapa':'')+(r.l&&r.l.id===newId?' new':'');
+  return`<div class="${cls}" style="width:${w.toFixed(2)}%;margin-left:${((100-w)/2+dx).toFixed(2)}%;padding-bottom:${h.toFixed(2)}%;margin-bottom:${mb.toFixed(2)}%;z-index:${i+1};transform:rotate(${rot.toFixed(2)}deg)">${c.html}</div>`}).join('');
+ return`<div class="stack stack-92" role="img" aria-label="${I18N.t('carta.alt.montado',{nombre:nm(b)})}">${html}</div>`}
+// Foto real del plato entero: solo cuando se pide con la receta original
+function fotoReal(b){const f=FOTO['completo_'+b.id];return f&&!isModified(b)&&!b.i.some(agotado)?f:null}
+function completo(b,layers,pid,newId){const f=fotoReal(b);
+ return f?`<div class="real" role="img" aria-label="${nm(b)}"><img src="${f.src}" alt=""></div>`:montadoFoto(b,layers,pid,newId)}
+
+/* ================= ESTADO =================
+   Cada línea del pedido guarda su producto y sus cambios. La línea que se está editando (state.edit)
+   se actualiza al momento cuando se quitan ingredientes o se añaden/quitan extras. */
+let abierto=true;   // «Aceptar pedidos»: lo cambia el local desde el backoffice o la cocina
+const state={cur:(BOC[0]||PICAR[0]||{}).id,mods:{},pedido:[],nuevo:null,edit:null};
+let uid=0;
+const mods=id=>state.mods[id]||(state.mods[id]={rm:[],ex:[]});
+const boc=()=>BOC.find(b=>b.id===state.cur);
+const pic=()=>PICAR.find(p=>p.id===state.cur);
+const prodById=id=>BOC.find(b=>b.id===id)||PICAR.find(p=>p.id===id);
+const prod=()=>prodById(state.cur);
+const esPicar=x=>PICAR.includes(x);
+function layersOf(b){const m=mods(b.id);return b.i.filter(i=>!m.rm.includes(i)&&!agotado(i)).map(id=>({id,extra:false})).concat(m.ex.map(id=>({id,extra:true})))}
+const priceWith=(x,m)=>x.p+m.ex.reduce((a,i)=>a+ING[i].p,0);
+const priceOf=x=>priceWith(x,mods(x.id));
+const isModified=b=>{const m=mods(b.id);return m.rm.length+m.ex.length>0};
+const lista=ids=>ids.map(i=>ingN(i).toLowerCase()).join(I18N.t('carta.lista_sep'));
+function textWith(x,m){const p=[];if(m.rm.length)p.push(I18N.t('carta.linea.sin',{lista:lista(m.rm)}));
+ const ag=x.i.filter(agotado);if(ag.length)p.push(I18N.t('carta.linea.sin_agotado',{lista:lista(ag)}));
+ if(m.ex.length)p.push(I18N.t('carta.linea.extra',{lista:lista(m.ex)}));return p.join(' · ')||I18N.t(esPicar(x)?'carta.linea.racion':'carta.linea.receta_original')}
+const ALG=window.ALERGENOS||{lista:[],textos:{es:{}}},ALGT=()=>ALG.textos[I18N.lang]||ALG.textos.es||{};
+const algEstado=x=>x.alergenos==null?'sin_revisar':x.alergenos.length?'marcados':'sin_declarar';
+const algNombre=a=>I18N.tr(a.n);
+function algTexto(x){const e=algEstado(x);return e==='marcados'?(ALGT().titulo||'')+': '+ALG.lista.filter(a=>x.alergenos.includes(a.id)).map(algNombre).join(I18N.t('carta.lista_sep')):ALGT()[e]}
+function algHtml(x){const e=algEstado(x);
+ if(e==='marcados')return`<span class="etq">${ALGT().titulo}</span><ul class="alg-lista">`+ALG.lista.filter(a=>x.alergenos.includes(a.id)).map(a=>`<li>${a.svg}<span>${algNombre(a)}</span></li>`).join('')+'</ul>';
+ return`<span class="etq">${ALGT().titulo}</span><p class="alg-estado ${e}">${ALGT()[e]}</p>`}
+const copyMods=m=>({rm:[...m.rm],ex:[...m.ex]});
+const editLine=()=>state.pedido.find(l=>l.uid===state.edit);
+function syncEdit(){const l=editLine();if(l&&l.pid===state.cur)l.m=copyMods(mods(l.pid))}
+
+function toggle(id){const x=prod();if(!x||agotado(id))return;const m=mods(x.id);
+ if(x.i.includes(id)){const k=m.rm.indexOf(id);if(k>=0){m.rm.splice(k,1);state.nuevo=id}else{m.rm.push(id);state.nuevo=null}}
+ else if(ING[id].p!=null){const k=m.ex.indexOf(id);if(k>=0){m.ex.splice(k,1);state.nuevo=null}else{m.ex.push(id);state.nuevo=id}}
+ const l=editLine();syncEdit();
+ render();if(l&&l.pid===x.id)toast(I18N.t('carta.toast.actualizado'))}
+
+// Cambiar de producto: si se estaba editando una línea, sus cambios ya están guardados en ella
+function selectProd(id){
+ const l=editLine();if(l){delete state.mods[l.pid];state.edit=null}
+ state.cur=id;state.nuevo=null;render();$('.build').scrollTo({top:0,behavior:'smooth'})}
+// Pulsar una línea del pedido la abre para editarla
+function openLine(u){const l=state.pedido.find(x=>x.uid===u);if(!l)return;
+ const prev=editLine();if(prev&&prev.uid!==u)delete state.mods[prev.pid];
+ state.cur=l.pid;state.mods[l.pid]=copyMods(l.m);state.edit=u;state.nuevo=null;render();$('.build').scrollTo({top:0,behavior:'smooth'})}
+
+/* ================= RENDER ================= */
+function renderLista(){
+ let html='',sec=null;
+ BOC.forEach((b,i)=>{
+  const sk=I18N.tr(b.sec,'es');
+  if(sk!==sec){sec=sk;html+=`<li class="sec etq"><span>${I18N.tr(b.sec)}</span></li>`}
+  const pic=conFotos?`<span class="thumb">${completo(b,layersOf(b),'th'+i,null)}</span>`:montado(b,layersOf(b),'th'+i,null);
+  html+=`<li><button class="item" type="button" data-b="${b.id}" aria-current="${b.id===state.cur}">${pic}<span><b>${nm(b)}</b><small>${isModified(b)?`<span class="mod">${I18N.th('carta.item.personalizado')}</span>`:`<span class="d">${I18N.tr(b.d)}</span>`}<span class="money">${eur.format(priceOf(b))}</span></small></span></button></li>`});
+ html+=`<li class="sec etq"><span>${I18N.th('carta.sec.picar')}</span></li>`;
+ PICAR.forEach(p=>{html+=`<li><button class="item" type="button" data-b="${p.id}" aria-current="${p.id===state.cur}">${plato(p,true)}<span><b>${nm(p)}</b><small>${isModified(p)?`<span class="mod">${I18N.th('carta.item.con_extras')}</span>`:`<span class="d">${I18N.th('carta.item.racion')}</span>`}<span class="money">${eur.format(priceOf(p))}</span></small></span></button></li>`});
+ $('#lista').innerHTML=html;
+ $('#ncarta').textContent=I18N.t('carta.cuenta',{n:BOC.length,platos:platosT(),picar:PICAR.length})}
+
+function renderBuild(){
+ const x=prod(),m=mods(x.id),p=esPicar(x)?x:null,editando=!!editLine();
+ $('#figDespiece').hidden=!!p;$('#vistas').classList.toggle('solo',!!p);$('#verDesp').hidden=!!p;
+ const chip=(id,cls,btn,lbl,extra='')=>`<span class="chip ${cls}"><i style="background:${ING[id].c}"></i><span>${ingN(id)}</span>${extra}<button type="button" data-t="${id}" aria-label="${lbl} ${ingN(id)}">${btn}</button></span>`;
+ const chipsEx=m.ex.map(id=>chip(id,'extra',I18N.t('carta.chip.quitar'),I18N.t('carta.chip.quitar'),`${ING[id].p?`<span class="money">+${eur.format(ING[id].p)}</span>`:""}`)).join('');
+ if(p){
+  $('#region').textContent=I18N.t('carta.sec.picar');$('#alg').innerHTML=algHtml(p);$('#nombre').textContent=nm(p);$('#desc').textContent=I18N.t('carta.picar.desc');
+  $('#montado').innerHTML=`<div class="plato">${plato(p)}</div>`;$('#capCompleto').textContent=I18N.t(FOTO['picar_'+p.id]?'carta.item.racion':'carta.dibujo_provisional');
+  $('#chipsLbl').textContent=I18N.t('carta.chips.tu_racion');$('#reset').textContent=I18N.t('carta.chips.quitar_extras');
+  $('#chips').innerHTML=chipsEx||`<span class="note">${I18N.th('carta.chips.sin_extras')}</span>`;
+ }else{
+  const b=x,L=layersOf(b);
+  $('#montado').innerHTML=conFotos?completo(b,L,'mt',state.nuevo):montado(b,L,'mt',state.nuevo);
+  $('#capCompleto').textContent=isModified(b)?I18N.t('carta.cap.tu_plato_aprox',{plato:plato_()}):b.i.some(agotado)?I18N.t('carta.cap.completo_aprox',{plato:platoCap()}):I18N.t('carta.cap.completo',{plato:platoCap()});
+  $('#despiece').innerHTML=conFotos?despieceFoto(b,L,'dp',state.nuevo):despiece(b,L,'dp',state.nuevo);
+  $('#region').textContent=I18N.t(b.i.includes('pa_amb_tomaquet')&&!m.rm.includes('pa_amb_tomaquet')?'carta.region.pan_tomate':'carta.region.pan',{sec:I18N.tr(b.sec),pan:I18N.t('carta.pan.'+b.pan)});
+  $('#alg').innerHTML=algHtml(b);$('#nombre').textContent=nm(b);$('#desc').textContent=I18N.tr(b.d);
+  $('#ncapas').textContent=I18N.t('carta.despiece',{n:L.length+2});
+  $('#chipsLbl').textContent=I18N.t('carta.chips.tu_plato',{plato:plato_()});$('#reset').textContent=I18N.t('carta.chips.volver_receta');
+  $('#chips').innerHTML=b.i.map(id=>agotado(id)?`<span class="chip off"><i style="background:${ING[id].c}"></i><span>${ingN(id)}</span><em class="ago">${I18N.th('carta.chip.agotado')}</em></span>`
+    :m.rm.includes(id)?chip(id,'off',I18N.t('carta.chip.poner'),I18N.t('carta.chip.volver_poner')):chip(id,'',I18N.t('carta.chip.quitar'),I18N.t('carta.chip.quitar'))).join('')+chipsEx;
+ }
+ $('#reset').disabled=!isModified(x);
+ $('#pbase').textContent=eur.format(x.p);
+ $('#pextra').textContent=m.ex.length?'+'+eur.format(priceOf(x)-x.p):'—';
+ $('#ptotal').textContent=eur.format(priceOf(x));
+ $('#add').textContent=I18N.t(editando?'carta.add.otro_igual':'carta.add.al_pedido');
+ $('#editing').hidden=!editando;
+ $('#pnote').textContent=I18N.t(p?'carta.precio.nota_picar':'carta.precio.nota');
+}
+function thumbIng(b,id){const f=b&&fotoCapa(b,id);
+ if(f)return`<img src="${f.src}" alt="">`;
+ const g=ING[id];return`<svg viewBox="0 0 120 ${g.h+8}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${drawIng(id,2,4,116,0)}</svg>`}
+const grupoN=(cid,cn)=>{const k='grupo.'+cid,v=I18N.t(k);return v===k?I18N.tr(cn):v};
+function renderMenu(){
+ const x=prod(),m=mods(x.id),b=esPicar(x)?null:x,q=$('#buscar').value.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+ $('#menuNote').textContent=I18N.t(b?'carta.ingredientes.nota':'carta.ingredientes.nota_picar');
+ $('#grupos').innerHTML=CATS.map(([cid,cn])=>{const items=Object.entries(ING).filter(([id,g])=>g.cat===cid&&g.p!=null&&!g.oculto&&(!q||I18N.tr(g.n).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').includes(q)));
+  if(!items.length)return'';
+  return`<div class="grupo"><h3>${grupoN(cid,cn)}</h3>`+items.map(([id,g])=>{let cls='',tag;
+   if(x.i.includes(id)){if(m.rm.includes(id))tag=`<em class="back">${I18N.th('carta.chip.volver_poner')}</em>`;else{cls='is-std';tag=`<em class="std">${I18N.th('carta.ing.en_receta')}</em>`}}
+   else if(m.ex.includes(id)){cls='is-on';tag=`<em class="on">${I18N.th('carta.ing.anadido')}</em>`}
+   else tag=g.p?`<em class="add">+ ${eur.format(g.p)}</em>`:"";
+   return`<button class="ing ${cls}" type="button" data-t="${id}"><span class="ith">${thumbIng(b,id)}</span><span>${ingN(id)}</span>${tag}</button>`}).join('')+'</div>'}).join('')||`<p class="note vacio-menu">${I18N.th('carta.ingredientes.ninguno')}</p>`}
+function renderPedido(){
+ const P=state.pedido;
+ $('#lineas').innerHTML=P.map(l=>{const x=prodById(l.pid),on=l.uid===state.edit;
+  return`<li class="${on?'on':''}"><button class="ln" type="button" data-l="${l.uid}" aria-label="${I18N.t('carta.linea.editar',{nombre:nm(x)})}"><b>${nm(x)}</b>${on?`<em>${I18N.th('carta.linea.editando')}</em>`:''}<small>${textWith(x,l.m)}<span class="alg-l">${algTexto(x)}</span></small></button><span class="money">${eur.format(priceWith(x,l.m))}</span><button class="x" type="button" data-q="${l.uid}" aria-label="${I18N.t('carta.linea.quitar',{nombre:nm(x)})}">×</button></li>`}).join('');
+ $('#vacio').hidden=P.length>0;$('#ptot').hidden=!P.length;$('#vaciar').disabled=!P.length;$('#enviar').hidden=!P.length;$('#notaLineas').hidden=!P.length;
+ $('#vacio').textContent=enviados.length?I18N.t('carta.pedido.vacio_seguir'):I18N.t('carta.pedido.vacio',{plato:plato_()});
+ const tot=eur.format(P.reduce((a,l)=>a+priceWith(prodById(l.pid),l.m),0));
+ $('#totalPedido').textContent=tot;$('#barN').textContent=P.length;$('#barT').textContent=tot;
+ $('#enviar').textContent=abierto?I18N.t('carta.pedido.enviar',{total:tot}):I18N.t('carta.pedido.cerrados');$('#enviar').disabled=!abierto;
+ renderEnviados()}
+function render(){renderLista();renderBuild();renderMenu();renderPedido();state.nuevo=null}
+
+let tt;function toast(t,ms=1800){const el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('show'),ms)}
+
+/* ================= MÓVIL: paneles y despiece ================= */
+function panel(cual){document.body.classList.toggle('ver-ing',cual==='ing');document.body.classList.toggle('ver-ped',cual==='ped')}
+$('#abrirExtras').addEventListener('click',()=>panel('ing'));
+$('#verPedido').addEventListener('click',()=>panel('ped'));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')panel(null)});
+$('#verDesp').addEventListener('click',()=>{const o=$('#vistas').classList.toggle('open');
+ pintaDesp();$('#verDesp').setAttribute('aria-expanded',o)});
+function pintaDesp(){$('#verDesp').textContent=I18N.t($('#vistas').classList.contains('open')?'carta.desp.ocultar':'carta.desp.ver')}
+// Cabecera que se recoge al bajar por el plato (solo móvil)
+$('.build').addEventListener('scroll',e=>{if(!matchMedia('(max-width:820px)').matches)return;
+ const y=e.target.scrollTop,c=document.body.classList;if(y>60)c.add('recogido');else if(y<8)c.remove('recogido')},{passive:true});
+// Pantalla completa: solo si el navegador lo permite (Android y escritorio; iPhone no)
+(()=>{const b=$('#pantalla'),d=document,el=d.documentElement;
+ const pedir=el.requestFullscreen||el.webkitRequestFullscreen,salir=d.exitFullscreen||d.webkitExitFullscreen;
+ const activo=()=>d.fullscreenElement||d.webkitFullscreenElement;
+ if(!pedir||!(d.fullscreenEnabled||d.webkitFullscreenEnabled))return;
+ b.hidden=false;
+ const pinta=()=>{const on=!!activo(),t=I18N.t(on?'carta.pantalla.salir':'carta.pantalla.entrar');$('#pantallaTxt').textContent=t;
+  b.setAttribute('aria-label',t);
+  $('#pantallaIco').setAttribute('d',on?'M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5':'M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5')};
+ b.addEventListener('click',()=>{try{const r=activo()?salir.call(d):pedir.call(el);if(r&&r.catch)r.catch(()=>toast(I18N.t('carta.pantalla.no_permite')))}catch(e){toast(I18N.t('carta.pantalla.no_permite'))}});
+ d.addEventListener('fullscreenchange',pinta);d.addEventListener('webkitfullscreenchange',pinta);pinta();I18N.alCambiar(pinta)})();
+function avisoBarra(){const b=$('#barra');b.classList.remove('bump');void b.offsetWidth;b.classList.add('bump')}
+
+/* ================= MESA Y ENVÍO A COCINA =================
+   El QR de cada mesa abre la carta con ?mesa=N; el número se recuerda unas horas en este móvil.
+   Con servidor (window.GASTRO_SERVIDOR, lo añade su datos.js) el pedido va a la cocina y se sigue su estado.
+   Sin servidor (carta de demostración) el envío y el estado se simulan, y se dice. */
+const SERVIDOR=!!window.GASTRO_SERVIDOR;
+// /pedir: la misma carta para pedir a domicilio o para recoger (sin mesa). Sin servidor no hay pedido online
+const ONLINE=SERVIDOR&&/\/pedir$/.test(location.pathname);
+let CFG=null;   // ajustes públicos de pedidos online (api/online)
+const guarda=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const lee=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}};
+const RECUERDO=4*3600e3;
+// Mesas dadas de alta en el backoffice; si no hay ninguna, vale cualquier número de 1 a 200
+const MESAS=DATOS.mesas||[];
+const mesaValida=n=>n>=1&&n<=200&&(!MESAS.length||MESAS.some(m=>m.n===n));
+let mesa=null,mesaQR=false;
+if(!ONLINE)(()=>{const n=parseInt(new URLSearchParams(location.search).get('mesa'),10);
+ if(mesaValida(n)){mesa=n;mesaQR=true;guarda('{{slug}}_mesa',{n,t:Date.now()})}
+ else{const g=lee('{{slug}}_mesa');if(g&&Date.now()-g.t<RECUERDO&&mesaValida(g.n))mesa=g.n}})();
+function pintaMesa(){$('#mesaTag').hidden=!mesa;document.body.classList.toggle('con-mesa',!!mesa);$('#mesaTag').textContent=I18N.t('carta.mesa.n',{n:mesa})}
+let enviados=(lee('{{slug}}_enviados')||[]).filter(p=>p&&Date.now()-p.creado*1000<RECUERDO);
+const ESTADOS=['nuevo','preparando','listo','entregado'];
+const ESTADO=e=>I18N.t('carta.estado.'+e),AVISO=e=>I18N.t('carta.estado_aviso.'+e);
+/*RESENA-INI*/
+// Enlace de reseña de Google del restaurante ('' = aún no configurado). Es el mismo para todos los clientes: no se filtra por
+// satisfacción ni se ofrece nada a cambio (política de Google); solo se enseña cuando el pedido está servido.
+const RESENA={{js:resena_url}};
+function htmlEnviado(p){
+ const resena=p.estado==='entregado'&&RESENA?`<a class="resena" href="${RESENA}" target="_blank" rel="noopener noreferrer">${I18N.th('carta.resena')}</a>`:'';
+ return `<div class="env" data-e="${p.estado}" data-pedido="${p.id}"><b>${I18N.th('carta.env.titulo',{numero:p.numero,mesa:p.mesa})}</b><span class="est">${I18N.th('carta.estado.'+p.estado)}</span>`+
+  `<small>${I18N.tn('carta.env.productos',p.n)} · ${eur.format(p.total)} · ${I18N.th('carta.estado_aviso.'+p.estado)}${p.demo?' '+I18N.th('carta.env.demo'):''}</small>${resena}</div>`}
+/*RESENA-FIN*/
+// Solo se cuenta el clic (anónimo, uno por pedido) para las cifras del backoffice; no cambia lo que ve ni lo que se le ofrece al cliente.
+document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('.env > a.resena');const id=a&&a.parentNode.dataset.pedido;
+ if(id&&window.GASTRO_SERVIDOR&&!id.startsWith('demo'))fetch('/api/resena/clic',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id}),keepalive:true}).catch(()=>{})});
+
+// Tarjeta de sellos: anónima, el id se guarda solo en este móvil. Los pedidos servidos con ella suman un sello.
+const TARJ_K='{{slug}}_tarjeta';let SELLOS=null;
+function tarjetaId(){const t=lee(TARJ_K);return typeof t==='string'?t:null}
+function htmlTarjeta(){
+ if(!SERVIDOR||!SELLOS||!SELLOS.activo)return'';
+ const t=tarjetaId();
+ return `<div class="env tarj"><b>${I18N.th('carta.tarjeta.titulo')}</b><small>${I18N.th('carta.tarjeta.texto',{meta:SELLOS.sellos_meta,premio:(SELLOS.premios&&SELLOS.premios[I18N.lang])||SELLOS.premio})}</small>`+
+  (t?`<a class="resena" href="tarjeta?t=${encodeURIComponent(t)}">${I18N.th('carta.tarjeta.ver')}</a>`:`<button class="resena" id="tarjetaNueva" type="button">${I18N.th('carta.tarjeta.guardar')}</button>`)+`</div>`}
+async function crearTarjeta(){
+ const b=$('#tarjetaNueva');if(b){b.disabled=true;b.textContent=I18N.t('carta.tarjeta.creando')}
+ try{const r=await fetch('api/tarjeta',{method:'POST'});if(!r.ok)throw 0;const t=await r.json();guarda(TARJ_K,t.id);
+  // los pedidos ya enviados (no de demostración) pasan a la tarjeta; los que ya estén servidos sellan en el acto
+  await Promise.all(enviados.filter(p=>!p.demo).map(p=>fetch('api/pedido/tarjeta',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:p.id,token:p.token,tarjeta:t.id})}).catch(()=>{})));
+  location.href='tarjeta?t='+encodeURIComponent(t.id)}
+ catch(_){toast(I18N.t('carta.tarjeta.error'));if(b){b.disabled=false;b.textContent=I18N.t('carta.tarjeta.guardar')}}}
+if(SERVIDOR)fetch('api/sellos').then(r=>r.ok?r.json():null).then(j=>{SELLOS=j;renderEnviados()}).catch(()=>{});
+document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('#tarjetaNueva'))crearTarjeta()});
+function renderEnviados(){
+ $('#enviados').hidden=!enviados.length;
+ $('#enviados').innerHTML=enviados.slice().reverse().map(htmlEnviado).join('')+(enviados.length?htmlTarjeta():'');
+ // Móvil: con el pedido vacío, la barra de abajo muestra cómo va el último pedido enviado
+ const act=enviados.slice().reverse().find(p=>p.estado!=='entregado'),solo=!state.pedido.length&&act;
+ $('#barTxt').textContent=solo?I18N.t('carta.barra.pedido_estado',{numero:act.numero,estado:ESTADO(act.estado).toLowerCase()}):I18N.t('carta.barra.ver_pedido');
+ $('#barN').hidden=$('#barT').hidden=!!solo}
+function cambiaEstado(p,e){if(!ESTADOS.includes(e)||p.estado===e)return;p.estado=e;
+ if(e==='listo'){toast(I18N.t('carta.toast.listo',{numero:p.numero}));try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(_){}}}
+// Consulta el estado de los pedidos enviados (cada 5 s; menos a menudo si la página no se ve)
+let sigueT=null;
+function seguir(){clearTimeout(sigueT);
+ const pend=enviados.filter(p=>p.estado!=='entregado');if(!pend.length)return;
+ sigueT=setTimeout(async()=>{
+  for(const p of pend){
+   if(p.demo){const s=Date.now()/1000-p.creado;cambiaEstado(p,s>45?'entregado':s>20?'listo':s>6?'preparando':'nuevo');continue}
+   try{const r=await fetch('api/pedido?id='+encodeURIComponent(p.id),{cache:'no-store'});
+    if(r.status===404)enviados=enviados.filter(x=>x!==p);
+    else if(r.ok)cambiaEstado(p,(await r.json()).estado)}catch(e){}}
+  guarda('{{slug}}_enviados',enviados);renderEnviados();seguir()},pend.some(p=>p.demo)?1500:document.hidden?15000:5000)}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)seguir()});
+
+// Consulta si la cocina acepta pedidos (al abrir, cada 20 s y al enviar). Sin servidor (demostración) siempre se acepta.
+function fijaAbierto(v){if(abierto===v)return;abierto=v;$('#cerrado').hidden=v;renderPedido()}
+async function consultaAbierto(){if(!SERVIDOR)return;
+ if(ONLINE){try{const r=await fetch('api/online',{cache:'no-store'});if(r.ok){CFG=await r.json();fijaAbierto(CFG.aceptar_pedidos!==false&&!!CFG.disponible);pintaOnline()}}catch(e){}return}
+ try{const r=await fetch('api/estado',{cache:'no-store'});if(r.ok)fijaAbierto((await r.json()).aceptar_pedidos!==false)}catch(e){}}
+consultaAbierto();setInterval(consultaAbierto,20000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)consultaAbierto()});
+const totalPedido=()=>state.pedido.reduce((a,l)=>a+priceWith(prodById(l.pid),l.m),0);
+const lineasEnvio=()=>state.pedido.map(l=>{const x=prodById(l.pid);return`<li><span>${nm(x)}<small>${textWith(x,l.m)}<span class="alg-l">${algTexto(x)}</span></small></span><span class="money">${eur.format(priceWith(x,l.m))}</span></li>`}).join('');
+const opcionesMesa=()=>`<option value="">${I18N.th('carta.enviar.elige_mesa')}</option>`+MESAS.map(m=>`<option value="${m.n}" ${m.n===mesa?'selected':''}>${I18N.th(m.z?'carta.mesa.n_zona':'carta.mesa.n',{n:m.n,zona:I18N.tr(m.z)})}</option>`).join('');
+// ---- pedido online: tipo, datos de entrega, hora, preferencia de pago e importe estimado (con envío) antes de enviar ----
+const tipoOnline=()=>(document.querySelector('input[name=tipo]:checked')||{}).value||'';
+const envioOnline=()=>CFG&&tipoOnline()==='domicilio'?CFG.envio:0;
+const estimado=()=>totalPedido()+envioOnline();
+function pintaOnline(){if(!ONLINE||!CFG)return;
+ $('#dlgTipoDom').disabled=!CFG.domicilio;$('#dlgTipoRec').disabled=!CFG.recoger;
+ if(!tipoOnline()||document.querySelector('input[name=tipo]:checked').disabled){const d=CFG.domicilio?$('#dlgTipoDom'):CFG.recoger?$('#dlgTipoRec'):null;if(d)d.checked=true}
+ const dom=tipoOnline()==='domicilio';$('#dlgDomicilio').hidden=!dom;$('#impEnvio').hidden=$('#impEnvioT').hidden=!dom;
+ $('#dlgHoraValor').hidden=(document.querySelector('input[name=hora]:checked')||{}).value!=='prog';
+ $('#dlgCambioCampo').hidden=(document.querySelector('input[name=pago]:checked')||{}).value!=='efectivo';
+ const info=[CFG.minimo?I18N.t('carta.online.minimo',{minimo:eur.format(CFG.minimo)}):'',I18N.t('carta.online.horario',{tramos:CFG.tramos.map(t=>t.join('–')).join(', ')}),dom?I18N.t('carta.online.zona',{cps:CFG.cps.join(', ')}):''];
+ $('#dlgOnlineInfo').textContent=info.filter(Boolean).join(' · ');
+ $('#impSub').textContent=eur.format(totalPedido());$('#impEnvio').textContent=eur.format(envioOnline());$('#impTotal').textContent=eur.format(estimado());
+ if($('#dlgEnviar').open&&!$('#dlgOk').disabled)setOk(okClave)}
+if(ONLINE){$('#dlgTit').dataset.i18n='carta.online.titulo';$('#cerrado').dataset.i18n='carta.online.no_disponible';
+ $('#dlgTit').textContent=I18N.t('carta.online.titulo');$('#cerrado').textContent=I18N.t('carta.online.no_disponible');
+ $('#dlgOnline').addEventListener('change',pintaOnline)}
+function abrirEnvio(){if(!state.pedido.length||!abierto)return;
+ $('#dlgDemo').hidden=SERVIDOR;
+ $('#dlgLineas').innerHTML=lineasEnvio();
+ if(ONLINE){$('#dlgOnline').hidden=false;$('#dlgMesaFija').hidden=$('#dlgMesaCampo').hidden=$('#dlgMesaLista').hidden=true;$('#dlgMesa').required=false;
+  setErr(null);$('#dlgOk').disabled=false;setOk('enviar');pintaOnline();panel(null);$('#dlgEnviar').showModal();return}
+ // Con QR la mesa ya viene puesta; sin QR, se elige de la lista de mesas (o se escribe si no hay lista)
+ const lista=!mesaQR&&MESAS.length>0;
+ $('#dlgMesaFija').hidden=!mesaQR;$('#dlgMesaCampo').hidden=mesaQR||lista;$('#dlgMesaLista').hidden=!lista;$('#dlgMesa').required=!mesaQR&&!lista;
+ if(lista)$('#dlgMesaSel').innerHTML=opcionesMesa();
+ $('#dlgMesaN').textContent=mesa||'';$('#dlgMesa').value=mesa||'';
+ setErr(null);$('#dlgOk').disabled=false;setOk('enviar');
+ panel(null);$('#dlgEnviar').showModal();if(!mesaQR&&!mesa)$('#dlgMesa').focus()}
+let PERMISO=null;   // texto y versión de la casilla de publicidad, tal como los tiene el servidor (la casilla nunca va premarcada)
+if(SERVIDOR)fetch('api/permiso',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>{if(j&&j.texto){PERMISO=j;$('#dlgPermisoTexto').textContent=j.texto;$('#dlgPermiso').hidden=false}}).catch(()=>{});
+const cargaPermiso=()=>{if(SERVIDOR)fetch('api/permiso',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>{if(j&&j.texto){PERMISO=j;$('#dlgPermisoTexto').textContent=j.texto}}).catch(()=>{})};
+$('#enviar').addEventListener('click',abrirEnvio);
+$('#dlgCancelar').addEventListener('click',()=>$('#dlgEnviar').close());
+// Estado del botón y del error del diálogo, para repintarlos si cambia el idioma con la ventana abierta
+let okClave='enviar',errFn=null;
+function setOk(c){okClave=c;$('#dlgOk').textContent=ONLINE&&c==='enviar'?I18N.t('carta.online.ok',{total:eur.format(estimado())}):I18N.t('carta.enviar.ok_'+c,{total:eur.format(totalPedido())})}
+function setErr(fn){errFn=fn;$('#dlgErr').textContent=fn?fn():''}
+$('#formEnviar').addEventListener('submit',async e=>{e.preventDefault();
+ if(ONLINE)return enviarOnline();
+ const lista=!mesaQR&&MESAS.length>0,n=mesaQR?mesa:parseInt((lista?$('#dlgMesaSel'):$('#dlgMesa')).value,10);
+ if(!mesaValida(n)){setErr(()=>I18N.t(lista?'carta.err.elige_mesa':MESAS.length?'carta.err.mesa_no_existe':'carta.err.escribe_mesa'));(lista?$('#dlgMesaSel'):$('#dlgMesa')).focus();return}
+ const cuerpo={mesa:n,via:mesaQR?'qr':'manual',nota:$('#dlgNota').value.trim(),lineas:state.pedido.map(l=>({pid:l.pid,rm:l.m.rm,ex:l.m.ex}))};
+ if(SERVIDOR&&tarjetaId())cuerpo.tarjeta=tarjetaId();
+ if(SERVIDOR&&PERMISO&&$('#dlgPermisoCasilla').checked){const em=$('#dlgEmail').value.trim();
+  if(!em||!$('#dlgEmail').checkValidity()){setErr(()=>I18N.t('carta.err.correo'));$('#dlgEmail').focus();return}
+  cuerpo.permiso={email:em,version:PERMISO.version}}
+ $('#dlgOk').disabled=true;setOk('enviando');setErr(null);
+ let p;
+ try{
+  if(SERVIDOR){const r=await fetch('api/pedido',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(cuerpo)});
+   const j=await r.json().catch(()=>({}));if(j.cerrado)fijaAbierto(false);if(!r.ok)throw new Error(j.error||I18N.t('carta.err.no_enviado'));p=j}
+  else{await new Promise(r=>setTimeout(r,500));
+   p={id:'demo'+Date.now(),numero:Math.max(0,...enviados.map(x=>x.numero))+1,mesa:n,estado:'nuevo',total:totalPedido(),creado:Date.now()/1000,demo:true}}
+ }catch(err){const msg=err instanceof TypeError?null:err.message;setErr(()=>msg||I18N.t('carta.err.sin_conexion'));
+  $('#dlgOk').disabled=false;setOk('reintentar');return}
+ mesa=n;guarda('{{slug}}_mesa',{n,t:Date.now()});pintaMesa();
+ enviados.push({id:p.id,token:p.token,numero:p.numero,mesa:p.mesa,total:p.total,estado:p.estado,creado:p.creado,n:state.pedido.length,demo:!!p.demo});
+ guarda('{{slug}}_enviados',enviados);
+ state.pedido=[];state.edit=null;state.mods={};$('#dlgNota').value='';$('#dlgEmail').value='';$('#dlgPermisoCasilla').checked=false;$('#dlgEnviar').close();
+ render();panel('ped');toast(I18N.t(p.permiso==='alta'?'carta.toast.enviado_alta':p.permiso==='confirmar'?'carta.toast.enviado_confirmar':p.permiso==='sin_canal'?'carta.toast.enviado_sin_canal':'carta.toast.enviado',{numero:p.numero}),p.permiso?6000:1800);seguir()});
+async function enviarOnline(){
+ const v=n=>(document.querySelector(`input[name=${n}]:checked`)||{}).value||'';
+ const cuerpo={tipo:tipoOnline(),nombre:$('#dlgNombre').value,telefono:$('#dlgTel').value,direccion:$('#dlgDir').value,cp:$('#dlgCP').value.trim(),
+  hora:v('hora')==='prog'?$('#dlgHoraValor').value:'asap',pago:v('pago'),cambio:v('pago')==='efectivo'?$('#dlgCambio').value:'',
+  nota:$('#dlgNota').value.trim(),lineas:state.pedido.map(l=>({pid:l.pid,rm:l.m.rm,ex:l.m.ex}))};
+ if(tarjetaId())cuerpo.tarjeta=tarjetaId();
+ if(PERMISO&&$('#dlgPermisoCasilla').checked){const em=$('#dlgEmail').value.trim();
+  if(!em||!$('#dlgEmail').checkValidity()){setErr(()=>I18N.t('carta.err.correo'));$('#dlgEmail').focus();return}
+  cuerpo.permiso={email:em,version:PERMISO.version}}
+ $('#dlgOk').disabled=true;setOk('enviando');setErr(null);
+ try{const r=await fetch('api/pedido/online',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(cuerpo)});
+  const j=await r.json().catch(()=>({}));if(j.cerrado)fijaAbierto(false);if(!r.ok)throw new Error(j.error||I18N.t('carta.err.no_enviado'));
+  location.href='seguir?t='+encodeURIComponent(j.seguimiento)}
+ catch(err){const msg=err instanceof TypeError?null:err.message;setErr(()=>msg||I18N.t('carta.err.sin_conexion'));$('#dlgOk').disabled=false;setOk('reintentar')}}
+pintaMesa();seguir();
+
+/* ================= EVENTOS ================= */
+document.addEventListener('click',e=>{
+ if(e.target.closest('[data-cerrar]')){panel(null);return}
+ const bi=e.target.closest('[data-b]');if(bi){selectProd(bi.dataset.b);return}
+ const t=e.target.closest('[data-t]');if(t){toggle(t.dataset.t);return}
+ const q=e.target.closest('[data-q]');if(q){const u=+q.dataset.q;state.pedido=state.pedido.filter(l=>l.uid!==u);if(state.edit===u)state.edit=null;render();return}
+ const ln=e.target.closest('[data-l]');if(ln){panel(null);openLine(+ln.dataset.l);return}
+});
+$('#reset').addEventListener('click',()=>{const x=prod();state.mods[x.id]={rm:[],ex:[]};const l=editLine();syncEdit();render();toast(I18N.t(l?'carta.toast.actualizado':esPicar(x)?'carta.toast.extras_quitados':'carta.toast.receta_restaurada'))});
+$('#add').addEventListener('click',()=>{
+ // Tras añadir, el plato vuelve a la receta: así el siguiente se personaliza aparte (uno con queso y otro sin)
+ // y no se cambia sin querer el que ya está en el pedido. Para cambiar una línea, se toca en el pedido.
+ const x=prod(),l={uid:++uid,pid:x.id,m:copyMods(mods(x.id))};
+ state.pedido.push(l);state.edit=null;state.mods[x.id]={rm:[],ex:[]};render();avisoBarra();toast(I18N.t('carta.toast.anadido',{nombre:nm(x)}))});
+$('#vaciar').addEventListener('click',()=>{state.pedido=[];state.edit=null;render()});
+$('#buscar').addEventListener('input',renderMenu);
+
+// Textos que no se repintan con render(): título, logo, aviso de alérgenos, ventana de envío abierta, selector de ingredientes
+function pintaEstatico(){
+ document.title=I18N.t('carta.pagina_titulo',{nombre:NOMBRE});
+ $('.logo').alt=I18N.t('carta.logo_alt',{nombre:NOMBRE});
+ document.querySelectorAll('[data-aviso-alg]').forEach(e=>{e.textContent=ALGT().aviso||e.textContent});
+ pintaDesp();
+ if($('#dlgEnviar').open){
+  const sel=$('#dlgMesaSel').value;
+  $('#dlgLineas').innerHTML=lineasEnvio();
+  if(!$('#dlgMesaLista').hidden){$('#dlgMesaSel').innerHTML=opcionesMesa();$('#dlgMesaSel').value=sel}
+  if(!$('#dlgOk').disabled||okClave!=='enviando')setOk(okClave);
+  setErr(errFn)}}
+I18N.alCambiar(()=>{pintaMesa();pintaEstatico();render();renderEnviados();cargaPermiso();pintaOnline()});
+// Ejemplo de partida: un pedido en curso
+state.pedido=[];
+pintaEstatico();
+render();
+</script>

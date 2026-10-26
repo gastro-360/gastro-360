@@ -1,0 +1,820 @@
+<!-- SPDX-License-Identifier: EUPL-1.2 -->
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="gastro-idioma" content="">
+<script src="/idiomas.js"></script>
+<script src="/estatico/comun.js"></script>
+<meta name="robots" content="noindex">
+<meta name="gastro-nombre" content="{{nombre_corto}}">
+<title>{{nombre_corto}}</title>
+<link rel="icon" type="image/png" href="/img/icon-192.png">
+<meta name="generator" content="{{producto}}">
+<link rel="stylesheet" href="/estatico/fuentes/fuentes.css">
+<link rel="stylesheet" href="/tema.css">
+<link rel="stylesheet" href="/estatico/base.css">
+<link rel="stylesheet" href="/estatico/admin.css">
+</head>
+<body>
+
+<section class="login" id="login" hidden>
+  <form id="formLogin">
+    <img src="/img/{{logo}}" alt="">
+    <h1 data-i18n="admin.nombre">Backoffice</h1>
+    <p><span>{{nombre}}</span>. <span data-i18n="admin.login.intro"></span></p>
+    <input class="in" id="clave" type="password" autocomplete="current-password" data-i18n-attr="placeholder:admin.login.clave" required>
+    <button class="btn" type="submit" data-i18n="admin.login.entrar"></button>
+    <span data-selector-idioma></span>
+    <p class="err" id="errLogin" role="alert"></p>
+  </form>
+</section>
+
+<div id="app" hidden>
+  <header class="top">
+    <div class="top-in">
+      <div class="marca"><img src="/img/{{logo}}" alt=""><div><small data-i18n="admin.nombre"></small><h1>{{nombre_inicio}}<span>{{nombre_resalte}}</span></h1></div></div>
+      <div class="acciones"><button class="aceptar" id="aceptar" type="button" aria-pressed="true"></button><a href="/" target="_blank" rel="noopener" data-i18n="admin.top.ver_carta"></a><a href="/cocina" target="_blank" rel="noopener" data-i18n="admin.top.cocina"></a><span data-selector-idioma></span><button class="link" id="salir" type="button" data-i18n="admin.top.salir"></button></div>
+      <nav class="tabs" role="tablist">
+        <button class="tab" role="tab" data-tab="boc" aria-selected="true"><span id="tabBoc"></span><span class="n" id="nBoc"></span><span class="n alg-n" id="nAlg"></span></button>
+        <button class="tab" role="tab" data-tab="pic" aria-selected="false"><span data-i18n="admin.tab.pic"></span><span class="n" id="nPic"></span></button>
+        <button class="tab" role="tab" data-tab="ing" aria-selected="false"><span data-i18n="admin.tab.ing"></span><span class="n" id="nIng"></span></button>
+        <button class="tab" role="tab" data-tab="mes" aria-selected="false"><span data-i18n="admin.tab.mes"></span><span class="n" id="nMes"></span></button>
+        <button class="tab" role="tab" data-tab="sel" aria-selected="false" data-i18n="admin.tab.sel"></button>
+        <button class="tab" role="tab" data-tab="pro" aria-selected="false" data-i18n="admin.tab.pro"></button>
+        <button class="tab" role="tab" data-tab="cif" aria-selected="false" data-i18n="admin.tab.cif"></button>
+        <button class="tab" role="tab" data-tab="exp" aria-selected="false" data-i18n="admin.tab.exp"></button>
+        <button class="tab" role="tab" data-tab="onl" aria-selected="false"><span data-i18n="admin.tab.onl"></span><span class="n" id="nOnl"></span></button>
+        <button class="tab" role="tab" data-tab="res" aria-selected="false"><span data-i18n="admin.tab.res"></span><span class="n" id="nRes"></span></button>
+      </nav>
+    </div>
+  </header>
+  <main id="vista"></main>
+  <div class="guardar">
+    <div class="guardar-in">
+      <span class="estado" id="estado" role="status" data-i18n="admin.estado.sin_cambios_corto"></span>
+      <button class="btn sec" id="descartar" type="button" disabled data-i18n="admin.guardar.descartar"></button>
+      <button class="btn" id="guardar" type="button" disabled data-i18n="admin.guardar.guardar"></button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<datalist id="secciones"></datalist>
+<input type="file" id="archivo" accept="image/jpeg,image/png,image/webp" hidden>
+<div class="velo" id="velo" hidden><div class="ventana" role="dialog" aria-modal="true" aria-labelledby="vTit" id="ventana"></div></div>
+
+<div id="impresion" aria-hidden="true"></div>
+<datalist id="zonas"></datalist>
+<script src="/fotos.js"></script>
+<script src="/alergenos.js"></script>
+<!-- Genera los códigos QR en el navegador (Kazuhiko Arase, licencia MIT) -->
+<script src="/vendor/qrcode-generator/qrcode.min.js"></script>
+<script>
+const TXT={{js:textos}};
+// Textos: T (texto plano), TH (para innerHTML: escapa los valores), TA (para atributos), TNH (plural para innerHTML)
+const T=(k,p)=>I18N.t(k,p),TH=(k,p)=>I18N.th(k,p),TA=(k,p)=>esc(I18N.t(k,p));
+const TNH=(k,n,p)=>I18N.th(k+(n===1?'.uno':'.otros'),{n,...p});
+const tx=k=>I18N.tr(TXT[k]);   // «plato», «platos»… como los llama este local, en el idioma del backoffice
+// Un texto en castellano pase lo que pase con el idioma del backoffice (lo que se escribe en el campo en castellano)
+const tes=(k,p)=>((window.I18N_DIC&&window.I18N_DIC.es||{})[k]??k).replace(/\{(\w+)\}/g,(m,x)=>p&&p[x]!=null?p[x]:m);
+// Nombres técnicos dentro de un texto: se escriben como {nombre} en el diccionario y aquí se les pone el formato de código
+const COD={k_brevo:'BREVO_API_KEY',k_remit:'BREVO_REMITENTE',k_env:'.env',m_correo:'CORREO_MODO=prueba',m_wallet:'WALLET_MODO=prueba'};
+const THc=(k,p)=>TH(k,p).replace(/\{(\w+)\}/g,(m,x)=>COD[x]?`<code>${COD[x]}</code>`:m);
+const FOTO=window.FOTOS||{};
+const GRUPOS=['carnes','embutidos','quesos','verduras','salsas'];
+const FORMAS=[['meat',10],['strands',9],['bacon',9],['balls',17],['sausage',12],['slab',18],['ham',8],['coins',9],['smear',6],
+ ['tuna',9],['cheeseFlat',6],['cheese',6],['leaf',7],['tomato',8],['onion',7],['sticks',7],['pepper',8],['olives',7],['sauce',4]];
+
+/* Campos de la carta con idiomas: un texto (solo castellano) o un objeto {es,en,ca,zh,fr,de,it,pt} */
+const IDI=I18N.idiomas.filter(l=>l!=='es');
+const es=v=>I18N.tr(v,'es');     // en castellano (es el campo obligatorio)
+const nom=v=>I18N.tr(v);         // en el idioma del backoffice, para mostrarlo
+const enIdioma=(v,l)=>v&&typeof v==='object'?(v[l]||''):(l==='es'&&v!=null?String(v):'');
+// Cambia un idioma de un campo y deja el valor como texto si solo queda el castellano, o como objeto con los idiomas rellenos
+function setCampo(o,c,l,valor){const act=o[c],obj=Object.fromEntries(I18N.idiomas.map(x=>[x,enIdioma(act,x)]));obj[l]=valor;
+  const otros=IDI.filter(x=>obj[x].trim());
+  o[c]=otros.length?Object.fromEntries(['es',...otros].map(x=>[x,obj[x]])):obj.es}
+
+let D=null, original='', tab='boc', abiertos=new Set(), tmp=0, RED=null;
+const tradAbiertos=new Set();   // bloques «otros idiomas» desplegados
+const ALG=window.ALERGENOS||{lista:[],textos:{es:{}},idioma:'es'};
+const algt=()=>ALG.textos[I18N.lang]||ALG.textos.es||{};
+let filtroAlg=false, errAlg=false;   // filtro «platos sin revisar»; errAlg = ya se intentó guardar con alérgenos sin decidir
+const productos=()=>[...D.platos,...D.picar];
+// Modo de alérgenos de un plato: lista (marcados), sin (sin alérgenos declarados), revisar (sin revisar) o undefined (nuevo, sin decidir)
+const modoAlg=o=>o._alg||(o._nuevo?undefined:o.alergenos==null?'revisar':o.alergenos.length?'lista':'sin');
+const sinRevisar=o=>{const m=modoAlg(o);return m==='revisar'||m===undefined};
+const algPendiente=o=>modoAlg(o)===undefined||(modoAlg(o)==='lista'&&!(o.alergenos||[]).length);
+const secNueva=new Map();   // platos que están escribiendo una sección nueva: id -> texto
+
+/* ---------- API ---------- */
+async function api(metodo,ruta,cuerpo){
+  const r=await fetch(ruta,{method:metodo,headers:cuerpo?{'Content-Type':'application/json'}:{},body:cuerpo?JSON.stringify(cuerpo):undefined,credentials:'same-origin'});
+  let j={};try{j=await r.json()}catch(e){}
+  if(r.status===401&&ruta!=='/api/login'){mostrarLogin();throw new Error(j.error||T('admin.error.sesion'))}
+  if(!r.ok)throw new Error(j.error||T('admin.error.servidor'));
+  return j}
+function mostrarLogin(){$('#app').hidden=true;$('#login').hidden=false;$('#clave').focus()}
+async function cargar(){
+  D=await api('GET','/api/datos');D.mesas=D.mesas||[];D.urlQR=D.urlQR||'';original=JSON.stringify(D);
+  api('GET','/api/pedidos').then(r=>pintarAceptar(r.aceptar_pedidos!==false)).catch(()=>{});
+  api('GET','/api/red').then(r=>{RED=r;if(tab==='mes')render()}).catch(()=>{});
+  cargarOnl();cargarRes();
+  $('#login').hidden=true;$('#app').hidden=false;render()}
+let aceptando=true;
+function pintarAceptar(v){aceptando=v;const b=$('#aceptar');b.setAttribute('aria-pressed',v);b.textContent=T(v?'admin.pedidos.abiertos':'admin.pedidos.cerrados')}
+$('#aceptar').addEventListener('click',async()=>{
+  if(aceptando&&!confirm(T('admin.pedidos.confirmar_cierre')))return;
+  try{pintarAceptar((await api('POST','/api/aceptar',{aceptar_pedidos:!aceptando})).aceptar_pedidos)}
+  catch(err){alert(T('admin.pedidos.error',{error:err.message}))}});
+$('#formLogin').addEventListener('submit',async e=>{e.preventDefault();$('#errLogin').textContent='';
+  try{await api('POST','/api/login',{clave:$('#clave').value});$('#clave').value='';await cargar()}
+  catch(err){$('#errLogin').textContent=err.message}});
+$('#salir').addEventListener('click',async()=>{if(hayCambios()&&!confirmarSalida())return;await api('POST','/api/logout').catch(()=>{});original=JSON.stringify(D);mostrarLogin()});
+function confirmarSalida(){return window.confirm(T('admin.salir.confirmar'))}
+
+/* ---------- utilidades de datos ---------- */
+const hayCambios=()=>D&&JSON.stringify(D)!==original;
+const usoDe=id=>D.platos.filter(b=>b.i.includes(id));
+const secciones=()=>[...new Set(D.platos.map(b=>es(b.sec)))];
+// El valor de sección (con sus idiomas) que ya tienen los demás platos de esa sección; si no hay, el texto tal cual
+const secDe=sec=>{const b=D.platos.find(x=>es(x.sec)===sec);return b?JSON.parse(JSON.stringify(b.sec)):sec};
+function slug(t){return String(t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'').slice(0,30)||'producto'}
+function idLibre(base,usados){let id=base,n=2;while(usados.has(id))id=base+'_'+(n++);return id}
+// Foto de una capa con el mismo orden que la carta: la del plato, la del ingrediente, la de otro plato
+function fotoCapa(bid,key){return FOTO[bid+'.'+key]||FOTO[key]||FOTO[Object.keys(FOTO).find(k=>k.endsWith('.'+key))]||null}
+// plato montado con fotos (pan abajo, relleno de abajo arriba, pan arriba). Devuelve '' si falta alguna foto.
+function montaje(bid,capas){
+  const seq=[['barra_abajo',1],...capas.map(k=>[k,0]),['barra_arriba',1]];
+  const extra=Math.min(.14,Math.max(0,capas.length-4)*.035);let prev=null,html='';
+  for(let i=0;i<seq.length;i++){const [k,pan]=seq[i],f=fotoCapa(bid,k);if(!f)return'';
+    const tom=k==='pa_amb_tomaquet';   // como en la carta: fino, tan ancho como el pan y asomando por el borde
+    const w=pan||tom?100:102,h=f.r*(pan?1:tom?.6:.78)*w,tapa=prev?(prev.pan?(tom?.78:.62):prev.tom?.7:Math.min(.9,.6+extra)):0,mb=prev?-(prev.h*tapa):0;prev={h,pan,tom};
+    html+=`<div class="st ${pan?'pan':'relleno'}${i===seq.length-1?' tapa':''}" style="width:${w}%;margin-left:${(100-w)/2}%;padding-bottom:${h.toFixed(2)}%;margin-bottom:${mb.toFixed(2)}%;z-index:${i+1}"><img src="/${esc(f.src)}" alt=""></div>`}
+  return`<div class="stack">${html}</div>`}
+function miniaturaProducto(id){const f=FOTO['completo_'+id]||FOTO['picar_'+id];if(f)return`<img src="/${esc(f.src)}" alt="" loading="lazy">`;
+  const b=D&&D.platos.find(x=>x.id===id);return b?montaje(b.id,b.i):''}
+// La foto de un ingrediente va por su identificador; uno nuevo lo tendrá a partir del nombre al guardar
+function miniaturaIng(id){const x=D&&D.ingredientes[id];if(x&&x._nuevo)id=slug(es(x.n));
+  const k=FOTO[id]?id:Object.keys(FOTO).find(k=>k.endsWith('.'+id));return k?`<img src="/${esc(FOTO[k].src)}" alt="" loading="lazy">`:''}
+// Descripción automática: va al campo en castellano, así que se compone siempre en castellano
+function descripcionDe(b){const n=b.i.map(x=>D.ingredientes[x]?es(D.ingredientes[x].n):'').filter(Boolean);if(!n.length)return'';
+  const t=n.length>1?tes('admin.desc.union',{lista:n.slice(0,-1).join(', '),ultimo:n[n.length-1].toLowerCase()}):n[0];return t.charAt(0).toUpperCase()+t.slice(1).toLowerCase()+'.'}
+
+/* ---------- traducciones: contador y bloque «otros idiomas» ---------- */
+// Cuántos elementos de la carta tienen vacío en el idioma l su nombre (o su descripción, si el plato la tiene en castellano)
+function faltan(l){
+  const sin=v=>!enIdioma(v,l).trim(),cuenta=(lista,f)=>[lista.filter(f).length,lista.length];
+  return{platos:cuenta(D.platos,b=>sin(b.n)||(es(b.d).trim()&&sin(b.d))),raciones:cuenta(D.picar,p=>sin(p.n)),ingredientes:cuenta(Object.values(D.ingredientes),x=>sin(x.n))}}
+function cuerpoTrad(){
+  return`<h3>${TH('admin.trad.contador')}</h3><ul class="trad-res">${IDI.map(l=>{const f=faltan(l),nf=f.platos[0]+f.raciones[0]+f.ingredientes[0],idioma=T('admin.idioma.'+l);
+    if(!nf)return`<li data-trad-idioma="${l}">${TH('admin.trad.completo',{idioma})}</li>`;
+    const partes=[];
+    if(f.platos[0])partes.push(T('admin.trad.parte',{falta:f.platos[0],total:f.platos[1],cosa:tx(f.platos[1]===1?'plato':'platos')}));
+    if(f.raciones[0])partes.push(T('admin.trad.parte',{falta:f.raciones[0],total:f.raciones[1],cosa:I18N.tn('admin.trad.racion',f.raciones[1])}));
+    if(f.ingredientes[0])partes.push(T('admin.trad.parte',{falta:f.ingredientes[0],total:f.ingredientes[1],cosa:I18N.tn('admin.trad.ingrediente',f.ingredientes[1])}));
+    return`<li data-trad-idioma="${l}">${TNH('admin.trad.faltan',nf,{idioma,partes:partes.join(' · ')})}</li>`}).join('')}</ul>`}
+const cajaTrad=()=>`<div class="caja" id="contadorTrad">${cuerpoTrad()}</div>`;
+function pintarTrad(){const e=$('#contadorTrad');if(e&&D)e.innerHTML=cuerpoTrad()}
+// Campos en los otros idiomas de un plato (nombre y descripción), una ración o un ingrediente (nombre)
+const bloqueIdiomas=(o,ref,key,desc)=>`<details class="trad" data-trad="${esc(key)}" ${tradAbiertos.has(key)?'open':''}><summary>${TH('admin.trad.resumen')}</summary>
+  <p class="nota">${TH('admin.trad.ayuda')}</p>
+  ${IDI.map(l=>`<div class="trad-l"><span class="trad-idioma">${esc(I18N.nombres[l])}</span>
+    <input class="in" lang="${l}" spellcheck="true" value="${esc(enIdioma(o.n,l))}" data-campo="n" data-lang="${l}" ${ref} placeholder="${TA('admin.trad.vacio')}" aria-label="${TA('admin.trad.nombre_en',{idioma:I18N.nombres[l]})}">
+    ${desc?`<textarea class="in" lang="${l}" spellcheck="true" maxlength="300" data-campo="d" data-lang="${l}" ${ref} placeholder="${TA('admin.trad.vacio')}" aria-label="${TA('admin.trad.desc_en',{idioma:I18N.nombres[l]})}">${esc(enIdioma(o.d,l))}</textarea>`:''}</div>`).join('')}</details>`;
+document.addEventListener('toggle',e=>{const d=e.target;if(!d.matches||!d.matches('details[data-trad]'))return;d.open?tradAbiertos.add(d.dataset.trad):tradAbiertos.delete(d.dataset.trad)},true);
+
+/* ---------- render ---------- */
+function render(){
+  $('#tabBoc').textContent=tx('platos_cap');
+  $('#nBoc').textContent=D.platos.length;$('#nPic').textContent=D.picar.length;$('#nIng').textContent=Object.keys(D.ingredientes).length;$('#nMes').textContent=D.mesas.length;{const n=productos().filter(sinRevisar).length;$('#nAlg').textContent=n?'⚠ '+n:'';$('#nAlg').title=n?T('admin.alg.tab_titulo',{n}):''}
+  document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',t.dataset.tab===tab));
+  $('#secciones').innerHTML=secciones().map(s=>`<option value="${esc(s)}">`).join('');
+  $('#zonas').innerHTML=zonas().map(z=>`<option value="${esc(z)}">`).join('');
+  $('#vista').innerHTML=tab==='boc'?vistaBoc():tab==='pic'?vistaPic():tab==='mes'?vistaMes():tab==='sel'?vistaSel():tab==='pro'?vistaPro():tab==='cif'?vistaCif():tab==='exp'?vistaExp():tab==='onl'?vistaOnl():tab==='res'?vistaRes():vistaIng();
+  document.querySelector('.guardar').style.display=tab==='sel'||tab==='pro'||tab==='cif'||tab==='exp'||tab==='onl'||tab==='res'?'none':'';
+  if(tab==='sel'&&!SEL.cfg&&!SEL.cargando)cargarSel();
+  if(tab==='pro'&&!PRO.datos&&!PRO.cargando)cargarPro();
+  if(tab==='cif'&&!CIF.datos&&!CIF.cargando)cargarCif();
+  if(tab==='exp'&&!EXP.datos&&!EXP.cargando&&!EXP.err)cargarExp();
+  if(tab==='onl'&&!ONL.cfg&&!ONL.cargando)cargarOnl();
+  if(tab==='res'&&!RES.cfg&&!RES.cargando)cargarRes();
+  estado()}
+
+function botonesOrden(lista,i,tipo){return`<div class="orden"><button class="ico" data-acc="subir" data-tipo="${tipo}" data-i="${i}" aria-label="${TA('admin.orden.subir')}" ${i===0?'disabled':''}>▲</button><button class="ico" data-acc="bajar" data-tipo="${tipo}" data-i="${i}" aria-label="${TA('admin.orden.bajar')}" ${i===lista.length-1?'disabled':''}>▼</button></div>`}
+// Interruptor «Visible en la carta» (oculto = agotado o para más adelante)
+const interruptor=(o,tipo,ref)=>`<label class="vis${o.oculto?' no':''}" title="${TA(o.oculto?'admin.vis.titulo_no':'admin.vis.titulo_si')}"><input type="checkbox" ${o.oculto?'':'checked'} data-campo="visible" data-tipo="${tipo}" ${ref}><span>${TH(o.oculto?'admin.vis.oculto':'admin.vis.visible')}</span></label>`;
+const botonBorrar=(tipo,i,dis,tit)=>`<button class="ico borrar" data-acc="borrar" data-tipo="${tipo}" data-i="${i}" aria-label="${TA('admin.borrar.titulo')}" title="${esc(tit||T('admin.borrar.titulo'))}" ${dis?'disabled':''}>✕</button>`;
+
+function campoAlg(o,tipo,i){
+  const m=modoAlg(o),nom_=`alg-${tipo}-${i}`,mal=errAlg&&algPendiente(o),dat=`data-tipo="${tipo}" data-i="${i}"`,sel=o.alergenos||[],AT=algt();
+  const op=(v,t,ayuda)=>`<label class="alg-op"><input type="radio" name="${nom_}" value="${v}" ${m===v?'checked':''} data-campo="algModo" ${dat}><span><b>${t}</b><small>${ayuda}</small></span></label>`;
+  const sinDecl=AT.sin_declarar||T('admin.alg.sin_declarar');
+  return`<fieldset class="alg-campo${mal?' mal':''}"><legend>${esc(AT.titulo||T('admin.alg.titulo'))}</legend>
+    ${m===undefined?`<p class="nota">${TH('admin.alg.decidir')}</p>`:''}
+    ${op('lista',TH('admin.alg.op_lista'),TH('admin.alg.op_lista_ayuda'))}
+    ${m==='lista'?`<div class="alg-grid">${ALG.lista.map(a=>`<label><input type="checkbox" value="${a.id}" ${sel.includes(a.id)?'checked':''} data-campo="algItem" ${dat}>${a.svg}<span>${esc(a.n[I18N.lang]||a.n.es)}</span></label>`).join('')}</div>`:''}
+    ${op('sin',esc(sinDecl),TH('admin.alg.op_sin_ayuda'))}
+    ${op('revisar',TH('admin.alg.op_revisar'),TH('admin.alg.op_revisar_ayuda',{texto:AT.sin_revisar||T('admin.alg.consulta')}))}
+    <p class="err" role="alert">${mal?(m===undefined?TH('admin.alg.err_decidir',{nombre:nom(o.n),sin:sinDecl,revisar:T('admin.alg.op_revisar')}):TH('admin.alg.err_ninguno',{sin:sinDecl,revisar:T('admin.alg.op_revisar')})):''}</p>
+  </fieldset>`}
+const etiquetaSinRevisar=o=>sinRevisar(o)?`<span class="alg-sin" title="${TA('admin.alg.etiqueta_titulo')}">${TH('admin.alg.etiqueta')}</span>`:'';
+function bannerAlg(){
+  const n=productos().filter(sinRevisar).length,AT=algt();
+  if(!n)return filtroAlg?`<div class="caja-alg" role="status"><p><b>${TH('admin.alg.ninguno',{plato:tx('plato')})}</b></p><button class="btn sec" data-acc="filtroAlg">${TH('admin.alg.ver_todos')}</button></div>`:'';
+  return`<div class="caja-alg" role="status"><p>${TNH('admin.alg.banner',n,{plato:tx('plato'),platos:tx('platos'),texto:AT.sin_revisar||T('admin.alg.consulta'),picar:T('admin.tab.pic')})}</p>
+    <button class="btn sec" data-acc="filtroAlg" aria-pressed="${filtroAlg}">${TH(filtroAlg?'admin.alg.ver_todos':'admin.alg.ver_sin')}</button></div>`}
+function vistaBoc(){
+  let h=`<div class="cab"><div><h2 class="etq">${TH('admin.boc.titulo',{platos:tx('platos_cap')})}</h2><p>${TH('admin.boc.ayuda')}</p></div>
+    <button class="btn nuevo" data-acc="nuevoBoc">${TH('admin.boc.nuevo',{plato:tx('plato')})}</button></div>`+cajaTrad()+bannerAlg();
+  if(!D.platos.length)return h+`<p class="vacio">${TH('admin.boc.vacio',{platos:tx('platos')})}</p>`;
+  secciones().forEach(sec=>{
+    if(filtroAlg&&!D.platos.some(b=>es(b.sec)===sec&&sinRevisar(b)))return;
+    const otro=D.platos.find(b=>es(b.sec)===sec);
+    h+=`<section class="grupo"><div class="grupo-h"><input class="in" value="${esc(sec)}" data-campo="secNombre" spellcheck="true" lang="es" data-sec="${esc(sec)}" aria-label="${TA('admin.sec.nombre_aria')}"><span class="etq">${D.platos.filter(b=>es(b.sec)===sec).length}</span></div>
+    <details class="trad trad-sec" data-trad="${esc('sec:'+sec)}" ${tradAbiertos.has('sec:'+sec)?'open':''}><summary>${TH('admin.sec.idiomas')}</summary>
+      ${IDI.map(l=>`<div class="trad-l"><span class="trad-idioma">${esc(I18N.nombres[l])}</span><input class="in" lang="${l}" spellcheck="true" value="${esc(enIdioma(otro.sec,l))}" data-campo="secTrad" data-lang="${l}" data-sec="${esc(sec)}" placeholder="${TA('admin.trad.vacio')}" aria-label="${TA('admin.sec.trad_aria',{idioma:I18N.nombres[l]})}"></div>`).join('')}</details><div class="lista">`;
+    D.platos.forEach((b,i)=>{if(es(b.sec)!==sec||(filtroAlg&&!sinRevisar(b)))return;const ab=abiertos.has(b.id);
+      h+=`<div class="fila${ab?' abierta':''}${b.oculto?' oculta':''}"><div class="fila-l l-boc">${botonesOrden(D.platos,i,'boc')}
+        <span class="mini">${miniaturaProducto(b.id)}</span>
+        <input class="in nom" spellcheck="true" lang="es" value="${esc(es(b.n))}" data-campo="n" data-tipo="boc" data-i="${i}" aria-label="${TA('admin.campo.nombre')}">
+        <span class="precio"><input class="in" type="number" step="0.05" min="0" value="${(+b.p).toFixed(2)}" data-campo="p" data-tipo="boc" data-i="${i}" aria-label="${TA('admin.campo.precio_de',{nombre:nom(b.n)})}"></span>
+        <button class="btn sec" data-acc="abrir" data-id="${esc(b.id)}" aria-expanded="${ab}">${TH(ab?'admin.boc.cerrar':'admin.boc.editar')}${etiquetaSinRevisar(b)}</button>
+        <span class="btns">${interruptor(b,'boc',`data-i="${i}"`)}${botonBorrar('boc',i)}</span></div>
+        ${ab?detalleBoc(b,i):''}</div>`});
+    h+='</div></section>'});
+  return h}
+
+function detalleBoc(b,i){
+  const capas=b.i.map((id,k)=>({id,k})).reverse();
+  const opciones=GRUPOS.map(g=>{const its=Object.entries(D.ingredientes).filter(([,x])=>x.cat===g);return its.length?`<optgroup label="${TA('grupo.'+g)}">${its.map(([id,x])=>`<option value="${esc(id)}">${esc(nom(x.n))}</option>`).join('')}</optgroup>`:''}).join('');
+  const nuevaSec=secNueva.has(b.id);
+  return`<div class="detalle">
+    <div class="campo"><span>${TH('admin.campo.seccion')}</span>
+      <select class="in" data-campo="secSel" data-tipo="boc" data-i="${i}" aria-label="${TA('admin.campo.seccion')}">${secciones().map(x=>`<option value="${esc(x)}" ${!nuevaSec&&x===es(b.sec)?'selected':''}>${esc(x)}</option>`).join('')}<option value="__nueva" ${nuevaSec?'selected':''}>${TH('admin.seccion.nueva_opcion')}</option></select>
+      ${nuevaSec?`<input class="in" id="secNueva-${i}" data-campo="secNueva" spellcheck="true" lang="es" data-tipo="boc" data-i="${i}" value="${esc(secNueva.get(b.id))}" placeholder="${TA('admin.seccion.nueva_ph')}" maxlength="40" aria-label="${TA('admin.seccion.nueva_ph')}">`:''}
+      <small class="nota">${TH(nuevaSec?'admin.seccion.nota_nueva':'admin.seccion.nota',{plato:tx('plato')})}</small>
+      <span class="sep-arriba">${TH('admin.campo.desc')}</span><textarea class="in" data-campo="d" data-tipo="boc" data-i="${i}" maxlength="300" spellcheck="true" lang="es" autocapitalize="sentences">${esc(es(b.d))}</textarea>
+      <div><button class="link" data-acc="autodesc" data-i="${i}">${TH('admin.desc.auto')}</button></div>
+      ${FOTO['completo_'+b.id]?'':`<p class="aviso">${TH(b.i.every(k=>fotoCapa(b.id,k))?'admin.foto.sin_montaje':'admin.foto.sin_montaje_dibujos',{plato:tx('plato')})}</p>`}
+      ${bloqueIdiomas(b,`data-tipo="boc" data-i="${i}"`,b.id,true)}</div>
+    <div class="campo"><span>${TH('admin.capas.titulo')}</span>
+      <div class="capas"><div class="capa pan">${TH('admin.capas.pan_arriba')}</div>
+      ${capas.map(({id,k},n)=>{const g=D.ingredientes[id];return`<div class="capa"><i style="background:${esc(g?.c||'#555')}"></i><span>${esc(g?nom(g.n):id)}</span>
+        <button class="ico" data-acc="capaSubir" data-i="${i}" data-k="${k}" aria-label="${TA('admin.capas.subir')}" ${n===0?'disabled':''}>▲</button>
+        <button class="ico" data-acc="capaBajar" data-i="${i}" data-k="${k}" aria-label="${TA('admin.capas.bajar')}" ${n===capas.length-1?'disabled':''}>▼</button>
+        <button class="ico borrar" data-acc="capaQuitar" data-i="${i}" data-k="${k}" aria-label="${TA('admin.capas.quitar',{nombre:g?nom(g.n):id})}">✕</button></div>`}).join('')}
+      <div class="capa pan">${TH('admin.capas.pan_abajo')}</div></div>
+      <div class="anadir"><select class="in" id="sel-${i}" aria-label="${TA('admin.capas.anadir_aria')}">${opciones}</select><button class="btn sec" data-acc="capaAnadir" data-i="${i}">${TH('admin.capas.anadir')}</button></div>
+      <small class="nota">${TH('admin.capas.nota')}</small></div>
+    ${campoAlg(b,'boc',i)}
+  </div>`}
+
+function vistaPic(){
+  let h=`<div class="cab"><div><h2 class="etq">${TH('admin.pic.titulo')}</h2><p>${TH('admin.pic.ayuda')}</p></div>
+    <button class="btn nuevo" data-acc="nuevoPic">${TH('admin.pic.nueva')}</button></div>`+cajaTrad()+bannerAlg();
+  if(!D.picar.length)return h+`<p class="vacio">${TH('admin.pic.vacio')}</p>`;
+  h+='<div class="lista">';
+  D.picar.forEach((p,i)=>{if(filtroAlg&&!sinRevisar(p))return;const ab=abiertos.has(p.id);h+=`<div class="fila${ab?' abierta':''}${p.oculto?' oculta':''}"><div class="fila-l l-pic">${botonesOrden(D.picar,i,'pic')}
+    <span class="mini">${miniaturaProducto(p.id)}</span>
+    <input class="in nom" spellcheck="true" lang="es" value="${esc(es(p.n))}" data-campo="n" data-tipo="pic" data-i="${i}" aria-label="${TA('admin.campo.nombre')}">
+    <span class="precio"><input class="in" type="number" step="0.05" min="0" value="${(+p.p).toFixed(2)}" data-campo="p" data-tipo="pic" data-i="${i}" aria-label="${TA('admin.campo.precio_de',{nombre:nom(p.n)})}"></span>
+    <input class="in" type="color" value="${esc(p.c)}" data-campo="c" data-tipo="pic" data-i="${i}" aria-label="${TA('admin.pic.color_aria')}">
+    <span class="btns"><button class="btn sec" data-acc="abrir" data-id="${esc(p.id)}" aria-expanded="${ab}">${TH(ab?'admin.boc.cerrar':'admin.pic.abrir')}${etiquetaSinRevisar(p)}</button>${interruptor(p,'pic',`data-i="${i}"`)}${botonBorrar('pic',i)}</span></div>
+    ${ab?`<div class="detalle">${bloqueIdiomas(p,`data-tipo="pic" data-i="${i}"`,p.id,false)}${campoAlg(p,'pic',i)}</div>`:''}</div>`});
+  return h+'</div>'}
+
+function vistaIng(){
+  let h=`<div class="cab"><div><h2 class="etq">${TH('admin.tab.ing')}</h2><p>${TH('admin.ing.ayuda',{plato:tx('plato')})}</p></div>
+    <button class="btn nuevo" data-acc="nuevoIng">${TH('admin.ing.nuevo')}</button></div>`+cajaTrad();
+  GRUPOS.forEach(g=>{const its=Object.entries(D.ingredientes).filter(([,x])=>x.cat===g);if(!its.length)return;
+    h+=`<section class="grupo"><div class="grupo-h"><h3>${TH('grupo.'+g)}</h3><span class="etq">${its.length}</span></div><div class="lista">`;
+    its.forEach(([id,x])=>{const uso=usoDe(id),ab=abiertos.has('ing:'+id),cosa=tx(uso.length===1?'plato':'platos');
+      h+=`<div class="fila${x.oculto?' oculta':''}${ab?' abierta':''}"><div class="fila-l l-ing">
+        <span class="mini ft" title="${TA(miniaturaIng(id)?'admin.ing.con_foto':'admin.ing.sin_foto')}">${miniaturaIng(id)||`<input class="in" type="color" value="${esc(x.c)}" data-campo="c" data-tipo="ing" data-id="${esc(id)}" aria-label="${TA('admin.ing.color_de',{nombre:nom(x.n)})}">`}</span>
+        <input class="in nom" spellcheck="true" lang="es" value="${esc(es(x.n))}" data-campo="n" data-tipo="ing" data-id="${esc(id)}" aria-label="${TA('admin.campo.nombre')}">
+        <select class="in gr" data-campo="cat" data-tipo="ing" data-id="${esc(id)}" aria-label="${TA('admin.ing.grupo_aria')}">${GRUPOS.map(v=>`<option value="${v}" ${v===x.cat?'selected':''}>${TH('grupo.'+v)}</option>`).join('')}</select>
+        <span class="extra"><label><input type="checkbox" ${x.p!=null?'checked':''} data-campo="esExtra" data-tipo="ing" data-id="${esc(id)}">${TH('admin.ing.extra')}</label>
+          <span class="precio"><input class="in" type="number" step="0.05" min="0" value="${x.p==null?'':(+x.p).toFixed(2)}" ${x.p==null?'disabled':''} data-campo="p" data-tipo="ing" data-id="${esc(id)}" aria-label="${TA('admin.ing.precio_extra')}"></span></span>
+        <select class="in fo" data-campo="s" data-tipo="ing" data-id="${esc(id)}" aria-label="${TA('admin.ing.forma_aria')}" title="${TA('admin.ing.forma_aria')}">${FORMAS.map(([v])=>`<option value="${v}" ${v===x.s?'selected':''}>${TH('admin.ing.dibujo',{forma:T('admin.forma.'+v)})}</option>`).join('')}</select>
+        <span class="uso" title="${esc(uso.map(b=>nom(b.n)).join(', '))}">${uso.length?TH(x.oculto?'admin.ing.uso_agotado':'admin.ing.uso',{n:uso.length,cosa}):TH('admin.ing.sin_uso')}</span>
+        <span class="btns">${interruptor(x,'ing',`data-id="${esc(id)}"`)}<button class="btn-foto" data-acc="abrir" data-id="${esc('ing:'+id)}" aria-expanded="${ab}">${TH(ab?'admin.boc.cerrar':'admin.trad.boton')}</button><button class="btn-foto" data-acc="foto" data-id="${esc(id)}" ${x._nuevo?`disabled title="${TA('admin.ing.guardar_primero')}"`:''}>${TH(FOTO[id]&&FOTO[id].subida?'admin.ing.ver_foto':'admin.ing.subir_foto')}</button>${botonBorrar('ing',esc(id),uso.length,uso.length?T('admin.ing.esta_en',{lista:uso.map(b=>nom(b.n)).join(', ')}):T('admin.borrar.titulo'))}</span></div>
+        ${ab?`<div class="detalle">${bloqueIdiomas(x,`data-tipo="ing" data-id="${esc(id)}"`,'ing:'+id,false)}</div>`:''}</div>`});
+    h+='</div></section>'});
+  return h}
+
+/* ---------- mesas y QR ---------- */
+const zonas=()=>[...new Set(D.mesas.map(m=>m.z).filter(Boolean))];
+const urlMesa=n=>D.urlQR.replace(/\/+$/,'')+'/?mesa='+n;
+// Dirección de los QR: tiene que poder abrirla un móvil (localhost solo funciona en este ordenador)
+function revisarUrl(u){
+  if(!u)return['mal',T('admin.url.vacia')];
+  if(!/^https?:\/\/[^\s\/?#]+/.test(u))return['mal',T('admin.url.sin_http')];
+  if(/\/\/(localhost|127\.|\[::1\])/.test(u))return['mal',T('admin.url.localhost')];
+  if(/^http:\/\/172\.(1[6-9]|2\d|3[01])\./.test(u))return['aviso',T('admin.url.interna')];
+  if(/^http:\/\/(192\.168\.|10\.)/.test(u))return['aviso',T('admin.url.wifi')];
+  return['bien',T('admin.url.ok')]}
+// Dibuja el QR como SVG (negro sobre transparente). Devuelve '' si no hay librería o dirección
+function svgQR(texto){if(!window.qrcode||!texto)return'';
+  const q=qrcode(0,'M');q.addData(texto);q.make();const n=q.getModuleCount();let d='';
+  for(let r=0;r<n;r++)for(let c=0;c<n;c++)if(q.isDark(r,c))d+=`M${c} ${r}h1v1h-1z`;
+  return`<svg viewBox="-2 -2 ${n+4} ${n+4}" shape-rendering="crispEdges" role="img" aria-label="${TA('admin.mesas.qr_aria')}"><rect x="-2" y="-2" width="${n+4}" height="${n+4}" fill="#fff"/><path d="${d}" fill="#000"/></svg>`}
+function vistaMes(){
+  const [tipoUrl,msgUrl]=revisarUrl(D.urlQR),urlOk=tipoUrl!=='mal',cambios=hayCambios();
+  const sugerida=RED&&RED.ip?`http://${RED.ip}:${RED.puerto}`:'';
+  const sig=Math.max(0,...D.mesas.map(m=>m.n))+1;
+  const rango=TH('admin.mesas.rango').replace('{desde}',`<input class="in num" type="number" min="1" max="200" id="desde" value="${sig}" aria-label="${TA('admin.mesas.desde_aria')}">`).replace('{hasta}',`<input class="in num" type="number" min="1" max="200" id="hasta" value="${sig+9}" aria-label="${TA('admin.mesas.hasta_aria')}">`);
+  let h=`<div class="cab"><div><h2 class="etq">${TH('admin.mesas.titulo')}</h2><p>${TH('admin.mesas.ayuda')}</p></div>
+    <button class="btn" data-acc="imprimirQR" ${!D.mesas.length||!urlOk||cambios?'disabled':''} title="${esc(cambios?T('admin.mesas.guardar_primero'):!urlOk?T('admin.mesas.falta_url_titulo'):'')}">${TH('admin.mesas.imprimir_todos')}</button></div>
+  <div class="caja"><h3>${TH('admin.mesas.url_titulo')}</h3>
+    <div class="fila-url"><input class="in" id="urlQR" data-campo="urlQR" value="${esc(D.urlQR)}" placeholder="${TA('admin.mesas.url_ph')}" spellcheck="false" autocomplete="off" aria-label="${TA('admin.mesas.url_aria')}">
+    ${sugerida&&sugerida!==D.urlQR?`<button class="btn sec" data-acc="urlWifi" data-url="${esc(sugerida)}">${TH('admin.mesas.usar_wifi',{url:sugerida})}</button>`:''}</div>
+    <p class="aviso ${tipoUrl==='aviso'?'':tipoUrl}" id="avisoUrl">${esc(msgUrl)}</p>
+    ${RED&&RED.contenedor?`<p class="aviso" id="avisoDocker">${TH('admin.mesas.sin_ip_docker')}</p>`:''}</div>
+  <div class="caja"><h3>${TH('admin.mesas.anadir_titulo')}</h3>
+    <div class="varias">${rango}
+      <input class="in" id="zonaVarias" list="zonas" placeholder="${TA('admin.mesas.zona_ph')}" maxlength="30" aria-label="${TA('admin.mesas.zona_nuevas_aria')}">
+      <button class="btn nuevo" data-acc="anadirMesas">${TH('admin.mesas.anadir')}</button></div></div>`;
+  if(!D.mesas.length)return h+`<p class="vacio">${TH('admin.mesas.vacio')}</p>`;
+  if(cambios)h+=`<p class="aviso sep-abajo">${TH('admin.mesas.guardar_para_imprimir')}</p>`;
+  h+='<div class="mesas">'+D.mesas.map((m,i)=>`<div class="mesa">
+      <span class="qr${urlOk?'':' sin'}">${urlOk?svgQR(urlMesa(m.n)):TH('admin.mesas.falta_url')}</span>
+      <span class="num">${TH('admin.mesas.mesa_n').replace('{n}',`<input class="in" type="number" min="1" max="200" value="${m.n}" data-campo="mesaN" data-i="${i}" aria-label="${TA('admin.mesas.numero_aria')}">`)}</span>
+      <input class="in" list="zonas" value="${esc(m.z||'')}" data-campo="mesaZ" data-i="${i}" placeholder="${TA('admin.mesas.zona_ph')}" maxlength="30" aria-label="${TA('admin.mesas.zona_aria',{n:m.n})}">
+      <span class="btns"><button class="btn-foto" data-acc="imprimirQR" data-i="${i}" ${!urlOk||cambios?'disabled':''}>${TH('admin.mesas.imprimir')}</button>${botonBorrar('mes',i)}</span></div>`).join('')+'</div>';
+  return h}
+function imprimirQR(lista){
+  $('#impresion').innerHTML=lista.map(m=>`<div class="tqr">
+    <div class="cab-t"><img src="/img/{{logo}}" alt=""><b>{{nombre_inicio}}<span>{{nombre_resalte}}</span></b></div>
+    <div class="mesa-t">${TH('admin.mesas.hoja_mesa',{n:m.n})}${m.z?`<small>${esc(m.z)}</small>`:''}</div>
+    ${svgQR(urlMesa(m.n))}
+    <p>${TH('admin.mesas.hoja_texto')}</p>
+    <span class="url">${esc(urlMesa(m.n))}</span></div>`).join('');
+  // Espera a que cargue el logo antes de abrir la ventana de imprimir
+  const img=$('#impresion img');const ir=()=>setTimeout(()=>window.print(),50);
+  if(!img||img.complete)ir();else{img.onload=img.onerror=ir}}
+
+/* ---------- estado y guardado ---------- */
+function estado(msg,clase){
+  const c=hayCambios(),e=$('#estado');
+  e.className='estado '+(clase||(c?'cambios':''));
+  e.textContent=msg||T(c?'admin.estado.cambios':'admin.estado.sin_cambios');
+  $('#guardar').disabled=!c;$('#descartar').disabled=!c;pintarTrad()}
+
+function validarLocal(){
+  document.querySelectorAll('.in.mal').forEach(x=>x.classList.remove('mal'));
+  const problemas=[],plato=tx('plato'),unPlato=()=>T('admin.val.un_plato',{plato});
+  D.platos.forEach((b,i)=>{const n=nom(b.n);if(!es(b.n).trim())problemas.push(T('admin.val.plato_sin_nombre',{plato}));if(!es(b.sec).trim())problemas.push(T('admin.val.sin_seccion',{nombre:n||unPlato()}));
+    if(!b.i.length)problemas.push(T('admin.val.sin_ingredientes',{nombre:n||unPlato()}));if(!(b.p>=0))problemas.push(T('admin.val.precio',{nombre:n||unPlato()}))});
+  productos().forEach(o=>{if(algPendiente(o)){abiertos.add(o.id);const AT=algt(),p={nombre:nom(o.n),sin:AT.sin_declarar||T('admin.alg.sin_declarar'),revisar:T('admin.alg.op_revisar')};problemas.push(modoAlg(o)===undefined?T('admin.val.alg_decidir',p):T('admin.val.alg_ninguno',p))}});
+  D.picar.forEach(p=>{if(!es(p.n).trim())problemas.push(T('admin.val.racion_sin_nombre'));if(!(p.p>=0))problemas.push(T('admin.val.precio',{nombre:nom(p.n)||T('admin.val.una_racion')}))});
+  Object.values(D.ingredientes).forEach(x=>{if(!es(x.n).trim())problemas.push(T('admin.val.ing_sin_nombre'));if(x.p!=null&&!(x.p>=0))problemas.push(T('admin.val.extra_precio',{nombre:nom(x.n)}))});
+  const vistas=new Set();D.mesas.forEach(m=>{if(!(Number.isInteger(m.n)&&m.n>=1&&m.n<=200))problemas.push(T('admin.val.mesas_rango'));else if(vistas.has(m.n))problemas.push(T('admin.val.mesa_repetida',{n:m.n}));vistas.add(m.n)});
+  return problemas}
+
+// Los productos e ingredientes nuevos reciben su identificador definitivo a partir del nombre al guardar
+function asignarIds(){
+  const usadosP=new Set([...D.platos,...D.picar].filter(x=>!x._nuevo).map(x=>x.id));
+  [...D.platos,...D.picar].forEach(x=>{if(x._nuevo){x.id=idLibre(slug(es(x.n)),usadosP);usadosP.add(x.id);delete x._nuevo}});
+  const nuevoIng={},cambio={},usadosI=new Set(Object.keys(D.ingredientes).filter(k=>!D.ingredientes[k]._nuevo));
+  Object.entries(D.ingredientes).forEach(([k,x])=>{if(x._nuevo){const id=idLibre(slug(es(x.n)),usadosI);usadosI.add(id);cambio[k]=id;delete x._nuevo;nuevoIng[id]=x}else nuevoIng[k]=x});
+  D.ingredientes=nuevoIng;D.platos.forEach(b=>b.i=b.i.map(x=>cambio[x]||x))}
+
+$('#guardar').addEventListener('click',async()=>{
+  const p=validarLocal();if(p.length){errAlg=true;render();estado(p[0],'error');return}
+  const copia=JSON.stringify(D);asignarIds();
+  $('#guardar').disabled=true;estado(T('admin.estado.guardando'));
+  try{const r=await api('PUT','/api/datos',D);D.version=r.version;original=JSON.stringify(D);errAlg=false;render();estado(T('admin.estado.guardado'),'bien');toast(T('admin.toast.guardado'))}
+  catch(err){D=JSON.parse(copia);render();estado(err.message,'error')}});
+$('#descartar').addEventListener('click',()=>{D=JSON.parse(original);abiertos.clear();render();toast(T('admin.toast.descartado'))});
+addEventListener('beforeunload',e=>{if(hayCambios()){e.preventDefault();e.returnValue=''}});
+
+/* ---------- edición ---------- */
+function objeto(el){const t=el.dataset.tipo;return t==='boc'?D.platos[+el.dataset.i]:t==='pic'?D.picar[+el.dataset.i]:D.ingredientes[el.dataset.id]}
+document.addEventListener('input',e=>{const el=e.target,c=el.dataset.campo;if(!c||!D)return;
+  if(c==='algModo'||c==='algItem')return;   // los gestiona el evento change
+  if(c==='secNueva'){secNueva.set(D.platos[+el.dataset.i].id,el.value);return}
+  if(c==='urlQR'){D.urlQR=el.value.trim();const [t,m]=revisarUrl(D.urlQR),a=$('#avisoUrl');a.className='aviso '+(t==='aviso'?'':t);a.textContent=m;estado();return}
+  if(c==='mesaZ'){const m=D.mesas[+el.dataset.i];if(el.value.trim())m.z=el.value;else delete m.z;estado();return}
+  if(c==='mesaN'){D.mesas[+el.dataset.i].n=parseInt(el.value,10);el.classList.toggle('mal',!(D.mesas[+el.dataset.i].n>=1&&D.mesas[+el.dataset.i].n<=200));estado();return}
+  if(c==='secNombre'){const viejo=el.dataset.sec,nuevo=el.value;D.platos.forEach(b=>{if(es(b.sec)===viejo)setCampo(b,'sec','es',nuevo)});el.dataset.sec=nuevo;
+    const det=el.closest('.grupo');if(det)det.querySelectorAll('[data-campo="secTrad"]').forEach(x=>x.dataset.sec=nuevo);estado();return}
+  if(c==='secTrad'){const sec=el.dataset.sec;D.platos.forEach(b=>{if(es(b.sec)===sec)setCampo(b,'sec',el.dataset.lang,el.value)});estado();return}
+  const o=objeto(el);if(!o)return;
+  if(c==='visible'){if(el.checked)delete o.oculto;else o.oculto=1;render();return}
+  if(c==='p'){o.p=el.value===''?NaN:Math.round(parseFloat(el.value.replace(',','.'))*100)/100;el.classList.toggle('mal',!(o.p>=0))}
+  else if(c==='esExtra'){o.p=el.checked?(o.p??0.5):null;render();return}
+  else if(c==='s'){o.s=el.value;o.h=(FORMAS.find(f=>f[0]===el.value)||[])[1]||8}
+  else if(c==='n'||c==='d'){const l=el.dataset.lang||'es';setCampo(o,c,l,el.value);if(c==='n'&&l==='es')el.classList.toggle('mal',!el.value.trim())}
+  else{o[c]=el.value}
+  estado()});
+document.addEventListener('change',e=>{const el=e.target,c=el.dataset.campo;
+  if(c==='algModo'||c==='algItem'){const o=objeto(el);if(!o)return;
+    if(c==='algModo'){o._alg=el.value;if(el.value==='sin')o.alergenos=[];else if(el.value==='revisar')delete o.alergenos;else o.alergenos=o.alergenos||[];render();return}
+    const sel=new Set(o.alergenos||[]);el.checked?sel.add(el.value):sel.delete(el.value);o.alergenos=ALG.lista.map(a=>a.id).filter(x=>sel.has(x));o._alg='lista';
+    if(errAlg&&o.alergenos.length)render();else estado();return}
+  if(c==='secSel'||c==='secNueva'){const i=+el.dataset.i,b=D.platos[i];
+    if(c==='secSel'&&el.value==='__nueva'){secNueva.set(b.id,'');render();document.getElementById('secNueva-'+D.platos.indexOf(b))?.focus();return}
+    const destino=el.value.trim();if(!destino)return;
+    secNueva.delete(b.id);moverASeccion(b,destino);render();toast(T('admin.toast.seccion',{nombre:nom(b.n),seccion:destino}));return}
+  if(c==='mesaN'||c==='urlQR'){if(c==='mesaN')D.mesas.sort((a,b)=>(a.n||0)-(b.n||0));render();return}
+  if(el.dataset.lang)return;   // los idiomas de un campo no repintan: se perdería el foco al saltar al siguiente
+  if(c==='cat'||c==='secNombre'||(c==='n'&&el.dataset.tipo==='ing'))render()});
+// Cambia un plato de sección y lo coloca al final de ella (o al final de la carta si la sección es nueva)
+function moverASeccion(b,sec){const nuevo=secDe(sec),lista=D.platos;lista.splice(lista.indexOf(b),1);b.sec=nuevo;
+  const ultimo=lista.map(x=>es(x.sec)).lastIndexOf(sec);lista.splice(ultimo<0?lista.length:ultimo+1,0,b)}
+
+/* ---------- Sellos: ajustes de la tarjeta y caja (con guardado propio, no pasa por «Guardar cambios») ---------- */
+const SEL={cfg:null,cargando:false,ficha:null,msg:'',err:'',lista:null,q:''};   // msg guarda una clave del diccionario, err el texto que dio el servidor
+async function cargarSel(){SEL.cargando=true;
+  try{SEL.cfg=await api('GET','/api/sellos/config');await cargarLista()}catch(e){SEL.err=e.message}
+  SEL.cargando=false;if(tab==='sel')render()}
+async function cargarLista(){SEL.lista=await api('GET','/api/sellos/tarjetas'+(SEL.q?'?q='+encodeURIComponent(SEL.q):''))}
+const canalTxt=m=>T(m==='real'?'admin.sel.canal_real':m==='prueba'?'admin.sel.canal_prueba':'admin.sel.canal_no');
+function vistaSel(){
+  const c=SEL.cfg;if(!c)return`<div class="cab"><div><h2 class="etq">${TH('admin.sel.titulo')}</h2><p>${esc(SEL.err||T('admin.cargando'))}</p></div></div>`;
+  const f=SEL.ficha;
+  return`<div class="cab"><div><h2 class="etq">${TH('admin.sel.titulo')}</h2><p>${TH('admin.sel.ayuda')}</p></div></div>
+  <div class="caja"><h3>${TH('admin.sel.ajustes')}</h3>
+    <label class="campo"><span>${TH('admin.sel.activo')}</span><input type="checkbox" id="selActivo" ${c.activo?'checked':''}></label>
+    <label class="campo"><span>${TH('admin.sel.meta')}</span><input class="in num" type="number" min="1" max="30" id="selMeta" value="${c.sellos_meta}"></label>
+    <label class="campo"><span>${TH('admin.sel.premio')}</span><input class="in" id="selPremio" maxlength="80" value="${esc(c.premio)}"></label>
+    ${IDI.map(l=>`<label class="campo"><span>${TH('admin.sel.premio_idioma',{idioma:I18N.nombres[l]})}</span><input class="in" id="selPremio_${l}" maxlength="80" lang="${l}" value="${esc((c.premio_i18n||{})[l]||'')}" placeholder="${esc((c.premios||{})[l]||'')}"></label>`).join('')}
+    <p class="nota">${TH('admin.sel.premio_idiomas_nota')}</p>
+    <label class="campo"><span>${TH('admin.sel.minimo')}</span><input class="in num" type="number" min="0" max="999" step="0.5" id="selMin" value="${c.importe_minimo}"><span class="nota">${TH('admin.sel.minimo_nota')}</span></label>
+    <div><button class="btn" data-sel="guardar" type="button">${TH('admin.sel.guardar')}</button></div>
+  </div>
+  <div class="caja"><h3>${TH('admin.sel.caja')}</h3>
+    <p class="nota">${TH('admin.sel.caja_ayuda')}</p>
+    <div class="fila-url"><input class="in" id="selCodigo" placeholder="${TA('admin.sel.codigo_ph')}" spellcheck="false" autocomplete="off" value="${esc(SEL.codigo||'')}">
+      <button class="btn sec" data-sel="buscar" type="button">${TH('admin.sel.buscar')}</button>${window.BarcodeDetector?`<button class="btn sec" data-sel="camara" type="button">${TH('admin.sel.camara')}</button>`:''}</div>
+    ${window.BarcodeDetector?'':`<p class="nota" id="selSinCamara">${TH('admin.sel.sin_camara')}</p>`}
+    <video id="selVideo" playsinline muted hidden class="video-lector"></video>
+    ${f?`<p><b>${TH('admin.sel.progreso',{sellos:f.sellos,meta:f.sellos_meta})}</b> · ${TH(f.premios_disponibles?'admin.sel.premio_disp':'admin.sel.sin_premio')}${f.canjes?' · '+TNH('admin.sel.canjes',f.canjes,{}):''}</p>
+    <div class="fila-url"><input class="in num" type="number" min="0" step="0.5" id="selImporte" placeholder="${TA('admin.sel.importe_ph')}">
+      <button class="btn sec" data-sel="sellar" type="button" ${f.premios_disponibles?'disabled':''}>${TH('admin.sel.sellar')}</button>
+      <button class="btn" data-sel="canjear" type="button" ${f.premios_disponibles?'':'disabled'}>${TH('admin.sel.canjear',{premio:f.premio})}</button></div>
+    ${f.premios_disponibles?`<p class="nota" id="selTope">${TH('admin.sel.tope')}</p>`:''}`:''}
+    <p class="aviso ${SEL.err?'mal':''}" role="status">${esc(SEL.err||(SEL.msg?T(SEL.msg):''))}</p></div>
+  <div class="caja" id="selLista"><h3>${TH('admin.sel.ultimas')}</h3>${listaSel()}</div>
+  <div class="caja"><h3>${TH('admin.sel.wallet')}</h3>
+    <p>${TH('admin.sel.wallet_canales',{apple:canalTxt(c.canales.apple),google:canalTxt(c.canales.google)})}</p>
+    <p class="nota">${TH('admin.sel.wallet_nota')}</p>
+    ${c.canales.apple&&c.canales.google?'':`<p class="nota"><b>${TH('admin.sel.falta_titulo')}</b>
+      ${c.canales.google?'':'<br>'+TH('admin.sel.falta_google')}
+      ${c.canales.apple?'':'<br>'+TH('admin.sel.falta_apple')}</p>`}</div>`}
+function listaSel(){
+  const l=SEL.lista;if(!l)return`<p class="nota">${TH('admin.cargando')}</p>`;
+  const buscador=`<div class="fila-url"><input class="in" id="selBusca" placeholder="${TA('admin.sel.busca_ph')}" spellcheck="false" autocomplete="off" value="${esc(SEL.q)}"><button class="btn sec" data-sel="filtrar" type="button">${TH('admin.sel.busca_btn')}</button></div>`;
+  if(!l.total)return`<p class="nota">${TH('admin.sel.sin_tarjetas')}</p>`;
+  return buscador+(l.tarjetas.length?`<ul class="lista-tarjetas">${l.tarjetas.map(t=>`<li><button class="btn sec fila-tarjeta" type="button" data-sel="abrir" data-id="${esc(t.id)}"><code>${esc(t.id)}</code><span><b>${TH('admin.sel.progreso',{sellos:t.sellos,meta:t.sellos_meta})}</b>${t.premio_disponible?' · '+TH('admin.sel.premio_disp_min'):''} · ${TH('admin.sel.ultimo_uso',{fecha:fechaCorta(t.ultimo_uso)})}</span></button></li>`).join('')}</ul>`:`<p class="nota">${TH('admin.sel.sin_coincidencia')}</p>`)}
+async function accionSel(a,id){
+  SEL.err=SEL.msg='';const cod=($('#selCodigo')||{}).value;if(cod!==undefined)SEL.codigo=cod.trim();
+  try{
+    if(a==='guardar'){SEL.cfg={...SEL.cfg,...await api('PUT','/api/sellos/config',{activo:$('#selActivo').checked,sellos_meta:parseInt($('#selMeta').value,10),premio:$('#selPremio').value,premio_i18n:Object.fromEntries(IDI.map(l=>[l,$('#selPremio_'+l).value])),importe_minimo:parseFloat($('#selMin').value)})};SEL.msg='admin.sel.msg_guardado'}
+    else if(a==='buscar'){SEL.ficha=await api('GET','/api/sellos/tarjeta?t='+encodeURIComponent(SEL.codigo||''))}
+    else if(a==='filtrar'){SEL.q=($('#selBusca')||{}).value.trim();await cargarLista()}
+    else if(a==='abrir'){SEL.codigo=id;SEL.ficha=await api('GET','/api/sellos/tarjeta?t='+encodeURIComponent(id))}
+    else if(a==='sellar'){const imp=parseFloat(($('#selImporte')||{}).value);const r=await api('POST','/api/sellos/sellar',{t:SEL.codigo,importe:imp});SEL.ficha=r;SEL.msg='admin.sel.msg_sello';await cargarLista()}
+    else if(a==='canjear'){if(!confirm(T('admin.sel.confirmar_canje')))return;const r=await api('POST','/api/sellos/canjear',{t:SEL.codigo});SEL.ficha=r;SEL.msg='admin.sel.msg_canjeado';await cargarLista()}
+    else if(a==='camara'){return camaraSel()}
+  }catch(e){SEL.err=e.message;if(a==='buscar')SEL.ficha=null}
+  render()}
+async function camaraSel(){
+  const v=$('#selVideo');
+  try{const flujo=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});v.srcObject=flujo;v.hidden=false;await v.play();
+    const det=new BarcodeDetector({formats:['qr_code']});
+    const bucle=async()=>{if(!v.srcObject)return;const r=await det.detect(v).catch(()=>[]);
+      if(r.length){flujo.getTracks().forEach(t=>t.stop());v.srcObject=null;SEL.codigo=r[0].rawValue;accionSel('buscar');return}
+      setTimeout(bucle,300)};bucle()}
+  catch(_){SEL.err=T('admin.sel.camara_error');render()}}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-sel]');if(b)accionSel(b.dataset.sel,b.dataset.id)});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='selCodigo'){e.preventDefault();accionSel('buscar')}
+  if(e.key==='Enter'&&e.target.id==='selBusca'){e.preventDefault();accionSel('filtrar')}});
+
+/* ---------- Cifras: cuatro números del mes y su comparación con el mes anterior ---------- */
+const CIF={datos:null,cargando:false,err:'',mes:''};   // resenaMsg guarda una clave del diccionario
+async function cargarCif(){CIF.cargando=true;CIF.err='';
+  try{CIF.datos=await api('GET','/api/kpis'+(CIF.mes?'?mes='+CIF.mes:''))}catch(e){CIF.err=e.message}
+  CIF.cargando=false;if(tab==='cif')render()}
+const mesNombre=m=>/^\d{4}-(0[1-9]|1[0-2])$/.test(m)?I18N.mes(m):String(m);
+function vistaCif(){
+  const d=CIF.datos;if(!d)return`<div class="cab"><div><h2 class="etq">${TH('admin.tab.cif')}</h2><p>${esc(CIF.err||T('admin.cargando'))}</p></div></div>`;
+  const a=d.actual,p=d.previo,n=v=>v==null?'–':I18N.numero(v,Number.isInteger(v)?0:1),pc=v=>v==null?'–':n(v)+' %',ant=mesNombre(d.anterior);
+  const dif=(x,y,pts)=>{if(x==null||y==null||(x===0&&y===0))return'';const k=Math.round((x-y)*10)/10;return k===0?T('admin.cif.igual',{mes:ant}):T(pts?'admin.cif.dif_puntos':'admin.cif.dif',{valor:(k>0?'+':'')+n(k),mes:ant})};
+  const t=(id,tit,val,cmp,ayuda,nota='')=>`<div class="caja" data-kpi="${id}"><h3>${esc(tit)}</h3><p class="cifra"><b>${esc(val)}</b></p>${cmp?`<p class="nota">${esc(cmp)}</p>`:''}<p class="nota">${esc(ayuda)}</p>${nota?`<p class="nota" data-aviso="${id}"><strong>${esc(nota)}</strong></p>`:''}</div>`;
+  const sinResena=!(d.resena&&d.resena.enlace);
+  const vacio=!a.pedidos&&!a.tarjetas_nuevas&&!a.clics_resena&&!a.clientes_repiten&&!d.totales.tarjetas;
+  const aviso=vacio?`<div class="caja" data-vacio><p><b>${TH('admin.cif.vacio',{mes:mesNombre(d.mes)})}</b></p><p class="nota">${TH('admin.cif.vacio_nota')}</p></div>`:'';
+  return`<div class="cab"><div><h2 class="etq">${TH('admin.cif.titulo',{mes:mesNombre(d.mes)})}</h2><p>${TH('admin.cif.subtitulo',{mes:ant})}</p></div>
+    <label class="campo"><span>${TH('admin.cif.mes')}</span><input class="in" type="month" id="cifMes" value="${esc(d.mes)}"></label></div>
+  ${aviso}
+  ${t('qr',T('admin.cif.qr.titulo'),a.pct_qr==null?T('admin.cif.sin_datos'):pc(a.pct_qr),dif(a.pct_qr,p.pct_qr,true),
+    T('admin.cif.qr.ayuda'),
+    a.pct_qr==null?T('admin.cif.qr.sin_pedidos'):T(a.pedidos_sin_medir?'admin.cif.qr.nota_sin_medir':'admin.cif.qr.nota',{qr:a.pedidos_qr,manual:a.pedidos_manual,sin:a.pedidos_sin_medir}))}
+  ${t('tarjetas',T('admin.cif.tarjetas.titulo'),a.tarjetas_nuevas,dif(a.tarjetas_nuevas,p.tarjetas_nuevas),
+    T('admin.cif.tarjetas.ayuda'),T('admin.cif.total_desde_inicio',{n:d.totales.tarjetas}))}
+  ${t('resenas',T('admin.cif.resenas.titulo'),a.clics_resena,dif(a.clics_resena,p.clics_resena),
+    T('admin.cif.resenas.ayuda'),
+    sinResena?T('admin.cif.resenas.sin_enlace'):'')}
+  ${t('repiten',T('admin.cif.repiten.titulo'),a.clientes_repiten,dif(a.clientes_repiten,p.clientes_repiten),
+    T('admin.cif.repiten.ayuda'),T('admin.cif.total_desde_inicio',{n:d.totales.clientes_repiten}))}
+  <div class="caja" id="ajustesResena"><h3>${TH('admin.cif.ajustes')}</h3>
+    <p class="nota">${TH(sinResena?'admin.cif.ajustes_sin':'admin.cif.ajustes_con')}</p>
+    <label class="campo"><span>${TH('admin.cif.enlace')}</span><input class="in" id="resenaEnlace" type="text" inputmode="url" autocomplete="off" placeholder="${TA('admin.cif.enlace_ph')}" value="${esc(d.resena?d.resena.valor||'':'')}"><span class="nota">${TH('admin.cif.enlace_nota')}</span></label>
+    <p><button class="btn" id="resenaGuardar" type="button">${TH('admin.cif.guardar_enlace')}</button></p><p class="nota" id="resenaMsg" role="status">${esc(CIF.resenaMsg?T(CIF.resenaMsg):'')}</p></div>`}
+document.addEventListener('click',async e=>{if(e.target.id!=='resenaGuardar')return;
+  try{await api('POST','/api/resena',{enlace:$('#resenaEnlace').value});CIF.resenaMsg='admin.cif.guardado';CIF.datos=null;await cargarCif()}
+  catch(er){$('#resenaMsg').textContent=er.message}});
+document.addEventListener('change',e=>{if(e.target.id==='cifMes'&&e.target.value){CIF.mes=e.target.value;CIF.datos=null;cargarCif()}});
+
+/* ---------- Promociones: redactar, enviar (solo a quien dio permiso) y ver el registro; guardado propio ---------- */
+const PRO={datos:null,clientes:null,cargando:false,msg:'',err:'',ver:null,envios:null,titulo:'',texto:'',email:true,wallet:true};   // msg guarda una clave del diccionario
+async function cargarPro(){PRO.cargando=true;
+  try{PRO.datos=await api('GET','/api/promociones');PRO.clientes=(await api('GET','/api/clientes')).clientes}catch(e){PRO.err=e.message}
+  PRO.cargando=false;if(tab==='pro')render()}
+// Fecha y hora de un registro («2026-10-22T14:30:00») en el idioma del backoffice
+const fechaCorta=f=>{if(!f)return'';const d=new Date(f);return isNaN(d)?String(f):I18N.fechaHora(d)};
+const resTxt=k=>{const c='admin.pro.res.'+k,v=T(c);return v===c?k:v};
+function vistaPro(){
+  const d=PRO.datos;if(!d)return`<div class="cab"><div><h2 class="etq">${TH('admin.tab.pro')}</h2><p>${esc(PRO.err||T('admin.cargando'))}</p></div></div>`;
+  const dest=d.destinatarios,ce=d.canales.email,cw=d.canales.wallet,wOk=!!(cw.apple||cw.google);
+  const cl=PRO.clientes||[],sinCanal=!ce&&!wOk;
+  const falta=sinCanal?`<div class="caja" id="proSinCanal"><h3>${TH('admin.pro.falta_titulo')}</h3><p>${TH('admin.pro.falta_intro')}</p><p>${THc('admin.pro.falta_correo')}</p><p>${TH('admin.pro.falta_wallet')}</p><p>${THc('admin.pro.falta_prueba')}</p></div>`:'';
+  return`<div class="cab"><div><h2 class="etq">${TH('admin.tab.pro')}</h2><p>${TH('admin.pro.ayuda')}</p></div></div>
+  ${falta}
+  <div class="caja"><h3>${TH('admin.pro.nueva')}</h3>
+    <label class="campo"><span>${TH('admin.pro.titulo')}</span><input class="in" id="proTitulo" maxlength="60" value="${esc(PRO.titulo)}" placeholder="${TA('admin.pro.titulo_ph')}"></label>
+    <label class="campo"><span>${TH('admin.pro.mensaje')}</span><textarea class="in" id="proTexto" rows="4" maxlength="300" placeholder="${TA('admin.pro.mensaje_ph')}">${esc(PRO.texto)}</textarea><span class="nota">${TH('admin.pro.mensaje_nota')}</span></label>
+    <label class="campo"><span>${ce?TNH('admin.pro.canal_email',dest.email,{}):TH('admin.pro.canal_email_no')}</span><input type="checkbox" id="proEmail" ${PRO.email&&ce?'checked':''} ${ce?'':'disabled'}></label>
+    <label class="campo"><span>${wOk?TNH('admin.pro.canal_wallet',dest.wallet,{}):TH('admin.pro.canal_wallet_no')}</span><input type="checkbox" id="proWallet" ${PRO.wallet&&wOk?'checked':''} ${wOk?'':'disabled'}><span class="nota">${TH('admin.pro.limite',{n:d.limite_wallet})}</span></label>
+    <p class="nota">${TNH('admin.pro.clientes',dest.clientes,{sin:dest.clientes-dest.email})}</p>
+    <div><button class="btn" data-pro="enviar" type="button" ${sinCanal?'disabled aria-describedby="proMotivo"':''}>${TH('admin.pro.enviar')}</button></div>
+    ${sinCanal?`<p class="nota" id="proMotivo">${TH('admin.pro.motivo')}</p>`:''}
+    ${PRO.err||PRO.msg?`<p class="aviso ${PRO.err?'mal':''}" role="status">${esc(PRO.err||T(PRO.msg))}</p>`:''}</div>
+  <div class="caja"><h3>${TH('admin.pro.enviadas')}</h3>${d.promociones.length?d.promociones.map(p=>`<div class="fila-url arriba"><div class="crece"><b>${esc(p.titulo)}</b> · ${esc(fechaCorta(p.creada))} · ${TH(p.estado==='enviada'?'admin.pro.estado_enviada':p.estado==='enviando'?'admin.pro.estado_enviando':'admin.pro.estado_borrador')}<br><span class="nota">${esc(p.texto)}</span><br><span class="nota">${esc(Object.entries(p.resultados).map(([c,r])=>T(c==='email'?'admin.pro.canal_correo':'admin.pro.canal_wallet_nombre')+': '+Object.entries(r).map(([k,n])=>resTxt(k)+' '+n).join(', ')).join(' · ')||T('admin.pro.sin_envios'))}</span></div>
+      <button class="btn sec" data-pro="ver" data-id="${p.id}" type="button">${TH('admin.pro.registro')}</button>${p.estado==='borrador'?`<button class="btn sec" data-pro="borrar" data-id="${p.id}" type="button">${TH('admin.borrar.titulo')}</button>`:''}</div>`).join(''):`<p class="nota">${TH('admin.pro.ninguna')}</p>`}
+    ${PRO.ver?`<h3>${TH('admin.pro.registro_de',{titulo:PRO.ver.titulo})}</h3>${PRO.envios.length?`<ul>${PRO.envios.map(e=>`<li>${esc(fechaCorta(e.fecha))} · ${TH(e.canal==='email'?'admin.pro.canal_correo':'admin.pro.canal_wallet_nombre')} · ${esc(e.destino)} · <b>${esc(resTxt(e.resultado))}</b>${e.detalle?` <span class="nota">(${esc(e.detalle)})</span>`:''}</li>`).join('')}</ul>`:`<p class="nota">${TH('admin.pro.nadie')}</p>`}`:''}</div>
+  <div class="caja"><h3>${TH('admin.pro.clientes_titulo')}</h3>${cl.length?`<ul>${cl.map(c=>{const u=(c.permisos||[])[(c.permisos||[]).length-1];if(!c.apto_marketing&&c.pendiente)return`<li>${esc(c.email)} · <b>${TH('admin.pro.pendiente')}</b> · ${esc(fechaCorta(c.pendiente))}</li>`;if(!u)return'';return`<li>${esc(c.email)} · <b>${TH(c.apto_marketing?'admin.pro.con_permiso':'admin.pro.de_baja')}</b> · ${TH(u.accion==='alta'?'admin.pro.permiso_el':'admin.pro.baja_el',{fecha:fechaCorta(u.fecha)})}</li>`}).join('')}</ul>`:`<p class="nota">${TH('admin.pro.nadie_permiso')}</p>`}</div>`}
+async function accionPro(a,id){
+  PRO.err=PRO.msg='';
+  try{
+    if(a==='enviar'){
+      const titulo=$('#proTitulo').value,texto=$('#proTexto').value,canales=[...(($('#proEmail')||{}).checked?['email']:[]),...(($('#proWallet')||{}).checked?['wallet']:[])];
+      PRO.titulo=titulo;PRO.texto=texto;PRO.email=canales.includes('email');PRO.wallet=canales.includes('wallet');
+      const dd=PRO.datos.destinatarios,n=T(canales.includes('email')&&canales.includes('wallet')?'admin.pro.llegara_ambos':canales.includes('email')?'admin.pro.llegara_email':'admin.pro.llegara_wallet',{email:dd.email,wallet:dd.wallet});
+      if(!canales.length)throw new Error(T('admin.pro.elige_canal'));
+      const r=await api('POST','/api/promociones',{titulo,texto,canales});
+      if(!confirm(T('admin.pro.confirmar',{destino:n}))){await api('DELETE','/api/promociones?id='+r.id);return render()}
+      await api('POST','/api/promociones/enviar',{id:r.id});PRO.titulo=PRO.texto='';PRO.msg='admin.pro.enviandose'}
+    else if(a==='ver'){const r=await api('GET','/api/promociones/registro?id='+id);PRO.ver=r.promocion;PRO.envios=r.envios;return render()}
+    else if(a==='borrar'){await api('DELETE','/api/promociones?id='+id);PRO.ver=null}
+    PRO.datos=await api('GET','/api/promociones');PRO.clientes=(await api('GET','/api/clientes')).clientes
+  }catch(e){PRO.err=e.message}
+  render()}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-pro]');if(b)accionPro(b.dataset.pro,b.dataset.id)});
+
+/* ---------- Exportar: pedidos de un rango de días a CSV o Excel ---------- */
+const EXP={desde:'',hasta:'',datos:null,cargando:false,err:'',n:0};
+async function cargarExp(){const n=++EXP.n;EXP.cargando=true;EXP.err='';
+  const q=EXP.desde||EXP.hasta?'?desde='+encodeURIComponent(EXP.desde)+'&hasta='+encodeURIComponent(EXP.hasta):'';
+  try{const d=await api('GET','/api/exportar'+q);if(n!==EXP.n)return;EXP.datos=d;EXP.desde=d.desde;EXP.hasta=d.hasta}
+  catch(e){if(n!==EXP.n)return;EXP.datos=null;EXP.err=e.message}
+  EXP.cargando=false;if(tab==='exp')render()}
+function vistaExp(){
+  const d=EXP.datos,q=`desde=${encodeURIComponent(EXP.desde)}&hasta=${encodeURIComponent(EXP.hasta)}&idioma=${I18N.lang}`;
+  const estado=EXP.err?`<div class="caja" data-error role="alert"><p><b>${esc(EXP.err)}</b></p></div>`
+    :!d?`<p class="nota">${TH('admin.exp.cargando')}</p>`
+    :d.pedidos?`<div class="caja" data-resumen><p><b>${TH('admin.exp.resumen',{pedidos:d.pedidos,lineas:d.lineas,total:I18N.moneda(d.total)})}</b></p></div>`
+    :`<div class="caja" data-vacio><p><b>${TH('admin.exp.vacio',{desde:d.desde,hasta:d.hasta})}</b></p></div>`;
+  const botones=EXP.err||!d?'':`<p class="botonera"><a class="btn" data-exp="csv" href="/api/exportar?${q}&amp;formato=csv" download>${TH('admin.exp.csv')}</a>
+    <a class="btn" data-exp="xlsx" href="/api/exportar?${q}&amp;formato=xlsx" download>${TH('admin.exp.xlsx')}</a></p>`;
+  return`<div class="cab"><div><h2 class="etq">${TH('admin.exp.titulo')}</h2><p>${TH('admin.exp.ayuda')}</p></div></div>
+  <div class="caja cajas-kpi">
+    <label class="campo"><span>${TH('admin.exp.desde')}</span><input class="in" type="date" id="expDesde" value="${esc(EXP.desde)}"></label>
+    <label class="campo"><span>${TH('admin.exp.hasta')}</span><input class="in" type="date" id="expHasta" value="${esc(EXP.hasta)}"></label></div>
+  ${estado}${botones}<p class="nota">${TH('admin.exp.nota')}</p>`}
+document.addEventListener('change',e=>{if(e.target.id!=='expDesde'&&e.target.id!=='expHasta')return;
+  EXP[e.target.id==='expDesde'?'desde':'hasta']=e.target.value;EXP.datos=null;cargarExp();render()});
+
+/* ---------- Pedidos online: aceptar/rechazar, sacar a repartir, hoja de reparto y ajustes ----------
+   Aquí no se registra ningún pago: el cliente paga al recibir con el ticket de la caja del restaurante. */
+const ONL={pedidos:[],cfg:null,cargando:false,err:'',ok:''};
+async function cargarOnl(){ONL.cargando=true;
+  try{const [p,c]=await Promise.all([api('GET','/api/pedidos?vista=sala'),ONL.cfg?Promise.resolve(ONL.cfg):api('GET','/api/online/ajustes')]);ONL.pedidos=p.pedidos;ONL.cfg=c}
+  catch(e){ONL.err=e.message}
+  ONL.cargando=false;const n=ONL.pedidos.filter(p=>p.estado==='recibido').length;$('#nOnl').textContent=n||'';
+  if(tab==='onl'&&!document.activeElement?.closest?.('#onlAjustes'))render()}
+setInterval(()=>{if(D&&!$('#app').hidden)cargarOnl()},20000);
+const diasSemana=()=>[0,1,2,3,4,5,6].map(i=>new Intl.DateTimeFormat(I18N.lang,{weekday:'short'}).format(new Date(2026,9,26+i)));
+function tarjetaOnl(p){const e=p.entrega||{},b=(a,k,x='')=>`<button class="btn${x}" type="button" data-onl="${a}" data-id="${esc(p.id)}">${TH(k)}</button>`;
+  const acc=p.estado==='recibido'?b('aceptado','admin.onl.aceptar')+b('rechazado','admin.onl.rechazar',' sec')
+    :p.estado==='listo'&&p.tipo==='domicilio'?b('en_reparto','admin.onl.en_reparto'):p.estado==='en_reparto'?b('entregado','admin.onl.entregado'):'';
+  const cancelar=['recibido','rechazado','cancelado','entregado'].includes(p.estado)?'':b('cancelado','admin.onl.cancelar',' sec');
+  return`<div class="caja" data-online="${esc(p.id)}" data-estado="${esc(p.estado)}"><p><b>#${p.numero} · ${TH('cocina.tipo.'+p.tipo)} · ${TH('admin.onl.estado.'+p.estado)}</b></p>
+  <p>${esc(e.nombre||'')} · ${esc(e.telefono||'')}${e.direccion?' · '+esc(e.direccion)+' ('+esc(e.cp||'')+')':''}</p>
+  <p>${p.hora==='asap'?TH('admin.onl.asap'):TH('admin.onl.para',{hora:p.hora})}${p.hora_estimada?' · '+TH('admin.onl.estimada',{hora:p.hora_estimada}):''} · ${TH('admin.onl.pago.'+p.pago)}${p.cambio?' ('+esc(p.cambio)+')':''}</p>
+  <p>${p.lineas.map(l=>`${l.cant}× ${esc(I18N.tr(l.n))}`).join(', ')}${p.nota?' · '+esc(p.nota):''}${p.motivo?' · '+esc(p.motivo):''}</p>
+  <p class="botonera">${acc}${cancelar}<a class="btn sec" href="/admin/reparto?id=${encodeURIComponent(p.id)}" target="_blank" rel="noopener">${TH('admin.onl.hoja')}</a></p></div>`}
+function vistaOnl(){const c=ONL.cfg,dias=diasSemana();
+  const orden=['recibido','aceptado','preparando','listo','en_reparto','entregado','rechazado','cancelado'];
+  const ps=[...ONL.pedidos].sort((a,b)=>orden.indexOf(a.estado)-orden.indexOf(b.estado)||a.creado-b.creado);
+  const ajustes=!c?'':`<div class="caja" id="onlAjustes"><h3>${TH('admin.onl.ajustes')}</h3>
+    <label class="campo"><input type="checkbox" id="onlDom" ${c.domicilio?'checked':''}> ${TH('admin.onl.domicilio')}</label>
+    <label class="campo"><input type="checkbox" id="onlRec" ${c.recoger?'checked':''}> ${TH('admin.onl.recoger')}</label>
+    <label class="campo"><input type="checkbox" id="onlPausa" ${c.pausa?'checked':''}> ${TH('admin.onl.pausa')}</label>
+    <p>${TH('admin.onl.dias')}: ${dias.map((d,i)=>`<label><input type="checkbox" data-dia="${i}" ${c.dias.includes(i)?'checked':''}> ${esc(d)}</label>`).join(' ')}</p>
+    <label class="campo"><span>${TH('admin.onl.tramos')}</span><input class="in" id="onlTramos" value="${esc(c.tramos.map(t=>t.join('-')).join(', '))}"></label>
+    <label class="campo"><span>${TH('admin.onl.minimo')}</span><input class="in" id="onlMinimo" type="number" min="0" step="0.5" value="${c.minimo}"></label>
+    <label class="campo"><span>${TH('admin.onl.envio')}</span><input class="in" id="onlEnvio" type="number" min="0" step="0.1" value="${c.envio}"></label>
+    <label class="campo"><span>${TH('admin.onl.cps')}</span><input class="in" id="onlCps" value="${esc(c.cps.join(', '))}"></label>
+    <label class="campo"><span>${TH('admin.onl.preparacion')}</span><input class="in" id="onlPrep" type="number" min="5" max="240" value="${c.preparacion}"></label>
+    <p class="botonera"><button class="btn" type="button" id="onlGuardar">${TH('admin.onl.guardar')}</button></p></div>`;
+  return`<div class="cab"><div><h2 class="etq">${TH('admin.tab.onl')}</h2><p>${TH('admin.onl.ayuda')}</p>
+    <p class="nota">${TH('admin.onl.enlace')} <a href="/pedir" target="_blank" rel="noopener">${esc(location.origin)}/pedir</a></p><p class="nota">${TH('admin.onl.nota')}</p></div></div>
+  ${ONL.err?`<div class="caja" data-error role="alert"><p><b>${esc(ONL.err)}</b></p></div>`:''}${ONL.ok?`<div class="caja"><p><b>${esc(ONL.ok)}</b></p></div>`:''}
+  ${ps.map(tarjetaOnl).join('')||`<p class="nota">${TH('admin.onl.vacio')}</p>`}${ajustes}`}
+async function accionOnl(estado,id){const cuerpo={id,estado};ONL.err=ONL.ok='';
+  if(estado==='aceptado'){const m=prompt(T('admin.onl.minutos'),String(ONL.cfg?ONL.cfg.preparacion:30));if(m===null)return;cuerpo.minutos=parseInt(m,10)}
+  if(estado==='rechazado'||estado==='cancelado'){const m=prompt(T(estado==='rechazado'?'admin.onl.motivo_rechazo':'admin.onl.motivo_cancelar'));if(m===null)return;cuerpo.motivo=m}
+  try{await api('POST','/api/pedido/estado',cuerpo)}catch(e){ONL.err=e.message}
+  await cargarOnl();render()}
+async function guardarOnl(){ONL.err=ONL.ok='';
+  const tramos=$('#onlTramos').value.split(',').map(x=>x.trim()).filter(Boolean).map(x=>x.split('-').map(h=>h.trim().padStart(5,'0')));
+  if(tramos.some(t=>t.length!==2)){ONL.err=T('admin.onl.tramos_mal');return render()}
+  const c={domicilio:$('#onlDom').checked,recoger:$('#onlRec').checked,pausa:$('#onlPausa').checked,
+    dias:[...document.querySelectorAll('[data-dia]')].filter(x=>x.checked).map(x=>+x.dataset.dia),tramos,
+    minimo:parseFloat($('#onlMinimo').value)||0,envio:parseFloat($('#onlEnvio').value)||0,cps:$('#onlCps').value,preparacion:parseInt($('#onlPrep').value,10)||0};
+  try{ONL.cfg=(await api('POST','/api/online/ajustes',c)).ajustes;ONL.ok=T('admin.onl.guardado')}catch(e){ONL.err=e.message}
+  render()}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-onl]');if(b){accionOnl(b.dataset.onl,b.dataset.id);return}
+  if(e.target.id==='onlGuardar')guardarOnl()});
+
+/* ---------- Reservas: vista del día por hora, aforo por tramo, acciones de sala y ajustes ---------- */
+const hoyISO=()=>{const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+const RES={dia:hoyISO(),datos:null,cfg:null,cargando:false,err:'',ok:''};
+async function cargarRes(){RES.cargando=true;
+  try{const [d,c]=await Promise.all([api('GET','/api/reservas?fecha='+RES.dia),RES.cfg?Promise.resolve(RES.cfg):api('GET','/api/reservas/ajustes')]);RES.datos=d;RES.cfg=c}
+  catch(e){RES.err=e.message}
+  RES.cargando=false;const n=RES.datos&&RES.dia===hoyISO()?RES.datos.reservas.filter(r=>r.estado==='solicitada').length:0;$('#nRes').textContent=n||'';
+  if(tab==='res'&&!document.activeElement?.closest?.('#resAjustes'))render()}
+setInterval(()=>{if(D&&!$('#app').hidden)cargarRes()},30000);
+function tarjetaRes(r){const ok=r.acciones,b=(a,k,x='')=>ok&&!ok.includes(a)?'':`<button class="btn${x}" type="button" data-res="${a}" data-id="${esc(r.id)}">${TH(k)}</button>`;
+  const acc={solicitada:b('confirmada','admin.res.aceptar')+b('rechazada','admin.res.rechazar',' sec')+b('cancelada','admin.res.cancelar',' sec'),
+    confirmada:b('sentada','admin.res.sentar')+b('no_presentada','admin.res.no_presentada',' sec')+b('cancelada','admin.res.cancelar',' sec'),
+    sentada:b('confirmada','admin.res.deshacer',' sec'),no_presentada:b('sentada','admin.res.sentar')+b('confirmada','admin.res.deshacer',' sec')}[r.estado]||'';
+  return`<div class="caja" data-reserva="${esc(r.id)}" data-estado="${esc(r.estado)}"><p><b>${esc(r.hora)} · ${TH('admin.res.comensales',{n:r.comensales})} · ${TH('admin.res.estado.'+r.estado)}</b>${r.mesa?' · '+TH('admin.res.mesa',{mesa:r.mesa}):''}</p>
+  <p>${esc(r.nombre)} · <a href="tel:${esc(r.telefono.replace(/[^0-9+]/g,''))}">${esc(r.telefono)}</a>${r.email?' · '+esc(r.email):''}</p>
+  ${r.nota||r.motivo?`<p>${esc(r.nota||'')}${r.nota&&r.motivo?' · ':''}${r.motivo?esc(r.motivo):''}</p>`:''}
+  ${acc?`<p class="botonera">${acc}</p>`:''}</div>`}
+function vistaRes(){const c=RES.cfg,d=RES.datos,dias=diasSemana();
+  const ocup=!d||!d.tramos.length?'':`<div class="caja"><h3>${TH('admin.res.ocupacion')}</h3><p>${d.tramos.map(t=>`<span class="cod" data-tramo="${esc(t.hora)}"${t.ocupados>=d.aforo?' data-lleno':''}>${esc(t.hora)} ${t.ocupados}/${d.aforo}</span>`).join(' ')}</p></div>`;
+  const ajustes=!c?'':`<div class="caja" id="resAjustes"><h3>${TH('admin.res.ajustes')}</h3>
+    <label class="campo"><input type="checkbox" id="resActivo" ${c.activo?'checked':''}> ${TH('admin.res.activo')}</label>
+    <p>${TH('admin.res.modo')}: <label><input type="radio" name="resModo" value="automatico" ${c.modo==='automatico'?'checked':''}> ${TH('admin.res.modo.automatico')}</label>
+      <label><input type="radio" name="resModo" value="manual" ${c.modo==='manual'?'checked':''}> ${TH('admin.res.modo.manual')}</label></p>
+    <label class="campo"><span>${TH('admin.res.tramo')}</span><select class="in" id="resTramo">${[15,20,30,60].map(m=>`<option ${m===c.tramo?'selected':''}>${m}</option>`).join('')}</select></label>
+    <label class="campo"><span>${TH('admin.res.aforo')}</span><input class="in" id="resAforo" type="number" min="1" max="500" value="${c.aforo}"></label>
+    <label class="campo"><span>${TH('admin.res.max_reserva')}</span><input class="in" id="resMax" type="number" min="1" max="100" value="${c.max_reserva}"></label>
+    <p><b>${TH('admin.res.horario')}</b></p>
+    ${dias.map((n,i)=>`<label class="campo"><span>${esc(n)}</span><input class="in" data-res-dia="${i}" value="${esc(c.horario[i].map(t=>t.join('-')).join(', '))}"></label>`).join('')}
+    <label class="campo"><span>${TH('admin.res.cerrados')}</span><input class="in" id="resCerrados" value="${esc(c.cerrados.join(', '))}"></label>
+    <label class="campo"><span>${TH('admin.res.antelacion_min')}</span><input class="in" id="resAntMin" type="number" min="0" value="${c.antelacion_min}"></label>
+    <label class="campo"><span>${TH('admin.res.antelacion_max')}</span><input class="in" id="resAntMax" type="number" min="1" max="365" value="${c.antelacion_max}"></label>
+    <label class="campo"><span>${TH('admin.res.no_presentada_min')}</span><input class="in" id="resNoPres" type="number" min="5" max="240" value="${c.no_presentada}"></label>
+    <p class="botonera"><button class="btn" type="button" id="resGuardar">${TH('admin.res.guardar')}</button></p></div>`;
+  return`<div class="cab"><div><h2 class="etq">${TH('admin.tab.res')}</h2><p>${TH('admin.res.ayuda')}</p>
+    <p class="nota">${TH('admin.res.enlace')} <a href="/reservar" target="_blank" rel="noopener">${esc(location.origin)}/reservar</a></p>
+    ${c&&!c.activo?`<p class="nota"><b>${TH('admin.res.desactivado')}</b></p>`:''}</div></div>
+  <p class="botonera"><label>${TH('admin.res.dia')} <input class="in" type="date" id="resDia" value="${esc(RES.dia)}" style="width:auto"></label>
+    <button class="btn sec" type="button" id="resHoy">${TH('admin.res.hoy')}</button></p>
+  ${RES.err?`<div class="caja" data-error role="alert"><p><b>${esc(RES.err)}</b></p></div>`:''}${RES.ok?`<div class="caja"><p><b>${esc(RES.ok)}</b></p></div>`:''}
+  ${ocup}${d&&d.reservas.length?d.reservas.map(tarjetaRes).join(''):`<p class="nota">${TH('admin.res.vacio')}</p>`}${ajustes}`}
+async function accionRes(estado,id){const cuerpo={id,estado};RES.err=RES.ok='';
+  if(estado==='rechazada'||estado==='cancelada'){const m=prompt(T(estado==='rechazada'?'admin.res.motivo_rechazo':'admin.res.motivo_cancelar'));if(m===null)return;cuerpo.motivo=m}
+  if(estado==='sentada'){const m=prompt(T('admin.res.mesa_pregunta'),'');if(m===null)return;cuerpo.mesa=m}
+  try{await api('POST','/api/reserva/estado',cuerpo)}catch(e){RES.err=e.message}
+  await cargarRes();render()}
+async function guardarRes(){RES.err=RES.ok='';
+  const horario=[...document.querySelectorAll('[data-res-dia]')].map(x=>x.value.split(',').map(t=>t.trim()).filter(Boolean).map(t=>t.split('-').map(h=>h.trim().padStart(5,'0'))));
+  if(horario.some(d=>d.some(t=>t.length!==2))){RES.err=T('admin.res.horario_mal');return render()}
+  const c={activo:$('#resActivo').checked,modo:(document.querySelector('[name=resModo]:checked')||{}).value||'manual',tramo:parseInt($('#resTramo').value,10),
+    aforo:parseInt($('#resAforo').value,10)||0,max_reserva:parseInt($('#resMax').value,10)||0,horario,cerrados:$('#resCerrados').value,
+    antelacion_min:parseInt($('#resAntMin').value,10)||0,antelacion_max:parseInt($('#resAntMax').value,10)||0,no_presentada:parseInt($('#resNoPres').value,10)||0};
+  try{RES.cfg=(await api('POST','/api/reservas/ajustes',c)).ajustes;RES.ok=T('admin.res.guardado')}catch(e){RES.err=e.message}
+  await cargarRes();render()}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-res]');if(b){accionRes(b.dataset.res,b.dataset.id);return}
+  if(e.target.id==='resGuardar')guardarRes();
+  if(e.target.id==='resHoy'){RES.dia=hoyISO();RES.err=RES.ok='';cargarRes()}});
+document.addEventListener('change',e=>{if(e.target.id==='resDia'&&e.target.value){RES.dia=e.target.value;RES.err=RES.ok='';cargarRes()}});
+
+const armados=new Map();
+document.addEventListener('click',e=>{
+  const t=e.target.closest('.tab');if(t){tab=t.dataset.tab;render();scrollTo(0,0);return}
+  const b=e.target.closest('[data-acc]');if(!b||!D)return;
+  const acc=b.dataset.acc,i=+b.dataset.i,tipo=b.dataset.tipo;
+  if(acc==='foto'){abrirFoto(b.dataset.id);return}
+  if(acc==='cerrarV'){cerrarVentana();return}
+  if(acc==='otraFoto'||acc==='elegirFoto'){$('#archivo').value='';$('#archivo').click();return}
+  if(acc==='ayuda'){ayudaFoto(fotoDe);return}
+  if(acc==='copiarPrompt'){const t=$('#promptTxt');
+    (navigator.clipboard?navigator.clipboard.writeText(t.value):Promise.reject()).then(()=>toast(T('admin.toast.texto_copiado')))
+      .catch(()=>{t.focus();t.select();toast(T('admin.toast.texto_seleccionado'))});return}
+  if(acc==='urlWifi'){D.urlQR=b.dataset.url;render();return}
+  if(acc==='imprimirQR'){imprimirQR(b.dataset.i===undefined?D.mesas:[D.mesas[i]]);return}
+  if(acc==='anadirMesas'){const a=parseInt($('#desde').value,10),z=parseInt($('#hasta').value,10),zona=$('#zonaVarias').value.trim();
+    if(!(a>=1&&z<=200&&a<=z)){toast(T('admin.toast.revisa_numeros'));return}
+    if(z-a>99){toast(T('admin.toast.max_mesas'));return}
+    const hay=new Set(D.mesas.map(m=>m.n));let n=0;
+    for(let k=a;k<=z;k++)if(!hay.has(k)){D.mesas.push(zona?{n:k,z:zona}:{n:k});n++}
+    D.mesas.sort((x,y)=>x.n-y.n);render();toast(n?I18N.tn('admin.toast.mesas_anadidas',n):T('admin.toast.mesas_existian'));return}
+  if(acc==='quitarFoto'){const id=fotoDe;b.classList.add('cargando');
+    fetch('/api/foto?id='+encodeURIComponent(id),{method:'DELETE',credentials:'same-origin'}).then(r=>r.json().then(j=>{if(!r.ok)throw new Error(j.error||T('admin.error.generico'));
+      delete FOTO[id];cerrarVentana();render();toast(T('admin.toast.foto_quitada'))})).catch(err=>{b.classList.remove('cargando');toast(err.message)});return}
+  const lista=tipo==='boc'?D.platos:D.picar;
+  if(acc==='subir'||acc==='bajar'){const j=i+(acc==='subir'?-1:1);if(tipo==='boc'){/* dentro de la misma sección */let k=j;while(k>=0&&k<lista.length&&es(lista[k].sec)!==es(lista[i].sec))k+=(acc==='subir'?-1:1);if(k<0||k>=lista.length)return;[lista[i],lista[k]]=[lista[k],lista[i]]}else{[lista[i],lista[j]]=[lista[j],lista[i]]}render();return}
+  if(acc==='filtroAlg'){filtroAlg=!filtroAlg;render();return}
+  if(acc==='abrir'){const id=b.dataset.id;abiertos.has(id)?abiertos.delete(id):abiertos.add(id);render();return}
+  if(acc==='borrar'){const clave=tipo+':'+b.dataset.i;
+    if(!armados.has(clave)){b.classList.add('armado');b.textContent=T('admin.borrar.confirmar');armados.set(clave,setTimeout(()=>{armados.delete(clave);render()},3500));return}
+    clearTimeout(armados.get(clave));armados.delete(clave);
+    if(tipo==='ing'){const id=b.dataset.i;if(usoDe(id).length)return;const n=nom(D.ingredientes[id].n);delete D.ingredientes[id];toast(T('admin.toast.borrado',{nombre:n}))}
+    else if(tipo==='mes'){const [m]=D.mesas.splice(i,1);toast(T('admin.toast.mesa_borrada',{n:m.n}))}
+    else{const [x]=lista.splice(i,1);abiertos.delete(x.id);toast(T('admin.toast.borrado',{nombre:nom(x.n)}))}
+    render();return}
+  if(acc==='nuevoBoc'){const id='tmp'+(++tmp);const sec0=secciones()[0]??tes('admin.seccion.defecto'),sec=secDe(sec0);
+    const pos=D.platos.map(x=>es(x.sec)).lastIndexOf(sec0)+1;
+    D.platos.splice(pos,0,{id,_nuevo:1,sec,pan:'barra',p:6,i:[],n:tes('admin.nuevo.plato',{plato:I18N.tr(TXT.plato,'es')}),d:''});abiertos.add(id);render();
+    const el=document.querySelector(`[data-tipo="boc"][data-i="${pos}"][data-campo="n"]`);el?.scrollIntoView({block:'center'});el?.select();return}
+  if(acc==='nuevoPic'){D.picar.push({id:'tmp'+(++tmp),_nuevo:1,n:tes('admin.nuevo.racion'),p:4,c:'#D9A040'});render();
+    const el=document.querySelector(`[data-tipo="pic"][data-i="${D.picar.length-1}"][data-campo="n"]`);el?.scrollIntoView({block:'center'});el?.select();return}
+  if(acc==='nuevoIng'){const id='tmp'+(++tmp);D.ingredientes[id]={n:tes('admin.nuevo.ingrediente'),cat:'verduras',p:0.5,s:'leaf',h:7,c:'#8DBF5A',_nuevo:1};render();
+    const el=document.querySelector(`[data-tipo="ing"][data-id="${id}"][data-campo="n"]`);el?.scrollIntoView({block:'center'});el?.select();return}
+  const bo=D.platos[i];
+  if(acc==='autodesc'){setCampo(bo,'d','es',descripcionDe(bo));render();return}
+  // Si la descripción estaba vacía o era la automática, se actualiza sola al cambiar los ingredientes
+  const auto=bo&&(!es(bo.d)||es(bo.d)===descripcionDe(bo));
+  const k=+b.dataset.k;
+  if(acc==='capaAnadir'){const v=$('#sel-'+i).value;if(v)bo.i.push(v)}
+  else if(acc==='capaQuitar')bo.i.splice(k,1);
+  else if(acc==='capaSubir'&&k<bo.i.length-1)[bo.i[k],bo.i[k+1]]=[bo.i[k+1],bo.i[k]];
+  else if(acc==='capaBajar'&&k>0)[bo.i[k],bo.i[k-1]]=[bo.i[k-1],bo.i[k]];
+  else return;
+  if(auto)setCampo(bo,'d','es',descripcionDe(bo));
+  render();
+});
+
+/* ---------- fotos de ingredientes ---------- */
+let fotoDe=null;
+const nombreIng=id=>D.ingredientes[id]?nom(D.ingredientes[id].n):id;
+function abrirFoto(id){fotoDe=id;const f=FOTO[id];if(f&&f.subida)verFoto(id,[]);else ayudaFoto(id)}
+function textoPrompt(n){return T('admin.foto.prompt',{ingrediente:n.toLowerCase()})}
+// Guía para crear la foto con ChatGPT (o Gemini) a partir de la imagen de referencia
+function ayudaFoto(id){fotoDe=id;const n=nombreIng(id);
+  ventana(`<div class="ayuda ayuda-grid"><h2 id="vTit">${TH('admin.foto.titulo',{nombre:n})}</h2>
+    <ol>
+      <li>${TH('admin.foto.paso1')}
+        <img class="ref" src="/img/referencia_capa.jpg" alt="${TA('admin.foto.ref_alt')}">
+        <div class="fila-botones"><a class="btn sec" href="/img/referencia_capa.jpg" download="referencia_capa.jpg">${TH('admin.foto.descargar')}</a></div></li>
+      <li>${TH('admin.foto.paso2')}
+        <textarea class="in" id="promptTxt" readonly>${esc(textoPrompt(n))}</textarea>
+        <div class="fila-botones"><button class="btn sec" data-acc="copiarPrompt">${TH('admin.foto.copiar')}</button></div></li>
+      <li>${TH('admin.foto.paso3')}</li>
+    </ol>
+    <div class="acc"><button class="btn sec" data-acc="cerrarV">${TH('admin.foto.cancelar')}</button><button class="btn" data-acc="elegirFoto">${TH('admin.foto.elegir')}</button></div></div>`)}
+$('#archivo').addEventListener('change',async()=>{const file=$('#archivo').files[0];if(!file||!fotoDe)return;
+  if(file.size>15e6){toast(T('admin.toast.foto_grande'));return}
+  ventana(`<h2 id="vTit">${TH('admin.foto.subiendo')}</h2><p class="nota">${TH('admin.foto.subiendo_nota',{nombre:nombreIng(fotoDe)})}</p>`);
+  try{const r=await fetch('/api/foto?id='+encodeURIComponent(fotoDe),{method:'POST',body:file,headers:{'Content-Type':file.type||'application/octet-stream'},credentials:'same-origin'});
+    const j=await r.json().catch(()=>({}));if(r.status===401){cerrarVentana();mostrarLogin();return}
+    if(!r.ok)throw new Error(j.error||T('admin.foto.error_subir'));
+    FOTO[fotoDe]=j.foto;render();verFoto(fotoDe,j.avisos||[])}
+  catch(err){ventana(`<h2 id="vTit">${TH('admin.foto.error_titulo')}</h2><p class="err">${esc(err.message)}</p><div class="acc"><span></span><button class="btn" data-acc="cerrarV">${TH('admin.foto.cerrar')}</button></div>`)}});
+function verFoto(id,avisos){const f=FOTO[id],nombre=nombreIng(id);
+  // Ejemplo de integración: un plato que lo lleve; si no lo lleva ninguno, solo con pan
+  const b=D.platos.find(b=>b.i.includes(id));const capas=b?b.i:[id];const ejemplo=montaje(b?b.id:'',capas);
+  ventana(`<h2 id="vTit">${esc(nombre)}</h2>
+    <div><div class="lienzo"><img class="recorte" src="/${esc(f.src)}" alt="${TA('admin.foto.recorte_alt',{nombre})}"></div><p class="pie">${TH('admin.foto.recortada')}</p></div>
+    <div><div class="lienzo">${ejemplo||`<p class="nota">${TH('admin.foto.no_monta')}</p>`}</div><p class="pie">${b?TH('admin.foto.asi_se_ve_en',{nombre:nom(b.n)}):TH('admin.foto.asi_se_ve_pan')}</p></div>
+    ${avisos.length?`<ul class="avisos">${avisos.map(a=>`<li>${esc(a)}</li>`).join('')}</ul>`:''}
+    <p class="nota">${TH('admin.foto.nota',{platos:tx('platos')})}</p>
+    <div class="acc"><span class="botonera sm"><button class="btn sec" data-acc="ayuda">${TH('admin.foto.como')}</button><button class="btn sec" data-acc="otraFoto">${TH('admin.foto.cambiar')}</button><button class="btn sec peligro" data-acc="quitarFoto">${TH('admin.foto.quitar')}</button></span><button class="btn" data-acc="cerrarV">${TH('admin.foto.hecho')}</button></div>`)}
+function ventana(html){$('#ventana').innerHTML=html;$('#velo').hidden=false;$('#ventana').querySelector('button')?.focus()}
+function cerrarVentana(){$('#velo').hidden=true;fotoDe=null}
+$('#velo').addEventListener('click',e=>{if(e.target.id==='velo')cerrarVentana()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#velo').hidden)cerrarVentana()});
+
+let tt;function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('show'),2200)}
+
+// El título de la pestaña del navegador lleva el nombre del local
+const rotular=()=>{document.title=T('admin.titulo',{nombre:document.querySelector('meta[name="gastro-nombre"]').content})};
+// Al cambiar de idioma se repinta todo: textos fijos, botón de pedidos y la pestaña abierta (las ya cargadas se pintan con sus datos)
+I18N.alCambiar(()=>{rotular();pintarAceptar(aceptando);if(!$('#velo').hidden)cerrarVentana();if(D&&!$('#app').hidden)render()});
+rotular();
+
+// Arranque: si ya hay sesión, directamente a editar
+api('GET','/api/sesion').then(r=>r.ok?cargar():mostrarLogin()).catch(mostrarLogin);
+</script>
+</body>
+</html>

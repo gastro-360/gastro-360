@@ -1,0 +1,76 @@
+# Carta + backoffice + cocina (app) detrás de Caddy, que saca el HTTPS solo para DOMINIO.
+#   Un comando: ./instalar.sh (prueba local) o ./instalar.sh --produccion; escriben el .env y levantan esto.
+#   A mano, servidor: HTTP_PORT=80 HTTPS_PORT=443 y DOMINIO=carta.tudominio.es   ->  docker compose up -d
+#   VM / pruebas (rootless, sin puertos < 1024):  HTTP_PORT=8080 HTTPS_PORT=8443 y DOMINIO=localhost
+# Caddy escucha dentro del contenedor en los mismos números que fuera, así las redirecciones a https llevan el puerto correcto.
+services:
+  app:
+    # La imagen se construye aquí, desde este repo (no se descarga de ningún registro).
+    image: gastro-360:${GASTRO_IMAGEN_TAG:-local}   # app y vigilante comparten imagen
+    pull_policy: build
+    build: .
+    restart: unless-stopped
+    environment:
+      RESTAURANTE: ${RESTAURANTE:-demo}
+      GIT_SHA: ${GIT_SHA:-}   # versión desplegada; la muestra /salud
+      CLAVE_BACKOFFICE: ${CLAVE_BACKOFFICE:-}
+      COPIA_HORAS: ${COPIA_HORAS:-6}
+      WALLET_MODO: ${WALLET_MODO:-}   # «prueba»: certificados y clientes simulados de Apple/Google Wallet (sin credenciales reales)
+      CORREO_MODO: ${CORREO_MODO:-}   # «prueba»: correo simulado (nada sale a Internet); sin Brevo ni esto, el canal de correo no existe
+      CONFIRMACION_DOBLE: ${CONFIRMACION_DOBLE:-}   # «1»: el permiso de publicidad exige confirmar por correo; vacío, alta directa al marcar la casilla
+      BREVO_API_KEY: ${BREVO_API_KEY:-}   # clave de la API de Brevo (secreto: solo en .env)
+      BREVO_REMITENTE: ${BREVO_REMITENTE:-}   # correo remitente ya validado en Brevo
+      MAX_PEDIDOS_IP: ${MAX_PEDIDOS_IP:-10}
+      MAX_RESERVAS_IP: ${MAX_RESERVAS_IP:-10}   # reservas por IP cada 10 minutos, cupo aparte del de pedidos
+      PROXY_CONFIABLE: ${PROXY_CONFIABLE:-caddy}   # de quién nos fiamos para leer la IP real y el https: el Caddy de este compose. Nunca expongas app:8080
+      CONFIAR_CF: ${CONFIAR_CF:-}   # 1 solo con Cloudflare delante y un proxy propio que NO borre CF-Connecting-IP (el Caddy de este compose la borra)
+      URL_PUBLICA: ${URL_PUBLICA:-}   # https://tu-dominio: la dirección que llevan las tarjetas de Wallet
+    volumes:
+      - datos:/datos
+    security_opt:
+      - no-new-privileges:true
+    # sin "ports": solo Caddy es accesible desde fuera
+
+  # Vigilante: comprueba /salud de app y avisa por Telegram si cae y cuando se recupera. Sin dependencia de app (debe seguir vivo si app se cae).
+  vigilante:
+    image: gastro-360:${GASTRO_IMAGEN_TAG:-local}
+    pull_policy: build
+    build: .
+    restart: unless-stopped
+    entrypoint: ["python", "/app/carta/vigilante.py"]
+    healthcheck:
+      disable: true   # el de la imagen sondea el servidor de la carta, que aquí no corre
+    environment:
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}   # secreto: solo en .env
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
+      TELEGRAM_API_URL: ${TELEGRAM_API_URL:-}   # solo pruebas (simulador); vacío = api.telegram.org
+      VIGILANTE_URL: http://app:8080/salud
+      VIGILANTE_INTERVALO: ${VIGILANTE_INTERVALO:-30}
+      VIGILANTE_FALLOS: ${VIGILANTE_FALLOS:-3}
+      VIGILANTE_NOMBRE: ${RESTAURANTE:-demo}
+    security_opt:
+      - no-new-privileges:true
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_healthy
+    environment:
+      DOMINIO: ${DOMINIO:-localhost}
+      HTTP_PORT: ${HTTP_PORT:-80}
+      HTTPS_PORT: ${HTTPS_PORT:-443}
+    ports:
+      - "${HTTP_PORT:-80}:${HTTP_PORT:-80}"
+      - "${HTTPS_PORT:-443}:${HTTPS_PORT:-443}"
+      - "${HTTPS_PORT:-443}:${HTTPS_PORT:-443}/udp"
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  datos:
+  caddy_data:
+  caddy_config:

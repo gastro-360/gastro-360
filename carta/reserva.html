@@ -1,0 +1,72 @@
+<!-- SPDX-License-Identifier: EUPL-1.2 -->
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="gastro-idioma" content="">
+<script src="/idiomas.js"></script>
+<script src="/estatico/comun.js"></script>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="{{c_fondo}}">
+<title>{{nombre_corto}}</title>
+<link rel="icon" type="image/png" href="/img/icon-192.png">
+<meta name="generator" content="{{producto}}">
+<link rel="stylesheet" href="/estatico/fuentes/fuentes.css">
+<link rel="stylesheet" href="/tema.css">
+<link rel="stylesheet" href="/estatico/base.css">
+<style>
+body{margin:0}
+.res{max-width:560px;margin:0 auto;padding:16px}
+.res header{display:flex;align-items:center;gap:12px;justify-content:space-between}
+.res header img{height:44px}
+.res h1{font-size:1.4rem;margin:16px 0 4px}
+.res .estado{font-size:1.15rem;font-weight:700;margin:12px 0 4px}
+.res dl{display:grid;grid-template-columns:max-content 1fr;gap:6px 14px;margin:12px 0}
+.res dt{font-weight:600}
+.res dd{margin:0}
+.res .nota{opacity:.8}
+</style>
+</head>
+<body>
+<main class="res">
+  <header><img src="/img/{{logo}}" alt=""><span data-selector-idioma></span></header>
+  <h1 data-i18n="reserva.titulo"></h1>
+  <div id="reserva" aria-live="polite"></div>
+  <p class="err" id="err" role="alert"></p>
+  <p class="nota" data-i18n="reserva.guardar_enlace"></p>
+  <p><a href="/" data-i18n="reservar.ver_carta"></a></p>
+</main>
+<script>
+const T=new URLSearchParams(location.search).get('t')||'';
+const MOTIVOS={'sin respuesta':'reserva.motivo.sin_respuesta','cancelada por el cliente':'reserva.motivo.cliente'};
+let R=null,error=false,temp=null;
+const fecha=f=>{const [y,m,d]=f.split('-').map(Number),x=new Date(y,m-1,d);return I18N.diaSemana(x)+' '+I18N.fecha(x)};
+function pintar(){
+  if(error){$('#reserva').innerHTML=`<p class="estado">${esc(I18N.t('reserva.no_encontrada'))}</p>`;return}
+  if(!R)return;
+  const motivo=R.motivo?(MOTIVOS[R.motivo]?I18N.t(MOTIVOS[R.motivo]):I18N.t('reserva.motivo',{motivo:R.motivo})):'';
+  $('#reserva').innerHTML=`<p class="estado" data-estado="${esc(R.estado)}">${esc(I18N.t('reserva.estado.'+R.estado))}</p>
+   ${motivo?`<p>${esc(motivo)}</p>`:''}
+   <dl><dt>${esc(I18N.t('reserva.nombre'))}</dt><dd>${esc(R.nombre)}</dd>
+   <dt>${esc(I18N.t('reserva.fecha'))}</dt><dd>${esc(fecha(R.fecha))}</dd>
+   <dt>${esc(I18N.t('reserva.hora'))}</dt><dd>${esc(R.hora)}</dd>
+   <dt>${esc(I18N.t('reserva.comensales'))}</dt><dd>${esc(R.comensales)}</dd></dl>
+   ${R.cancelable?`<p><button class="btn sec" type="button" id="cancelar">${esc(I18N.t('reserva.cancelar'))}</button></p>`:''}`}
+async function cargar(){clearTimeout(temp);
+  try{const r=await fetch('/api/reserva?t='+encodeURIComponent(T),{cache:'no-store'});
+    if(r.status===404){error=true;pintar();return}
+    if(r.ok){R=await r.json();error=false;pintar()}}catch(e){}
+  if(!R||['solicitada','confirmada'].includes(R.estado))temp=setTimeout(cargar,30000)}
+document.addEventListener('click',async e=>{if(e.target.id!=='cancelar')return;
+  if(!confirm(I18N.t('reserva.confirmar_cancelar')))return;
+  e.target.disabled=true;$('#err').textContent='';
+  try{const r=await fetch('/api/reserva/cancelar',{method:'POST',headers:{'Content-Type':'application/json','X-Idioma':I18N.lang},body:JSON.stringify({t:T})});
+    const j=await r.json().catch(()=>({}));if(r.ok){R=j;pintar()}else{$('#err').textContent=j.error||'';e.target.disabled=false}}
+  catch(_){e.target.disabled=false}});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)cargar()});
+I18N.alCambiar(pintar);
+cargar();
+</script>
+</body>
+</html>
