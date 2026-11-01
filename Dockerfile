@@ -1,4 +1,4 @@
-FROM python:3.12-slim
+FROM python:3.15-slim
 
 # Pillow, numpy y scipy: solo para subir fotos desde el backoffice y generar los iconos de la app (el servidor en sí es solo biblioteca estándar)
 # curl: solo para el aviso (push) a Apple Wallet con HTTP/2 cuando haya credenciales reales (openssl ya viene en la imagen)
